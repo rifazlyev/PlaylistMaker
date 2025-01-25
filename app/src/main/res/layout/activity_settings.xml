@@ -9,15 +9,22 @@
     tools:context=".SettingsActivity">
 
     <LinearLayout
+        android:id="@+id/settings_screen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/back_button_settings_screen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:layout_gravity="start"
+            android:backgroundTint="@color/white"
+            android:paddingHorizontal="0dp"
+            android:scaleType="fitStart"
             android:src="@drawable/ic_back" />
 
         <TextView
@@ -47,7 +54,9 @@
 
         <Switch
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:thumbTint="@color/switch_thumb_color"
+            android:trackTint="@color/switch_track_color" />
     </LinearLayout>
 
     <LinearLayout
