@@ -11,4 +11,5 @@
     <!--Dimension for text-->
     <dimen name="_16sp">16sp</dimen>
     <dimen name="_22sp">22sp</dimen>
+    <dimen name="_0dp">0dp</dimen>
 </resources>
