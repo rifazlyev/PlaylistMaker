@@ -31,26 +31,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:fontFamily="@font/ys_display_medium"
             android:text="@string/settings"
             android:textColor="@color/black"
+            android:textFontWeight="500"
             android:textSize="@dimen/_22sp" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_24dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/_21dp">
+        style="@style/SettingsScreenLinearLayout"
+        android:layout_marginTop="@dimen/_24dp">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/dark_theme"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_16sp" />
+            style="@style/SettingsScreenText"
+            android:text="@string/dark_theme" />
 
         <Switch
             android:layout_width="wrap_content"
@@ -60,69 +54,36 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/_21dp">
+    <LinearLayout style="@style/SettingsScreenLinearLayout">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/share_text"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_16sp" />
+            style="@style/SettingsScreenText"
+            android:text="@string/share_text" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_16dp"
+            style="@style/SettingsScreenImage"
             android:src="@drawable/ic_share" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/_21dp">
+    <LinearLayout style="@style/SettingsScreenLinearLayout">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/write_to_support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_16sp" />
+            style="@style/SettingsScreenText"
+            android:text="@string/write_to_support" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_16dp"
+            style="@style/SettingsScreenImage"
             android:src="@drawable/ic_support" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/_21dp">
+    <LinearLayout style="@style/SettingsScreenLinearLayout">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/privacy_policy"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_16sp" />
+            style="@style/SettingsScreenText"
+            android:text="@string/privacy_policy" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_16dp"
+            style="@style/SettingsScreenImage"
             android:src="@drawable/ic_chevron" />
     </LinearLayout>
 </LinearLayout>
