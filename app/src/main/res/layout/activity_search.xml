@@ -8,13 +8,9 @@
 
     <!--    Для теста, после удалю-->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Search screen"
-        android:textColor="@color/black"
+        style="@style/TitleText"
         android:padding="@dimen/_16dp"
-        android:textSize="@dimen/_22sp"
-        android:foregroundGravity="center"
+        android:text="@string/search"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

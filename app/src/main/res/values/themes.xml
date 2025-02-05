@@ -4,5 +4,6 @@
         <!-- Customize your light theme here. -->
          <item name="backgroundColorMainPage">@color/blue</item>
         <item name="colorControlNormal">@color/button_settings</item>
+        <item name="textColor">@color/black</item>
     </style>
 </resources>

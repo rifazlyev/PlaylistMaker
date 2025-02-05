@@ -30,14 +30,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/TitleText"
             android:layout_marginStart="12dp"
-            android:fontFamily="@font/ys_display_medium"
             android:text="@string/settings"
-            android:textColor="@color/black"
-            android:textFontWeight="500"
-            android:textSize="@dimen/_22sp" />
+
+             />
     </LinearLayout>
 
     <LinearLayout
