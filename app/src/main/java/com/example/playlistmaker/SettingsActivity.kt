@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
@@ -9,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SettingsActivity : AppCompatActivity() {
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -29,6 +31,15 @@ class SettingsActivity : AppCompatActivity() {
         buttonBack.setOnClickListener {
             val buttonBackIntent = Intent(this, MainActivity::class.java)
             startActivity(buttonBackIntent)
+        }
+
+        val buttonShareApp = findViewById<LinearLayout>(R.id.share_app)
+        buttonShareApp.setOnClickListener{
+            val message = "https://practicum.yandex.ru/android-developer"
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.putExtra(Intent.EXTRA_TEXT, message)
+            intent.type = "text/plain"
+            startActivity(Intent.createChooser(intent, "Choose the app"))
         }
     }
 }

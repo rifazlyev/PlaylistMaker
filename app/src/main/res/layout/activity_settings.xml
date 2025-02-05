@@ -53,7 +53,12 @@
 
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsScreenLinearLayout">
+    <LinearLayout
+        android:id="@+id/share_app"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        style="@style/SettingsScreenLinearLayout">
 
         <TextView
             style="@style/SettingsScreenText"
