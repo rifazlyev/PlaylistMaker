@@ -4,12 +4,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/_16dp"
     tools:context=".SearchActivity">
 
     <!--    Для теста, после удалю-->
     <TextView
         style="@style/TitleText"
-        android:padding="@dimen/_16dp"
         android:text="@string/search"
         tools:ignore="MissingConstraints" />
 

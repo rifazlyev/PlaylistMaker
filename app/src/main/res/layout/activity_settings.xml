@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,8 +32,8 @@
             style="@style/TitleText"
             android:layout_marginStart="12dp"
             android:text="@string/settings"
+            />
 
-             />
     </LinearLayout>
 
     <LinearLayout
@@ -51,6 +50,7 @@
             android:thumbTint="@color/switch_thumb_color"
             android:trackTint="@color/switch_track_color"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </LinearLayout>
 
     <LinearLayout style="@style/SettingsScreenLinearLayout">
@@ -62,6 +62,7 @@
         <ImageView
             style="@style/SettingsScreenImage"
             android:src="@drawable/ic_share" />
+
     </LinearLayout>
 
     <LinearLayout style="@style/SettingsScreenLinearLayout">
@@ -73,6 +74,7 @@
         <ImageView
             style="@style/SettingsScreenImage"
             android:src="@drawable/ic_support" />
+
     </LinearLayout>
 
     <LinearLayout style="@style/SettingsScreenLinearLayout">
@@ -84,5 +86,7 @@
         <ImageView
             style="@style/SettingsScreenImage"
             android:src="@drawable/ic_chevron" />
+
     </LinearLayout>
+
 </LinearLayout>
