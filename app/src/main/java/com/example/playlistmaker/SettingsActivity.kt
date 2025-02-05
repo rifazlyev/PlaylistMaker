@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,8 +18,15 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
         //Тут сделал кликабельным весь контейнер
-        val buttonBackSettings = findViewById<LinearLayout>(R.id.settings_screen)
-        buttonBackSettings.setOnClickListener {
+        val backSettings = findViewById<LinearLayout>(R.id.settings_screen)
+        backSettings.setOnClickListener {
+            val buttonBackIntent = Intent(this, MainActivity::class.java)
+            startActivity(buttonBackIntent)
+        }
+
+        //Тут кликабельна и сама 'стрелочка'
+        val buttonBack= findViewById<ImageButton>(R.id.back_button_settings_screen)
+        buttonBack.setOnClickListener {
             val buttonBackIntent = Intent(this, MainActivity::class.java)
             startActivity(buttonBackIntent)
         }
