@@ -16,23 +16,22 @@
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/back_button_settings_screen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="center"
-            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
+            android:scaleType="center"
+            android:src="@drawable/ic_back" />
 
         <TextView
             style="@style/TitleText"
             android:layout_marginStart="12dp"
-            android:text="@string/settings"
-            />
+            android:text="@string/settings" />
 
     </LinearLayout>
 
@@ -55,10 +54,10 @@
 
     <LinearLayout
         android:id="@+id/share_app"
+        style="@style/SettingsScreenLinearLayout"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        style="@style/SettingsScreenLinearLayout">
+        android:foreground="?attr/selectableItemBackground">
 
         <TextView
             style="@style/SettingsScreenText"
@@ -70,7 +69,12 @@
 
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsScreenLinearLayout">
+    <LinearLayout
+        android:id="@+id/support"
+        style="@style/SettingsScreenLinearLayout"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
 
         <TextView
             style="@style/SettingsScreenText"
@@ -82,7 +86,12 @@
 
     </LinearLayout>
 
-    <LinearLayout style="@style/SettingsScreenLinearLayout">
+    <LinearLayout
+        android:id="@+id/privacy_policy"
+        style="@style/SettingsScreenLinearLayout"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground">
 
         <TextView
             style="@style/SettingsScreenText"
