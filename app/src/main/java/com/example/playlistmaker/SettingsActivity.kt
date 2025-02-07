@@ -40,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_SEND)
             intent.putExtra(Intent.EXTRA_TEXT, message)
             intent.type = "text/plain"
-            startActivity(Intent.createChooser(intent, "Choose the app"))
+            startActivity(Intent.createChooser(intent, getString(R.string.choose_the_app)))
         }
 
         val buttonSupport = findViewById<LinearLayout>(R.id.support)

@@ -98,4 +98,3 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(restoredText)
     }
 }
-
