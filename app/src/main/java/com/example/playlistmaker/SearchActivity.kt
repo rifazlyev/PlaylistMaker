@@ -40,6 +40,7 @@ class SearchActivity : AppCompatActivity() {
 
         buttonClear.setOnClickListener {
             inputEditText.setText("")
+            buttonClear.visibility = View.GONE
         }
 
         val textWatcher = object : TextWatcher {
