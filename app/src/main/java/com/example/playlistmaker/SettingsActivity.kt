@@ -29,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
         //Тут кликабельна и сама 'стрелочка'
         val buttonBack = findViewById<ImageButton>(R.id.back_button_settings_screen)
         buttonBack.setOnClickListener {
-            finish()
+            backSettings.performClick()
         }
 
         val buttonShareApp = findViewById<LinearLayout>(R.id.share_app)

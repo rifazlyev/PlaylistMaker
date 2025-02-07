@@ -44,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         buttonBack.setOnClickListener {
-            finish()
+            backSearch.performClick()
         }
 
         buttonClear.setOnClickListener {
