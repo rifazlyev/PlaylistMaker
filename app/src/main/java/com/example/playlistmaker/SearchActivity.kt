@@ -40,13 +40,11 @@ class SearchActivity : AppCompatActivity() {
         }
 
         backSearch.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
         buttonBack.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
         buttonClear.setOnClickListener {

@@ -23,15 +23,13 @@ class SettingsActivity : AppCompatActivity() {
         //Тут сделал кликабельным весь контейнер
         val backSettings = findViewById<LinearLayout>(R.id.settings_screen)
         backSettings.setOnClickListener {
-            val buttonBackIntent = Intent(this, MainActivity::class.java)
-            startActivity(buttonBackIntent)
+            finish()
         }
 
         //Тут кликабельна и сама 'стрелочка'
         val buttonBack = findViewById<ImageButton>(R.id.back_button_settings_screen)
         buttonBack.setOnClickListener {
-            val buttonBackIntent = Intent(this, MainActivity::class.java)
-            startActivity(buttonBackIntent)
+            finish()
         }
 
         val buttonShareApp = findViewById<LinearLayout>(R.id.share_app)
