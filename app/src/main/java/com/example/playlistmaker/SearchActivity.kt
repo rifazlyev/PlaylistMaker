@@ -14,7 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
-
+    private var textValue: String = ""
     companion object {
         const val SEARCH_TEXT_KEY = "SEARCH_TEXT"
     }
@@ -61,6 +61,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (!p0.isNullOrBlank()) {
+                    textValue = p0.toString()
                     buttonClear.visibility = clearButtonVisibility(p0)
                 }
             }
@@ -87,8 +88,8 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val textToSave = inputEditText.text.toString()
-        outState.putString(SEARCH_TEXT_KEY, textToSave)
+
+        outState.putString(SEARCH_TEXT_KEY, textValue)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
