@@ -33,21 +33,17 @@
             android:text="@string/search" />
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_24dp"
         android:background="@drawable/rounded_edittext"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/_16dp"
-        android:paddingEnd="@dimen/_16dp">
+        android:paddingHorizontal="@dimen/_16dp">
 
         <EditText
             android:id="@+id/searchEditText"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_36dp"
             android:background="@android:color/transparent"
             android:drawableStart="@drawable/ic_search"
             android:drawablePadding="@dimen/_8dp"
@@ -56,6 +52,7 @@
             android:hint="@string/search"
             android:inputType="text"
             android:lines="1"
+            android:paddingEnd="@dimen/_40dp"
             android:textColor="@color/black"
             android:textColorHint="@color/search_hint_color"
             android:textCursorDrawable="@drawable/cursor"
@@ -65,12 +62,14 @@
             android:id="@+id/clearButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="@dimen/_8dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
             android:src="@drawable/ic_clear"
             android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
+
 
 </LinearLayout>
