@@ -40,6 +40,8 @@ class SearchActivity : AppCompatActivity() {
 
         buttonClear.setOnClickListener {
             inputEditText.setText("")
+            inputEditText.clearFocus()
+            hideKeyboard(inputEditText)
             buttonClear.visibility = View.GONE
         }
 
@@ -66,5 +68,10 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
