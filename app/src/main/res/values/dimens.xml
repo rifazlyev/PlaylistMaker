@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Common dimensions-->
+    <dimen name="_0dp">0dp</dimen>
+    <dimen name="_5dp">5dp</dimen>
     <dimen name="_8dp">8dp</dimen>
+    <dimen name="_13dp">13dp</dimen>
     <dimen name="_16dp">16dp</dimen>
+    <dimen name="_20dp">20dp</dimen>
     <dimen name="_21dp">21dp</dimen>
     <dimen name="_24dp">24dp</dimen>
     <dimen name="_28dp">28dp</dimen>
     <dimen name="_36dp">36dp</dimen>
     <dimen name="_40dp">40dp</dimen>
-    <dimen name="_0dp">0dp</dimen>
+    <dimen name="_45dp">45dp</dimen>
 
     <!--Dimension for text-->
+    <dimen name="_11sp">11sp</dimen>
     <dimen name="_16sp">16sp</dimen>
     <dimen name="_22sp">22sp</dimen>
-
 </resources>
