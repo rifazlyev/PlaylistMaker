@@ -4,18 +4,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/_16dp"
+    android:background="@color/background_color"
     tools:context=".MediaActivity">
 
-
-<!--    Для теста, после удалю-->
+    <!--    Для теста, после удалю-->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Media screen"
-        android:textColor="@color/black"
-        android:padding="@dimen/_16dp"
-        android:textSize="@dimen/_22sp"
-        android:foregroundGravity="center"
+        style="@style/TitleText"
+        android:text="@string/media"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
