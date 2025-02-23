@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/track_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/_8dp">
+
+    <ImageView
+        android:id="@+id/track_image"
+        android:layout_width="@dimen/_45dp"
+        android:layout_height="@dimen/_45dp"
+        android:background="@drawable/track_placeholder"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="@dimen/_8dp">
+
+        <TextView
+            android:id="@+id/track_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/ys_display_regular"
+            android:maxLines="1"
+            android:textColor="?attr/textColor"
+            android:textFontWeight="400"
+            android:textSize="@dimen/_16sp"
+            tools:text="Проверочный текст заголовка" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5dp">
+
+            <TextView
+                android:id="@+id/artist_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/ys_display_regular"
+                android:maxLines="1"
+                android:textColor="?attr/artistAndDurationTextColor"
+                android:textFontWeight="400"
+                android:textSize="@dimen/_11sp"
+                tools:text="Тестовое название группы" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_dot" />
+
+            <TextView
+                android:id="@+id/track_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/ys_display_regular"
+                android:maxLines="1"
+                android:paddingEnd="@dimen/_8dp"
+                android:textColor="?attr/artistAndDurationTextColor"
+                android:textFontWeight="400"
+                android:textSize="@dimen/_11sp"
+                tools:text="4:00" />
+        </LinearLayout>
+    </LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron" />
+</LinearLayout>
