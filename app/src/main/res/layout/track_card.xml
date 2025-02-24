@@ -23,14 +23,7 @@
 
         <TextView
             android:id="@+id/track_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/ys_display_regular"
-            android:maxLines="1"
-            android:textColor="?attr/textColor"
-            android:textFontWeight="400"
-            android:textSize="@dimen/_16sp"
+            style="@style/SongTitleText"
             tools:text="Проверочный текст заголовка" />
 
         <LinearLayout
@@ -42,15 +35,9 @@
 
             <TextView
                 android:id="@+id/artist_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/SongArtistAndDurationText"
+                android:layout_width="@dimen/_0dp"
                 android:layout_weight="3"
-                android:ellipsize="end"
-                android:fontFamily="@font/ys_display_regular"
-                android:maxLines="1"
-                android:textColor="?attr/artistAndDurationTextColor"
-                android:textFontWeight="400"
-                android:textSize="@dimen/_11sp"
                 tools:text="Тестовое название группы" />
 
             <ImageView
@@ -59,19 +46,12 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_dot" />
 
-            <!--тут задал специально макс и мин ширину для временя на случай длинных значений времени(например час и больше)-->
+            <!--тут задал специально макс и мин ширину для времени на случай длинных значений времени(например час и больше)-->
             <TextView
                 android:id="@+id/track_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/ys_display_regular"
+                style="@style/SongArtistAndDurationText"
                 android:maxWidth="@dimen/_60dp"
-                android:maxLines="1"
                 android:minWidth="@dimen/_24dp"
-                android:textColor="?attr/artistAndDurationTextColor"
-                android:textFontWeight="400"
-                android:textSize="@dimen/_11sp"
                 tools:text="10:00:00" />
         </LinearLayout>
     </LinearLayout>
