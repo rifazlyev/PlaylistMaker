@@ -18,6 +18,7 @@ import com.example.playlistmaker.model.Track
 
 class SearchActivity : AppCompatActivity() {
     private var textValue: String = ""
+
     companion object {
         const val SEARCH_TEXT_KEY = "SEARCH_TEXT"
     }
