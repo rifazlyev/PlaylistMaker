@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <style name="TitleText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -48,5 +48,27 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:paddingVertical">@dimen/_21dp</item>
+    </style>
+
+    <style name="SongTitleText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/_16sp</item>
+    </style>
+
+    <style name="SongArtistAndDurationText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/artistAndDurationTextColor</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/_11sp</item>
     </style>
 </resources>
