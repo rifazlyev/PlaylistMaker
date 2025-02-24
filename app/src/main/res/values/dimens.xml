@@ -13,6 +13,7 @@
     <dimen name="_36dp">36dp</dimen>
     <dimen name="_40dp">40dp</dimen>
     <dimen name="_45dp">45dp</dimen>
+    <dimen name="_60dp">60dp</dimen>
 
     <!--Dimension for text-->
     <dimen name="_11sp">11sp</dimen>
