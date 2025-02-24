@@ -11,11 +11,11 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
 
-class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackName = itemView.findViewById<TextView>(R.id.track_title)
     private val artistName = itemView.findViewById<TextView>(R.id.artist_title)
-    private  val trackTime = itemView.findViewById<TextView>(R.id.track_duration)
-    private  val trackImage = itemView.findViewById<ImageView>(R.id.track_image)
+    private val trackTime = itemView.findViewById<TextView>(R.id.track_duration)
+    private val trackImage = itemView.findViewById<ImageView>(R.id.track_image)
 
     private fun dpToPx(dp: Float, context: Context): Int {
         return TypedValue.applyDimension(
@@ -25,9 +25,9 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         ).toInt()
     }
 
-    fun bind(track: Track){
+    fun bind(track: Track) {
         trackName.text = track.trackName
-        artistName.text= track.artistName
+        artistName.text = track.artistName
         trackTime.text = track.trackTime
 
         val radiusPx = dpToPx(2F, itemView.context)
