@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/track_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/track_image"
+        android:layout_width="@dimen/_45dp"
+        android:layout_height="@dimen/_45dp"
+        android:background="@drawable/track_placeholder"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="@dimen/_8dp">
+
+        <TextView
+            android:id="@+id/track_title"
+            style="@style/SongTitleText"
+            tools:text="Проверочный текст заголовка" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5dp">
+
+            <TextView
+                android:id="@+id/artist_title"
+                style="@style/SongArtistAndDurationText"
+                android:layout_width="@dimen/_0dp"
+                android:layout_weight="3"
+                tools:text="Тестовое название группы" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_dot" />
+
+            <!--тут задал специально макс и мин ширину для времени на случай длинных значений времени(например час и больше)-->
+            <TextView
+                android:id="@+id/track_duration"
+                style="@style/SongArtistAndDurationText"
+                android:maxWidth="@dimen/_60dp"
+                android:minWidth="@dimen/_24dp"
+                tools:text="10:00:00" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron" />
+</LinearLayout>

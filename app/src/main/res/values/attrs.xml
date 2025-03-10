@@ -2,5 +2,5 @@
 <resources>
     <attr name="backgroundColorMainPage" format="color"/>
     <attr name="textColor" format="color"/>
-
+    <attr name="artistAndDurationTextColor" format="color"/>
 </resources>

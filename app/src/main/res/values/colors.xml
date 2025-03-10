@@ -10,4 +10,5 @@
     <color name="button_settings">#AEAFB4</color>
     <color name="search_hint_color">#AEAFB4</color>
     <color name="text_field">#E6E8EB</color>
+    <color name="artist_and_duration_color">#AEAFB4</color>
 </resources>
