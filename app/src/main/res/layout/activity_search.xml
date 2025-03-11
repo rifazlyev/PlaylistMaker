@@ -56,7 +56,9 @@
             android:textColor="@color/black"
             android:textColorHint="@color/search_hint_color"
             android:textCursorDrawable="@drawable/cursor"
-            android:textSize="@dimen/_16sp" />
+            android:textSize="@dimen/_16sp"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageView
             android:id="@+id/clearButton"
