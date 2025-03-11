@@ -3,14 +3,14 @@ package com.example.playlistmaker
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -38,6 +38,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var buttonBack: ImageButton
     private lateinit var inputEditText: EditText
     private lateinit var buttonClear: ImageView
+    private lateinit var imagePlaceholder: ImageView
+    private lateinit var textPlaceholder: TextView
+    private lateinit var refreshButton: Button
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -63,6 +66,9 @@ class SearchActivity : AppCompatActivity() {
         buttonBack = findViewById(R.id.back_button_search_screen)
         inputEditText = findViewById(R.id.searchEditText)
         buttonClear = findViewById(R.id.clearButton)
+        imagePlaceholder = findViewById(R.id.image_placeholder)
+        textPlaceholder = findViewById(R.id.text_placeholder)
+        refreshButton = findViewById(R.id.refresh_button)
 
         adapter.trackList = listOfTrack
 
@@ -72,38 +78,9 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (inputEditText.text.isNotEmpty()) {
-                    iTunesService.search(inputEditText.text.toString()).enqueue(
-                        object : Callback<SearchResponse> {
-                            override fun onResponse(
-                                call: Call<SearchResponse>,
-                                response: Response<SearchResponse>
-                            ) {
-                                Log.d("SearchResponse", "Response code: ${response.code()}")
-                                Log.d(
-                                    "SearchResponse",
-                                    "Response body: ${response.body()?.toString()}"
-                                )
-                                if (response.code() == 200) {
-                                    listOfTrack.clear()
-                                    if (response.body()?.results?.isNotEmpty() == true) {
-                                        listOfTrack.addAll(response.body()?.results!!)
-                                        adapter.notifyDataSetChanged()
-                                    } else {
-                                        listOfTrack.clear()
-                                        adapter.notifyDataSetChanged()
-                                        showToast("\"No tracks found.\"")
-                                    }
-                                } else {
-                                    showToast("${response.code()}")
-                                }
-                            }
-
-                            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                                showToast("Error: ${t.message}")
-                            }
-                        }
-                    )
+                val query = inputEditText.text.toString()
+                if (query.isNotEmpty()) {
+                    search(query)
                 }
                 true
             } else {
@@ -125,6 +102,11 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.clearFocus()
             hideKeyboard(inputEditText)
             buttonClear.visibility = View.GONE
+            allViewIsGone()
+        }
+
+        refreshButton.setOnClickListener {
+            search(inputEditText.text.toString())
         }
 
         val textWatcher = object : TextWatcher {
@@ -139,7 +121,6 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(p0: Editable?) {}
         }
-
         inputEditText.addTextChangedListener(textWatcher)
     }
 
@@ -168,9 +149,68 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(restoredText)
     }
 
-    fun showToast(message: String) {
-        Toast
-            .makeText(this, message, Toast.LENGTH_SHORT)
-            .show()
+    private fun showError(message: String, iconResId: Int, showRefreshButton: Boolean = false) {
+        listOfTrack.clear()
+        adapter.notifyDataSetChanged()
+
+        imagePlaceholder.apply {
+            setBackgroundResource(iconResId)
+            visibility = View.VISIBLE
+        }
+
+        textPlaceholder.apply {
+            text = message
+            visibility = View.VISIBLE
+        }
+
+        refreshButton.visibility = if (showRefreshButton) View.VISIBLE else View.GONE
+    }
+
+    private fun allViewIsGone() {
+        imagePlaceholder.visibility = View.GONE
+        textPlaceholder.visibility = View.GONE
+        refreshButton.visibility = View.GONE
+    }
+
+    private fun search(query: String) {
+        if (query.isBlank()) {
+            allViewIsGone()
+            return
+        }
+
+        iTunesService.search(query).enqueue(
+            object : Callback<SearchResponse> {
+                override fun onResponse(
+                    call: Call<SearchResponse>,
+                    response: Response<SearchResponse>
+                ) {
+                    listOfTrack.clear()
+                    adapter.notifyDataSetChanged()
+                    if (response.code() == 200) {
+                        allViewIsGone()
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            listOfTrack.addAll(response.body()?.results!!)
+                            adapter.notifyDataSetChanged()
+                        } else {
+                            showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
+                        }
+                    } else {
+                        showError(
+                            getString(R.string.something_wrong),
+                            R.drawable.ic_something_wrong,
+                            true
+                        )
+                    }
+                }
+
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    showError(
+                        getString(R.string.something_wrong),
+                        R.drawable.ic_something_wrong,
+                        true
+                    )
+                }
+            }
+        )
     }
 }
