@@ -11,4 +11,7 @@
     <color name="search_hint_color">#AEAFB4</color>
     <color name="text_field">#E6E8EB</color>
     <color name="artist_and_duration_color">#AEAFB4</color>
+    <color name="refresh_button_color">#1A1B22</color>
+    <color name="refresh_button_text_color">#FFFFFF</color>
+
 </resources>

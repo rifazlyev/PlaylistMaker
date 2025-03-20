@@ -13,10 +13,16 @@
     <dimen name="_36dp">36dp</dimen>
     <dimen name="_40dp">40dp</dimen>
     <dimen name="_45dp">45dp</dimen>
+    <dimen name="_54dp">54dp</dimen>
     <dimen name="_60dp">60dp</dimen>
+    <dimen name="_102dp">102dp</dimen>
+    <dimen name="_238dp">238dp</dimen>
+    <dimen name="_356dp">356dp</dimen>
 
     <!--Dimension for text-->
     <dimen name="_11sp">11sp</dimen>
+    <dimen name="_14sp">14sp</dimen>
     <dimen name="_16sp">16sp</dimen>
+    <dimen name="_19sp">19sp</dimen>
     <dimen name="_22sp">22sp</dimen>
 </resources>

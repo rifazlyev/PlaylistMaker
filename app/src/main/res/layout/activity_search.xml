@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -50,9 +51,11 @@
             android:drawableTint="@color/search_hint_color"
             android:fontFamily="@font/ys_display_regular"
             android:hint="@string/search"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:lines="1"
             android:paddingEnd="@dimen/_40dp"
+            android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="@color/search_hint_color"
             android:textCursorDrawable="@drawable/cursor"
@@ -71,9 +74,49 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_24dp" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_24dp" />
+
+        <ImageView
+            android:id="@+id/image_placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_102dp" />
+
+        <TextView
+            android:id="@+id/text_placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_238dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:textAlignment="center"
+            android:textColor="?attr/textColor"
+            android:textFontWeight="400"
+            android:textSize="@dimen/_19sp"
+            tools:text="Примерный текст для теста" />
+
+        <Button
+            android:id="@+id/refresh_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/_356dp"
+            android:backgroundTint="@color/refresh_button_color"
+            android:fontFamily="@font/ys_display_medium"
+            android:text="@string/refresh"
+            android:textAllCaps="false"
+            android:textFontWeight="500"
+            android:textSize="@dimen/_14sp"
+            android:visibility="gone"
+            app:cornerRadius="@dimen/_54dp" />
+    </FrameLayout>
 </LinearLayout>
