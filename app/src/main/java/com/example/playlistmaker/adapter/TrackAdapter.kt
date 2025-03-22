@@ -8,7 +8,7 @@ import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.viewHolder.TrackViewHolder
 import java.util.ArrayList
 
-class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(private val item: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
 
     var trackList: ArrayList<Track> = ArrayList<Track>()
 
@@ -24,5 +24,8 @@ class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position])
+        holder.itemView.setOnClickListener {
+            item(trackList[position])
+        }
     }
 }
