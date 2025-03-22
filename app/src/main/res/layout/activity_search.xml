@@ -79,13 +79,11 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/search_history_view_group"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
             android:gravity="center"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <TextView
                 style="@style/SearchScreenText"
@@ -93,21 +91,41 @@
                 android:text="@string/you_found"
                 android:textFontWeight="500" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/searchHistoryRecyclerView"
+
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="20dp"/>
+                android:fillViewport="false">
 
-            <Button
-                style="@style/SearchHistoryButton"
-                android:text="@string/clear_history"
-                android:layout_marginTop="@dimen/_24dp"
-                />
+                <LinearLayout
+                    android:id="@+id/search_history_view_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/searchHistoryRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp" />
+
+                    <Button
+                        android:id="@+id/clearHistoryButton"
+                        style="@style/SearchHistoryButton"
+                        android:layout_marginTop="@dimen/_24dp"
+                        android:text="@string/clear_history" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchRecyclerView"
+            android:id="@+id/searchResultRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_24dp" />
@@ -129,9 +147,9 @@
 
         <Button
             android:id="@+id/refresh_button"
+            style="@style/SearchHistoryButton"
             android:layout_marginTop="@dimen/_356dp"
             android:text="@string/refresh"
-            android:visibility="gone"
-            style="@style/SearchHistoryButton" />
+            android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>
