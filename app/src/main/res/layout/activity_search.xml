@@ -78,8 +78,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/search_history_view_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/SearchScreenText"
+                android:layout_marginTop="@dimen/_42dp"
+                android:text="@string/you_found"
+                android:textFontWeight="500" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchHistoryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"/>
+
+            <Button
+                style="@style/SearchHistoryButton"
+                android:text="@string/clear_history"
+                android:layout_marginTop="@dimen/_24dp"
+                />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/searchRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_24dp" />
@@ -93,30 +121,17 @@
 
         <TextView
             android:id="@+id/text_placeholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/SearchScreenText"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/_238dp"
-            android:fontFamily="@font/ys_display_medium"
-            android:textAlignment="center"
-            android:textColor="?attr/textColor"
             android:textFontWeight="400"
-            android:textSize="@dimen/_19sp"
             tools:text="Примерный текст для теста" />
 
         <Button
             android:id="@+id/refresh_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/_356dp"
-            android:backgroundTint="@color/refresh_button_color"
-            android:fontFamily="@font/ys_display_medium"
             android:text="@string/refresh"
-            android:textAllCaps="false"
-            android:textFontWeight="500"
-            android:textSize="@dimen/_14sp"
             android:visibility="gone"
-            app:cornerRadius="@dimen/_54dp" />
+            style="@style/SearchHistoryButton" />
     </FrameLayout>
 </LinearLayout>
