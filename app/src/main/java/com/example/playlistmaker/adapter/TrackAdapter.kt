@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.listeners.OnTrackClickListener
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.viewHolder.TrackViewHolder
 import java.util.ArrayList
 
-class TrackAdapter(private val item: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(private val listener: OnTrackClickListener? = null) :
+    RecyclerView.Adapter<TrackViewHolder>() {
 
     var trackList: ArrayList<Track> = ArrayList<Track>()
 
@@ -25,7 +27,7 @@ class TrackAdapter(private val item: (Track) -> Unit) : RecyclerView.Adapter<Tra
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position])
         holder.itemView.setOnClickListener {
-            item(trackList[position])
+            listener?.onTrackClick(trackList[position])
         }
     }
 }
