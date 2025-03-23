@@ -32,6 +32,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
     private var textValue: String = ""
     private val baseUrl = "https://itunes.apple.com"
@@ -48,9 +49,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var searchHistory: SearchHistory;
     private lateinit var searchResultTrackAdapter: TrackAdapter
+    private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchResultRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
-
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -60,9 +61,6 @@ class SearchActivity : AppCompatActivity() {
     private val iTunesService = retrofit.create(ITunesApiService::class.java)
     private val listOfTrack: ArrayList<Track> = ArrayList()
 
-    private val searchHistoryTrackAdapter = TrackAdapter()
-
-    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -84,9 +82,8 @@ class SearchActivity : AppCompatActivity() {
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
         sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
-        searchHistory.getHistoryTrackList()
 
-        searchHistoryIsVisible(true)
+        searchHistoryTrackAdapter = TrackAdapter()
 
         searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
@@ -98,7 +95,6 @@ class SearchActivity : AppCompatActivity() {
 
         searchResultTrackAdapter.trackList = listOfTrack
         searchHistoryTrackAdapter.trackList = ArrayList(searchHistory.getHistoryTrackList())
-
 
         searchResultRecycler = findViewById(R.id.searchResultRecyclerView)
         searchHistoryRecycler = findViewById(R.id.searchHistoryRecyclerView)
@@ -121,12 +117,17 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+            searchHistoryIsVisible(hasFocus && inputEditText.text.isEmpty())
+        }
+        inputEditText.requestFocus()
+
         backSearch.setOnClickListener {
             finish()
         }
 
         buttonBack.setOnClickListener {
-            backSearch.performClick()
+            finish()
         }
 
         buttonClear.setOnClickListener {
@@ -136,6 +137,7 @@ class SearchActivity : AppCompatActivity() {
             hideKeyboard(inputEditText)
             buttonClear.visibility = View.GONE
             allViewIsGone()
+            searchHistoryIsVisible(false)
         }
 
         refreshButton.setOnClickListener {
@@ -144,8 +146,7 @@ class SearchActivity : AppCompatActivity() {
 
         clearSearchHistory.setOnClickListener {
             searchHistory.clearSearchHistoryTrackList()
-            searchHistoryTrackAdapter.notifyDataSetChanged()
-            searchHistoryViewGroup.visibility = View.GONE
+            searchHistoryIsVisible(false)
         }
 
         val textWatcher = object : TextWatcher {
@@ -159,7 +160,6 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     searchHistoryIsVisible(true)
                     searchResultRecycler.visibility = View.GONE
-
                 }
             }
 
@@ -193,7 +193,6 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(restoredText)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun showError(
         message: String,
         iconResId: Int,
@@ -264,7 +263,6 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun searchHistoryIsVisible(flag: Boolean) {
         if (searchHistory.getHistoryTrackList().isEmpty()) {
             searchHistoryViewGroup.visibility = View.GONE
