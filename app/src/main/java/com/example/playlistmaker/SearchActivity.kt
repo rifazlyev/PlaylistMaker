@@ -47,7 +47,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearSearchHistory: Button
     private lateinit var searchHistoryViewGroup: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var searchHistory: SearchHistory;
+    private lateinit var searchHistory: SearchHistory
     private lateinit var searchResultTrackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchResultRecycler: RecyclerView
