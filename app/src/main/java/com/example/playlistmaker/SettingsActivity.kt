@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
@@ -9,8 +10,14 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.playlistmaker.constants.PreferencesConstants.APP_THEME_KEY
+import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+   private lateinit var themeSwitcher: SwitchMaterial
+   private  lateinit var sharedPreferences: SharedPreferences
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +27,22 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
+
+        themeSwitcher = findViewById(R.id.themeSwitcher)
+
+        val darkTheme = sharedPreferences.getBoolean(APP_THEME_KEY, false)
+
+        themeSwitcher.isChecked = darkTheme
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            sharedPreferences.edit()
+                .putBoolean(APP_THEME_KEY ,checked)
+                .apply()
+        }
+
         //Тут сделал кликабельным весь контейнер
         val backSettings = findViewById<LinearLayout>(R.id.settings_screen)
         backSettings.setOnClickListener {
