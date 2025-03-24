@@ -2,7 +2,6 @@ package com.example.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
@@ -16,7 +15,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
    private lateinit var themeSwitcher: SwitchMaterial
-   private  lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,17 +26,19 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
+        val appObject = App()
+
+        appObject.sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
 
         themeSwitcher = findViewById(R.id.themeSwitcher)
 
-        val darkTheme = sharedPreferences.getBoolean(APP_THEME_KEY, false)
+        appObject.darkTheme = appObject.sharedPreferences.getBoolean(APP_THEME_KEY, false)
 
-        themeSwitcher.isChecked = darkTheme
+        themeSwitcher.isChecked = appObject.darkTheme
 
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
-            sharedPreferences.edit()
+            appObject.sharedPreferences.edit()
                 .putBoolean(APP_THEME_KEY ,checked)
                 .apply()
         }

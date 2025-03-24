@@ -7,7 +7,7 @@ import com.example.playlistmaker.constants.PreferencesConstants.APP_THEME_KEY
 import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
 
 class App : Application() {
-    private var darkTheme: Boolean = false
+    var darkTheme: Boolean = false
     lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate() {
