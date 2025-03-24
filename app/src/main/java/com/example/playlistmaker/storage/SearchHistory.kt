@@ -7,11 +7,16 @@ import com.google.gson.Gson
 
 class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
-    private var searchHistoryTrackList: MutableList<Track> = getHistoryTrackList()
+    private val gson = Gson()
 
-    fun getHistoryTrackList(): MutableList<Track> {
-        val json = sharedPreferences.getString(SEARCH_HISTORY_KEY, null) ?: return mutableListOf()
-        return Gson().fromJson(json, Array<Track>::class.java).toMutableList()
+    var searchHistoryTrackList: MutableList<Track> = mutableListOf()
+
+    fun loadHistoryTrackList() {
+        val json = sharedPreferences.getString(SEARCH_HISTORY_KEY, "")
+        if (json.isNullOrEmpty()) {
+            return
+        }
+        searchHistoryTrackList = gson.fromJson(json, Array<Track>::class.java).toMutableList()
     }
 
     fun addTrackToSearchHistoryList(track: Track) {
@@ -32,7 +37,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
     }
 
     private fun saveSearchHistory() {
-        val json: String = Gson().toJson(searchHistoryTrackList)
+        val json: String = gson.toJson(searchHistoryTrackList)
         sharedPreferences.edit()
             .putString(SEARCH_HISTORY_KEY, json)
             .apply()

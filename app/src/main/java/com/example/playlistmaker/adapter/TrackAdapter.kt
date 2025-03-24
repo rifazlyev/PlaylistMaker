@@ -7,12 +7,11 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.listeners.OnTrackClickListener
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.viewHolder.TrackViewHolder
-import java.util.ArrayList
 
 class TrackAdapter(private val listener: OnTrackClickListener? = null) :
     RecyclerView.Adapter<TrackViewHolder>() {
 
-    var trackList: ArrayList<Track> = ArrayList<Track>()
+    var trackList: MutableList<Track> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_card, parent, false)

@@ -59,7 +59,7 @@ class SearchActivity : AppCompatActivity() {
         .build()
 
     private val iTunesService = retrofit.create(ITunesApiService::class.java)
-    private val listOfTrack: ArrayList<Track> = ArrayList()
+    private val listOfTrack: MutableList<Track> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +82,7 @@ class SearchActivity : AppCompatActivity() {
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
         sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
+        searchHistory.loadHistoryTrackList()
 
         searchHistoryTrackAdapter = TrackAdapter()
 
@@ -94,7 +95,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         searchResultTrackAdapter.trackList = listOfTrack
-        searchHistoryTrackAdapter.trackList = ArrayList(searchHistory.getHistoryTrackList())
+        searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
 
         searchResultRecycler = findViewById(R.id.searchResultRecyclerView)
         searchHistoryRecycler = findViewById(R.id.searchHistoryRecyclerView)
@@ -264,11 +265,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun searchHistoryIsVisible(flag: Boolean) {
-        if (searchHistory.getHistoryTrackList().isEmpty()) {
+        if (searchHistory.searchHistoryTrackList.isEmpty()) {
             searchHistoryViewGroup.visibility = View.GONE
         } else {
             searchHistoryViewGroup.visibility = if (flag) View.VISIBLE else View.GONE
-            searchHistoryTrackAdapter.trackList = ArrayList(searchHistory.getHistoryTrackList())
+            searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }
