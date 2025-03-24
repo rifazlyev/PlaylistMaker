@@ -9,12 +9,10 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.playlistmaker.constants.PreferencesConstants.APP_THEME_KEY
-import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
-   private lateinit var themeSwitcher: SwitchMaterial
+    private lateinit var themeSwitcher: SwitchMaterial
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,21 +24,14 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val appObject = App()
-
-        appObject.sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
-
         themeSwitcher = findViewById(R.id.themeSwitcher)
 
-        appObject.darkTheme = appObject.sharedPreferences.getBoolean(APP_THEME_KEY, false)
+        val appObject = applicationContext as App
 
-        themeSwitcher.isChecked = appObject.darkTheme
+        themeSwitcher.isChecked = appObject.isDarkThemeEnabled()
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            (applicationContext as App).switchTheme(checked)
-            appObject.sharedPreferences.edit()
-                .putBoolean(APP_THEME_KEY ,checked)
-                .apply()
+            appObject.switchTheme(checked)
         }
 
         //Тут сделал кликабельным весь контейнер
