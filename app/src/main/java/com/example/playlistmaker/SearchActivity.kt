@@ -1,5 +1,7 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,22 +19,23 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.adapter.TrackAdapter
+import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
+import com.example.playlistmaker.constants.PreferencesConstants.SEARCH_TEXT_KEY
+import com.example.playlistmaker.listeners.OnTrackClickListener
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.requests.ITunesApiService
 import com.example.playlistmaker.responses.SearchResponse
+import com.example.playlistmaker.storage.SearchHistory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
     private var textValue: String = ""
     private val baseUrl = "https://itunes.apple.com"
-
-    companion object {
-        const val SEARCH_TEXT_KEY = "SEARCH_TEXT"
-    }
 
     private lateinit var backSearch: LinearLayout
     private lateinit var buttonBack: ImageButton
@@ -41,6 +44,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var imagePlaceholder: ImageView
     private lateinit var textPlaceholder: TextView
     private lateinit var refreshButton: Button
+    private lateinit var clearSearchHistory: Button
+    private lateinit var searchHistoryViewGroup: LinearLayout
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var searchHistory: SearchHistory
+    private lateinit var searchResultTrackAdapter: TrackAdapter
+    private lateinit var searchHistoryTrackAdapter: TrackAdapter
+    private lateinit var searchResultRecycler: RecyclerView
+    private lateinit var searchHistoryRecycler: RecyclerView
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -48,9 +59,7 @@ class SearchActivity : AppCompatActivity() {
         .build()
 
     private val iTunesService = retrofit.create(ITunesApiService::class.java)
-    private val listOfTrack: ArrayList<Track> = ArrayList()
-    private val adapter = TrackAdapter()
-
+    private val listOfTrack: MutableList<Track> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,12 +78,33 @@ class SearchActivity : AppCompatActivity() {
         imagePlaceholder = findViewById(R.id.image_placeholder)
         textPlaceholder = findViewById(R.id.text_placeholder)
         refreshButton = findViewById(R.id.refresh_button)
+        searchHistoryViewGroup = findViewById(R.id.search_history_view_group)
+        clearSearchHistory = findViewById(R.id.clearHistoryButton)
+        sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPreferences)
+        searchHistory.loadHistoryTrackList()
 
-        adapter.trackList = listOfTrack
+        searchHistoryTrackAdapter = TrackAdapter()
 
-        val recycler = findViewById<RecyclerView>(R.id.recyclerView)
-        recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = adapter
+        searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
+            override fun onTrackClick(track: Track) {
+                searchHistory.addTrackToSearchHistoryList(track)
+                searchHistoryTrackAdapter.notifyDataSetChanged()
+            }
+        }
+        )
+
+        searchResultTrackAdapter.trackList = listOfTrack
+        searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
+
+        searchResultRecycler = findViewById(R.id.searchResultRecyclerView)
+        searchHistoryRecycler = findViewById(R.id.searchHistoryRecyclerView)
+
+        searchResultRecycler.layoutManager = LinearLayoutManager(this)
+        searchHistoryRecycler.layoutManager = LinearLayoutManager(this)
+
+        searchResultRecycler.adapter = searchResultTrackAdapter
+        searchHistoryRecycler.adapter = searchHistoryTrackAdapter
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -88,12 +118,17 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
+        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+            searchHistoryIsVisible(hasFocus && inputEditText.text.isEmpty())
+        }
+        inputEditText.requestFocus()
+
         backSearch.setOnClickListener {
             finish()
         }
 
         buttonBack.setOnClickListener {
-            backSearch.performClick()
+            finish()
         }
 
         buttonClear.setOnClickListener {
@@ -103,10 +138,16 @@ class SearchActivity : AppCompatActivity() {
             hideKeyboard(inputEditText)
             buttonClear.visibility = View.GONE
             allViewIsGone()
+            searchHistoryIsVisible(false)
         }
 
         refreshButton.setOnClickListener {
             search(inputEditText.text.toString())
+        }
+
+        clearSearchHistory.setOnClickListener {
+            searchHistory.clearSearchHistoryTrackList()
+            searchHistoryIsVisible(false)
         }
 
         val textWatcher = object : TextWatcher {
@@ -116,6 +157,10 @@ class SearchActivity : AppCompatActivity() {
                 if (!p0.isNullOrBlank()) {
                     textValue = p0.toString()
                     buttonClear.visibility = clearButtonVisibility(p0)
+                    searchHistoryIsVisible(false)
+                } else {
+                    searchHistoryIsVisible(true)
+                    searchResultRecycler.visibility = View.GONE
                 }
             }
 
@@ -149,9 +194,13 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(restoredText)
     }
 
-    private fun showError(message: String, iconResId: Int, showRefreshButton: Boolean = false) {
+    private fun showError(
+        message: String,
+        iconResId: Int,
+        showRefreshButton: Boolean = false
+    ) {
         listOfTrack.clear()
-        adapter.notifyDataSetChanged()
+        searchResultTrackAdapter.notifyDataSetChanged()
 
         imagePlaceholder.apply {
             setBackgroundResource(iconResId)
@@ -185,12 +234,13 @@ class SearchActivity : AppCompatActivity() {
                     response: Response<SearchResponse>
                 ) {
                     listOfTrack.clear()
-                    adapter.notifyDataSetChanged()
+                    searchResultTrackAdapter.notifyDataSetChanged()
                     if (response.code() == 200) {
                         allViewIsGone()
                         if (response.body()?.results?.isNotEmpty() == true) {
                             listOfTrack.addAll(response.body()?.results!!)
-                            adapter.notifyDataSetChanged()
+                            searchResultTrackAdapter.notifyDataSetChanged()
+                            searchResultRecycler.visibility = View.VISIBLE
                         } else {
                             showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
                         }
@@ -212,5 +262,15 @@ class SearchActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    fun searchHistoryIsVisible(flag: Boolean) {
+        if (searchHistory.searchHistoryTrackList.isEmpty()) {
+            searchHistoryViewGroup.visibility = View.GONE
+        } else {
+            searchHistoryViewGroup.visibility = if (flag) View.VISIBLE else View.GONE
+            searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
+            searchHistoryTrackAdapter.notifyDataSetChanged()
+        }
     }
 }

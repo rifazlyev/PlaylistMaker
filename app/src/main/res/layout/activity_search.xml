@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -78,11 +77,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/search_history_view_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/SearchScreenText"
+                android:layout_marginTop="@dimen/_42dp"
+                android:text="@string/you_found"
+                android:textFontWeight="500" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchHistoryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:maxHeight="200dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
+
+            <Button
+                android:id="@+id/clearHistoryButton"
+                style="@style/SearchHistoryButton"
+                android:layout_marginTop="@dimen/_24dp"
+                android:text="@string/clear_history" />
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/searchResultRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/_24dp" />
+            android:layout_marginTop="@dimen/_24dp"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/image_placeholder"
@@ -93,30 +124,17 @@
 
         <TextView
             android:id="@+id/text_placeholder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/SearchScreenText"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/_238dp"
-            android:fontFamily="@font/ys_display_medium"
-            android:textAlignment="center"
-            android:textColor="?attr/textColor"
             android:textFontWeight="400"
-            android:textSize="@dimen/_19sp"
             tools:text="Примерный текст для теста" />
 
         <Button
             android:id="@+id/refresh_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            style="@style/SearchHistoryButton"
             android:layout_marginTop="@dimen/_356dp"
-            android:backgroundTint="@color/refresh_button_color"
-            android:fontFamily="@font/ys_display_medium"
             android:text="@string/refresh"
-            android:textAllCaps="false"
-            android:textFontWeight="500"
-            android:textSize="@dimen/_14sp"
-            android:visibility="gone"
-            app:cornerRadius="@dimen/_54dp" />
+            android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

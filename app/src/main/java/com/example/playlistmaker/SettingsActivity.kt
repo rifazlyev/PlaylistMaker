@@ -9,8 +9,11 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var themeSwitcher: SwitchMaterial
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +23,17 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        themeSwitcher = findViewById(R.id.themeSwitcher)
+
+        val appObject = applicationContext as App
+
+        themeSwitcher.isChecked = appObject.isDarkThemeEnabled()
+
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            appObject.switchTheme(checked)
+        }
+
         //Тут сделал кликабельным весь контейнер
         val backSettings = findViewById<LinearLayout>(R.id.settings_screen)
         backSettings.setOnClickListener {
