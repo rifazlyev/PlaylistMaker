@@ -8,7 +8,7 @@ import com.example.playlistmaker.listeners.OnTrackClickListener
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.viewHolder.TrackViewHolder
 
-class TrackAdapter(private val listener: OnTrackClickListener? = null) :
+class TrackAdapter(private val listener: OnTrackClickListener) :
     RecyclerView.Adapter<TrackViewHolder>() {
 
     var trackList: MutableList<Track> = mutableListOf()
@@ -26,7 +26,7 @@ class TrackAdapter(private val listener: OnTrackClickListener? = null) :
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position])
         holder.itemView.setOnClickListener {
-            listener?.onTrackClick(trackList[position])
+            listener.onTrackClick(trackList[position])
         }
     }
 }
