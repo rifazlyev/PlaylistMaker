@@ -90,6 +90,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                playerIntent.putExtra("track", track)
                 startActivity(playerIntent)
             }
         }
@@ -100,6 +101,7 @@ class SearchActivity : AppCompatActivity() {
                 searchHistory.addTrackToSearchHistoryList(track)
                 searchHistoryTrackAdapter.notifyDataSetChanged()
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                playerIntent.putExtra("track", track)
                 startActivity(playerIntent)
             }
         }
