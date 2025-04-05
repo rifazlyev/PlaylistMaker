@@ -33,6 +33,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/player_image_placeholder"
         android:layout_width="@dimen/_0dp"
         android:layout_height="312dp"
         android:layout_marginTop="82dp"
@@ -40,9 +41,94 @@
         android:scaleType="center"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/player_track_title"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/player_track_title"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="start"
+        android:maxLines="1"
+        android:textColor="?attr/textColor"
+        android:textFontWeight="400"
+        android:textSize="@dimen/_22sp"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/player_image_placeholder"
+        app:layout_constraintBottom_toTopOf="@id/player_artist_title"
+        tools:text="Тестовый текст названия песни" />
 
+    <TextView
+        android:id="@+id/player_artist_title"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="start"
+        android:maxLines="1"
+        android:textColor="?attr/textColor"
+        android:textFontWeight="400"
+        android:textSize="@dimen/_14sp"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/player_track_title"
+        tools:text="Тестовый текст исполнителя" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65"
         />
+
+    <ImageButton
+        android:id="@+id/add_track_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/guideline_middle"
+        app:layout_constraintEnd_toStartOf="@id/play_button"
+        android:background="@drawable/ic_add_track"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        />
+
+    <ImageButton
+        android:id="@+id/play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toEndOf="@id/add_track_button"
+        app:layout_constraintTop_toBottomOf="@id/guideline_middle"
+        app:layout_constraintEnd_toStartOf="@id/like_button"
+        android:background="@drawable/ic_play"/>
+
+
+    <ImageButton
+        android:id="@+id/like_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/play_button"
+        app:layout_constraintTop_toBottomOf="@id/guideline_middle"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end"
+        app:layout_constraintBottom_toBottomOf="@id/add_track_button"
+        android:background="@drawable/ic_like_track"/>
+
+
+
+
+
+
+
+
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
