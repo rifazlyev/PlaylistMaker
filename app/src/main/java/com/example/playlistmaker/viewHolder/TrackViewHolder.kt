@@ -14,7 +14,7 @@ import com.example.playlistmaker.uiUtils.UiUtils.formatTrackTime
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackName = itemView.findViewById<TextView>(R.id.track_title)
     private val artistName = itemView.findViewById<TextView>(R.id.artist_title)
-    private val trackTime = itemView.findViewById<TextView>(R.id.player_track_duration)
+    private val trackTime = itemView.findViewById<TextView>(R.id.track_duration)
     private val trackImage = itemView.findViewById<ImageView>(R.id.track_image)
 
     fun bind(track: Track) {
