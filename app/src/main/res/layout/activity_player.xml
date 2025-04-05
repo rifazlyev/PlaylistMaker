@@ -201,5 +201,13 @@
             style="@style/TrackInfoText"
             android:text="USA"
             app:layout_constraintBottom_toBottomOf="@id/country_title" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/album_info_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="album_title, album_value" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
