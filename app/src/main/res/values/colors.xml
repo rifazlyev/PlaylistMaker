@@ -16,5 +16,8 @@
     <color name="player_button">#1A1B22</color>
     <color name="play_button_shape">#1A1B22</color>
     <color name="play_button_triangle">#FFFFFF</color>
+    <color name="track_info_title">#AEAFB4</color>
+
+
 
 </resources>
