@@ -93,6 +93,19 @@
         <item name="cornerRadius">@dimen/_54dp</item>
     </style>
 
+    <style name="TrackAndArtistTitle">
+        <item name="android:layout_width">@dimen/_0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:gravity">start</item>
+        <item name="maxLines">1</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="layout_constraintStart_toEndOf">@id/guideline_start</item>
+        <item name="layout_constraintEnd_toStartOf">@id/guideline_end</item>
+    </style>
+
     <style name="TrackInfoTitleText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -101,5 +114,21 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="layout_constraintStart_toEndOf">@id/guideline_start</item>
+        <item name="android:paddingVertical">@dimen/_9dp</item>
+    </style>
+
+    <style name="TrackInfoText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="android:textSize">@dimen/_13sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="layout_constraintStart_toEndOf">@id/guideline_middle_vertical</item>
+        <item name="layout_constraintEnd_toStartOf">@id/guideline_end</item>
+        <item name="android:gravity">end</item>
+        <item name="android:ellipsize">end</item>
+        <item name="maxLines">1</item>
+        <item name="android:paddingVertical">@dimen/_9dp</item>
     </style>
 </resources>
