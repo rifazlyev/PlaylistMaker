@@ -55,19 +55,15 @@ class PlayerActivity : AppCompatActivity() {
         albumGroupInfo = findViewById(R.id.player_album_info_group)
         albumGroupInfo.visibility = View.GONE
 
-        track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getSerializableExtra("track", Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getSerializableExtra("track") as? Track
-        }
+        track = getTrack()
+
         val radiusPx = dpToPx(8F, context = this)
         track?.let {
             trackTitle.text = it.trackName
             trackArtistTitle.text = it.artistName
             trackDuration.text = formatTrackTime(it.trackTime)
             trackDurationValue.text = formatTrackTime(it.trackTime)
-            if (it.collectionName.isNotBlank()){
+            if (it.collectionName.isNotBlank()) {
                 albumGroupInfo.visibility = View.VISIBLE
                 albumTitle.text = it.collectionName
             }
@@ -83,5 +79,24 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(radiusPx))
             .into(trackImage)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable("track", track)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        getTrack()
+    }
+
+    private fun getTrack(): Track? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return intent.getSerializableExtra("track", Track::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            return intent.getSerializableExtra("track") as? Track
+        }
     }
 }
