@@ -84,11 +84,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun getTrack(): Track? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return intent.getSerializableExtra(TRACK, Track::class.java)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK, Track::class.java)
         } else {
             @Suppress("DEPRECATION")
-            return intent.getSerializableExtra(TRACK) as? Track
+            intent.getParcelableExtra(TRACK)
         }
     }
 }
