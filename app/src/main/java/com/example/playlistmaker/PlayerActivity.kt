@@ -12,11 +12,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.constants.IntentKeys.TRACK
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.uiUtils.UiUtils.dpToPx
 import com.example.playlistmaker.uiUtils.UiUtils.formatTrackTime
 
 class PlayerActivity : AppCompatActivity() {
+
     private var track: Track? = null
     private lateinit var buttonBack: ImageButton
     private lateinit var trackImage: ImageView
@@ -81,22 +83,12 @@ class PlayerActivity : AppCompatActivity() {
             .into(trackImage)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable("track", track)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        getTrack()
-    }
-
     private fun getTrack(): Track? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return intent.getSerializableExtra("track", Track::class.java)
+            return intent.getSerializableExtra(TRACK, Track::class.java)
         } else {
             @Suppress("DEPRECATION")
-            return intent.getSerializableExtra("track") as? Track
+            return intent.getSerializableExtra(TRACK) as? Track
         }
     }
 }
