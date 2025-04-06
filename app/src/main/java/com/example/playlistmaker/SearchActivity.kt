@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.adapter.TrackAdapter
+import com.example.playlistmaker.constants.IntentKeys.TRACK
 import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.example.playlistmaker.constants.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.listeners.OnTrackClickListener
@@ -90,7 +91,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                playerIntent.putExtra("track", track)
+                playerIntent.putExtra(TRACK, track)
                 startActivity(playerIntent)
             }
         }
@@ -101,7 +102,7 @@ class SearchActivity : AppCompatActivity() {
                 searchHistory.addTrackToSearchHistoryList(track)
                 searchHistoryTrackAdapter.notifyDataSetChanged()
                 val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                playerIntent.putExtra("track", track)
+                playerIntent.putExtra(TRACK, track)
                 startActivity(playerIntent)
             }
         }
