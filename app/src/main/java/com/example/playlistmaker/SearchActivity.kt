@@ -1,10 +1,12 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -19,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.adapter.TrackAdapter
+import com.example.playlistmaker.constants.IntentKeys.TRACK
 import com.example.playlistmaker.constants.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.example.playlistmaker.constants.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.listeners.OnTrackClickListener
@@ -26,6 +29,7 @@ import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.requests.ITunesApiService
 import com.example.playlistmaker.responses.SearchResponse
 import com.example.playlistmaker.storage.SearchHistory
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -84,12 +88,22 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(sharedPreferences)
         searchHistory.loadHistoryTrackList()
 
-        searchHistoryTrackAdapter = TrackAdapter()
+        searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
+            override fun onTrackClick(track: Track) {
+                val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                playerIntent.putExtra(TRACK, track)
+                startActivity(playerIntent)
+            }
+        }
+        )
 
         searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
                 searchHistory.addTrackToSearchHistoryList(track)
                 searchHistoryTrackAdapter.notifyDataSetChanged()
+                val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                playerIntent.putExtra(TRACK, track)
+                startActivity(playerIntent)
             }
         }
         )
@@ -241,6 +255,7 @@ class SearchActivity : AppCompatActivity() {
                             listOfTrack.addAll(response.body()?.results!!)
                             searchResultTrackAdapter.notifyDataSetChanged()
                             searchResultRecycler.visibility = View.VISIBLE
+                            Log.d("query", Gson().toJson(response.body()))
                         } else {
                             showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
                         }
