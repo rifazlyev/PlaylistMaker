@@ -47,6 +47,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
     private lateinit var backSearch: LinearLayout
@@ -64,6 +65,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchResultRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
+    private val searchRunnable = Runnable { search() }
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -136,7 +138,7 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = inputEditText.text.toString()
                 if (query.isNotEmpty()) {
-                    search(query)
+                    search()
                 }
                 true
             } else {
@@ -168,7 +170,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         refreshButton.setOnClickListener {
-            search(inputEditText.text.toString())
+            search()
         }
 
         clearSearchHistory.setOnClickListener {
@@ -184,6 +186,7 @@ class SearchActivity : AppCompatActivity() {
                     textValue = p0.toString()
                     buttonClear.visibility = clearButtonVisibility(p0)
                     searchHistoryIsVisible(false)
+                    searchDebounce()
                 } else {
                     searchHistoryIsVisible(true)
                     searchResultRecycler.visibility = View.GONE
@@ -247,7 +250,8 @@ class SearchActivity : AppCompatActivity() {
         refreshButton.visibility = View.GONE
     }
 
-    private fun search(query: String) {
+    private fun search() {
+        val query = inputEditText.text.toString()
         if (query.isBlank()) {
             allViewIsGone()
             return
@@ -308,5 +312,10 @@ class SearchActivity : AppCompatActivity() {
             handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return currentValue
+    }
+
+    private fun searchDebounce(){
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 }
