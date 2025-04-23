@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -65,6 +66,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchResultRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
+    private lateinit var progressBar: ProgressBar
+
     private val searchRunnable = Runnable { search() }
 
     private val retrofit = Retrofit.Builder()
@@ -94,6 +97,7 @@ class SearchActivity : AppCompatActivity() {
         refreshButton = findViewById(R.id.refresh_button)
         searchHistoryViewGroup = findViewById(R.id.search_history_view_group)
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
+        progressBar = findViewById(R.id.progress_bar)
         sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
         searchHistory.loadHistoryTrackList()
@@ -134,6 +138,7 @@ class SearchActivity : AppCompatActivity() {
         searchResultRecycler.adapter = searchResultTrackAdapter
         searchHistoryRecycler.adapter = searchHistoryTrackAdapter
 
+        //Хоть и добавил автопоиск через handler, эту функцию решил оставить для ручного поиска
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 val query = inputEditText.text.toString()
@@ -252,11 +257,9 @@ class SearchActivity : AppCompatActivity() {
 
     private fun search() {
         val query = inputEditText.text.toString()
-        if (query.isBlank()) {
-            allViewIsGone()
-            return
-        }
-
+        allViewIsGone()
+        progressBar.visibility = View.VISIBLE
+        searchResultRecycler.visibility = View.GONE
         iTunesService.search(query).enqueue(
             object : Callback<SearchResponse> {
                 override fun onResponse(
@@ -265,6 +268,7 @@ class SearchActivity : AppCompatActivity() {
                 ) {
                     listOfTrack.clear()
                     searchResultTrackAdapter.notifyDataSetChanged()
+                    progressBar.visibility = View.GONE
                     if (response.code() == 200) {
                         allViewIsGone()
                         if (response.body()?.results?.isNotEmpty() == true) {
@@ -285,6 +289,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
                     showError(
                         getString(R.string.something_wrong),
                         R.drawable.ic_something_wrong,
@@ -314,7 +319,7 @@ class SearchActivity : AppCompatActivity() {
         return currentValue
     }
 
-    private fun searchDebounce(){
+    private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
