@@ -195,6 +195,7 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     searchHistoryIsVisible(true)
                     searchResultRecycler.visibility = View.GONE
+                    allViewIsGone()
                 }
             }
 
@@ -257,6 +258,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun search() {
         val query = inputEditText.text.toString()
+        if (query.isBlank()) return
         allViewIsGone()
         progressBar.visibility = View.VISIBLE
         searchResultRecycler.visibility = View.GONE
