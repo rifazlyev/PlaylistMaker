@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -40,6 +42,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SearchActivity : AppCompatActivity() {
     private var textValue: String = ""
     private val baseUrl = "https://itunes.apple.com"
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
 
     private lateinit var backSearch: LinearLayout
     private lateinit var buttonBack: ImageButton
@@ -90,20 +98,24 @@ class SearchActivity : AppCompatActivity() {
 
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
-                val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                playerIntent.putExtra(TRACK, track)
-                startActivity(playerIntent)
+                if (clickDebounce()) {
+                    val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                    playerIntent.putExtra(TRACK, track)
+                    startActivity(playerIntent)
+                }
             }
         }
         )
 
         searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
-                searchHistory.addTrackToSearchHistoryList(track)
-                searchHistoryTrackAdapter.notifyDataSetChanged()
-                val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                playerIntent.putExtra(TRACK, track)
-                startActivity(playerIntent)
+                if (clickDebounce()) {
+                    searchHistory.addTrackToSearchHistoryList(track)
+                    searchHistoryTrackAdapter.notifyDataSetChanged()
+                    val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+                    playerIntent.putExtra(TRACK, track)
+                    startActivity(playerIntent)
+                }
             }
         }
         )
@@ -287,5 +299,14 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val currentValue = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return currentValue
     }
 }
