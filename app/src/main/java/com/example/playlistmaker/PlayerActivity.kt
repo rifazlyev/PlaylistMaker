@@ -138,6 +138,8 @@ class PlayerActivity : AppCompatActivity() {
         val dataSource = track?.previewUrl
         if (dataSource.isNullOrEmpty()) {
             playButton.isEnabled = false
+            //Такого в требованиях нет, я сделал в случае если придет null,
+            //пользователь узнает, что нельзя воспроизвести трек
             handler.postDelayed({
                 Toast.makeText(this, getString(R.string.audio_error), Toast.LENGTH_SHORT).show()
             }, CUSTOM_DELAY)
