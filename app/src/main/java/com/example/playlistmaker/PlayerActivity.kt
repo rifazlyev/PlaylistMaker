@@ -28,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
-        private const val DELAY_FOR_TOAST = 300L
+        private const val CUSTOM_DELAY = 300L
     }
 
     private var playerState = STATE_DEFAULT
@@ -45,8 +45,17 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
-    private var handler: Handler? = null
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private val mediaPlayer = MediaPlayer()
+    private val updateTime = object : Runnable {
+        override fun run() {
+            if (playerState == STATE_PLAYING) {
+                val currentPosition = mediaPlayer.currentPosition.toLong()
+                trackDuration.text = formatTrackTime(currentPosition)
+                handler.postDelayed(this, CUSTOM_DELAY)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +84,6 @@ class PlayerActivity : AppCompatActivity() {
         albumGroupInfo.visibility = View.GONE
 
         track = getTrack()
-        handler = Handler(Looper.getMainLooper())
         preparePlayer()
 
         playButton.setOnClickListener {
@@ -113,6 +121,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        handler.removeCallbacks(updateTime)
         mediaPlayer.release()
     }
 
@@ -129,18 +138,21 @@ class PlayerActivity : AppCompatActivity() {
         val dataSource = track?.previewUrl
         if (dataSource.isNullOrEmpty()) {
             playButton.isEnabled = false
-            handler?.postDelayed({
+            handler.postDelayed({
                 Toast.makeText(this, getString(R.string.audio_error), Toast.LENGTH_SHORT).show()
-            }, DELAY_FOR_TOAST)
+            }, CUSTOM_DELAY)
             return
         }
         mediaPlayer.setDataSource(dataSource)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             playerState = STATE_PREPARED
+            handler.post(updateTime)
         }
         mediaPlayer.setOnCompletionListener {
+            handler.removeCallbacks(updateTime)
             playButton.setImageResource(R.drawable.ic_play)
+            trackDuration.text = formatTrackTime(0)
         }
         playerState = STATE_PREPARED
     }
@@ -148,11 +160,13 @@ class PlayerActivity : AppCompatActivity() {
     private fun startPlayer() {
         mediaPlayer.start()
         playButton.setImageResource(R.drawable.ic_pause_track)
+        handler.post(updateTime)
         playerState = STATE_PLAYING
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
+        handler.removeCallbacks(updateTime)
         playButton.setImageResource(R.drawable.ic_play)
         playerState = STATE_PAUSED
     }
