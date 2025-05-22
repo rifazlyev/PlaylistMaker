@@ -25,20 +25,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.IntentKeys.TRACK
 import com.example.playlistmaker.OnTrackClickListener
-import com.example.playlistmaker.ui.player.PlayerActivity
 import com.example.playlistmaker.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.example.playlistmaker.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.R
 import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.data.dto.TrackSearchResponse
-import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.player.PlayerActivity
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
