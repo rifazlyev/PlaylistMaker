@@ -24,4 +24,5 @@
     <string name="year_title">Год</string>
     <string name="genre_title">Жанр</string>
     <string name="country_title">Страна</string>
+    <string name="audio_error">Аудио недоступно для этого трека</string>
 </resources>
