@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/_16dp"
     android:background="@color/background_color"
-    tools:context=".MediaActivity">
+    tools:context=".ui.media.MediaActivity">
 
     <!--    Для теста, после удалю-->
     <TextView
