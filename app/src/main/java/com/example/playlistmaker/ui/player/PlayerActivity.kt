@@ -21,6 +21,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.UiUtils.dpToPx
 import com.example.playlistmaker.UiUtils.formatTrackTime
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.model.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -33,7 +34,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private var playerState = STATE_DEFAULT
-    private var track: Track? = null
+    private var track: TrackUi? = null
     private lateinit var buttonBack: ImageButton
     private lateinit var trackImage: ImageView
     private lateinit var trackTitle: TextView
@@ -95,13 +96,13 @@ class PlayerActivity : AppCompatActivity() {
         track?.let {
             trackTitle.text = it.trackName
             trackArtistTitle.text = it.artistName
-            trackDuration.text = formatTrackTime(it.trackTime)
-            trackDurationValue.text = formatTrackTime(it.trackTime)
+            trackDuration.text = it.formattedTime
+            trackDurationValue.text = it.formattedTime
             if (it.collectionName.isNotBlank()) {
                 albumGroupInfo.visibility = View.VISIBLE
                 albumTitle.text = it.collectionName
             }
-            yearTitle.text = it.releaseDate.take(4)
+            yearTitle.text = it.releaseDate
             genreTitle.text = it.primaryGenreName
             countryTitle.text = it.country
         }
@@ -126,9 +127,9 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer.release()
     }
 
-    private fun getTrack(): Track? {
+    private fun getTrack(): TrackUi? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK, Track::class.java)
+            intent.getParcelableExtra(TRACK, TrackUi::class.java)
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(TRACK)

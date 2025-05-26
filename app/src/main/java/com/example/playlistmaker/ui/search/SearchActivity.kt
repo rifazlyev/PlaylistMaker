@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -29,17 +28,12 @@ import com.example.playlistmaker.OnTrackClickListener
 import com.example.playlistmaker.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.example.playlistmaker.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.dto.TrackSearchResponse
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.mapper.toTrackDomain
 import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
 import com.example.playlistmaker.ui.player.PlayerActivity
-import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
@@ -95,15 +89,12 @@ class SearchActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progress_bar)
         sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
         trackSearchHistory = Creator.provideTrackHistory(sharedPreferences)
-        trackSearchHistory.loadHistoryTrackList()
         trackInteractor = Creator.provideTrackInteractor()
 
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
-            override fun onTrackClick(track: Track) {
+            override fun onTrackClick(track: TrackUi) {
                 if (clickDebounce()) {
-                    val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                    playerIntent.putExtra(TRACK, track)
-                    startActivity(playerIntent)
+                    openPlayer(track)
                 }
             }
         }
@@ -112,18 +103,18 @@ class SearchActivity : AppCompatActivity() {
         searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: TrackUi) {
                 if (clickDebounce()) {
-                    trackSearchHistory.addTrackToSearchHistoryList(track)
+                    trackSearchHistory.addTrackToSearchHistoryList(track.toTrackDomain())
                     searchHistoryTrackAdapter.notifyDataSetChanged()
-                    val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-                    playerIntent.putExtra(TRACK, track)
-                    startActivity(playerIntent)
+                    openPlayer(track)
                 }
             }
         }
         )
 
         searchResultTrackAdapter.trackList = listOfTrack
-        searchHistoryTrackAdapter.trackList = trackSearchHistory.loadHistoryTrackList()
+        searchHistoryTrackAdapter.trackList = trackSearchHistory.loadHistoryTrackList().map {
+            it.toTrackUi()
+        }.toMutableList()
 
         searchResultRecycler = findViewById(R.id.searchResultRecyclerView)
         searchHistoryRecycler = findViewById(R.id.searchHistoryRecyclerView)
@@ -266,26 +257,27 @@ class SearchActivity : AppCompatActivity() {
                 listOfTrack.clear()
                 searchResultTrackAdapter.notifyDataSetChanged()
                 allViewIsGone()
-            }
-            result.fold(
-                onSuccess = { tracks ->
-                    if (tracks.isNotEmpty()) {
-                        val uiTracks = tracks.map { it.toTrackUi() }
-                        listOfTrack.addAll(uiTracks)
-                        searchResultTrackAdapter.notifyDataSetChanged()
-                        searchResultRecycler.visibility = View.VISIBLE
-                    } else {
-                        showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
+
+                result.fold(
+                    onSuccess = { tracks ->
+                        if (tracks.isNotEmpty()) {
+                            val uiTracks = tracks.map { it.toTrackUi() }
+                            listOfTrack.addAll(uiTracks)
+                            searchResultTrackAdapter.notifyDataSetChanged()
+                            searchResultRecycler.visibility = View.VISIBLE
+                        } else {
+                            showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
+                        }
+                    },
+                    onFailure = {
+                        showError(
+                            getString(R.string.something_wrong),
+                            R.drawable.ic_something_wrong,
+                            true
+                        )
                     }
-                },
-                onFailure = {
-                    showError(
-                        getString(R.string.something_wrong),
-                        R.drawable.ic_something_wrong,
-                        true
-                    )
-                }
-            )
+                )
+            }
         }
     }
 
@@ -294,7 +286,8 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryViewGroup.visibility = View.GONE
         } else {
             searchHistoryViewGroup.visibility = if (flag) View.VISIBLE else View.GONE
-            searchHistoryTrackAdapter.trackList = trackSearchHistory.loadHistoryTrackList()
+            searchHistoryTrackAdapter.trackList =
+                trackSearchHistory.loadHistoryTrackList().map { it.toTrackUi() }.toMutableList()
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }
@@ -311,5 +304,11 @@ class SearchActivity : AppCompatActivity() {
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun openPlayer(track: TrackUi) {
+        val playerIntent = Intent(this, PlayerActivity::class.java)
+        playerIntent.putExtra(TRACK, track)
+        startActivity(playerIntent)
     }
 }
