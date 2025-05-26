@@ -23,14 +23,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.IntentKeys.TRACK
 import com.example.playlistmaker.OnTrackClickListener
 import com.example.playlistmaker.PreferencesConstants.PLAYLIST_PREFERENCES
 import com.example.playlistmaker.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.R
-import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.data.dto.TrackSearchResponse
+import com.example.playlistmaker.domain.api.TrackHistoryRepository
+import com.example.playlistmaker.domain.api.TrackInteractor
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.mapper.toTrackUi
+import com.example.playlistmaker.presentation.model.TrackUi
 import com.example.playlistmaker.ui.player.PlayerActivity
 import com.google.gson.Gson
 import retrofit2.Call
@@ -58,7 +62,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearSearchHistory: Button
     private lateinit var searchHistoryViewGroup: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var searchHistory: SearchHistory
+    private lateinit var trackSearchHistory: TrackHistoryRepository
+    private lateinit var trackInteractor: TrackInteractor
     private lateinit var searchResultTrackAdapter: TrackAdapter
     private lateinit var searchHistoryTrackAdapter: TrackAdapter
     private lateinit var searchResultRecycler: RecyclerView
@@ -66,10 +71,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     private val searchRunnable = Runnable { search() }
-
-
-
-    private val listOfTrack: MutableList<Track> = mutableListOf()
+    private val listOfTrack: MutableList<TrackUi> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,8 +94,9 @@ class SearchActivity : AppCompatActivity() {
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progress_bar)
         sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPreferences)
-        searchHistory.loadHistoryTrackList()
+        trackSearchHistory = Creator.provideTrackHistory(sharedPreferences)
+        trackSearchHistory.loadHistoryTrackList()
+        trackInteractor = Creator.provideTrackInteractor()
 
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: Track) {
@@ -107,9 +110,9 @@ class SearchActivity : AppCompatActivity() {
         )
 
         searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
-            override fun onTrackClick(track: Track) {
+            override fun onTrackClick(track: TrackUi) {
                 if (clickDebounce()) {
-                    searchHistory.addTrackToSearchHistoryList(track)
+                    trackSearchHistory.addTrackToSearchHistoryList(track)
                     searchHistoryTrackAdapter.notifyDataSetChanged()
                     val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
                     playerIntent.putExtra(TRACK, track)
@@ -120,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
         )
 
         searchResultTrackAdapter.trackList = listOfTrack
-        searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
+        searchHistoryTrackAdapter.trackList = trackSearchHistory.loadHistoryTrackList()
 
         searchResultRecycler = findViewById(R.id.searchResultRecyclerView)
         searchHistoryRecycler = findViewById(R.id.searchHistoryRecyclerView)
@@ -172,7 +175,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearSearchHistory.setOnClickListener {
-            searchHistory.clearSearchHistoryTrackList()
+            trackSearchHistory.clearSearchHistoryTrackList()
             searchHistoryIsVisible(false)
         }
 
@@ -252,55 +255,46 @@ class SearchActivity : AppCompatActivity() {
     private fun search() {
         val query = inputEditText.text.toString()
         if (query.isBlank()) return
+
         allViewIsGone()
         progressBar.visibility = View.VISIBLE
         searchResultRecycler.visibility = View.GONE
-        iTunesService.search(query).enqueue(
-            object : Callback<TrackSearchResponse> {
-                override fun onResponse(
-                    call: Call<TrackSearchResponse>,
-                    response: Response<TrackSearchResponse>
-                ) {
-                    listOfTrack.clear()
-                    searchResultTrackAdapter.notifyDataSetChanged()
-                    progressBar.visibility = View.GONE
-                    if (response.code() == 200) {
-                        allViewIsGone()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            listOfTrack.addAll(response.body()?.results!!)
-                            searchResultTrackAdapter.notifyDataSetChanged()
-                            searchResultRecycler.visibility = View.VISIBLE
-                            Log.d("query", Gson().toJson(response.body()))
-                        } else {
-                            showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
-                        }
-                    } else {
-                        showError(
-                            getString(R.string.something_wrong),
-                            R.drawable.ic_something_wrong,
-                            true
-                        )
-                    }
-                }
 
-                override fun onFailure(call: Call<TrackSearchResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
+        trackInteractor.searchTrack(query) { result ->
+            runOnUiThread {
+                progressBar.visibility = View.GONE
+                listOfTrack.clear()
+                searchResultTrackAdapter.notifyDataSetChanged()
+                allViewIsGone()
+            }
+            result.fold(
+                onSuccess = { tracks ->
+                    if (tracks.isNotEmpty()) {
+                        val uiTracks = tracks.map { it.toTrackUi() }
+                        listOfTrack.addAll(uiTracks)
+                        searchResultTrackAdapter.notifyDataSetChanged()
+                        searchResultRecycler.visibility = View.VISIBLE
+                    } else {
+                        showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
+                    }
+                },
+                onFailure = {
                     showError(
                         getString(R.string.something_wrong),
                         R.drawable.ic_something_wrong,
                         true
                     )
                 }
-            }
-        )
+            )
+        }
     }
 
     fun searchHistoryIsVisible(flag: Boolean) {
-        if (searchHistory.searchHistoryTrackList.isEmpty()) {
+        if (trackSearchHistory.loadHistoryTrackList().isEmpty()) {
             searchHistoryViewGroup.visibility = View.GONE
         } else {
             searchHistoryViewGroup.visibility = if (flag) View.VISIBLE else View.GONE
-            searchHistoryTrackAdapter.trackList = searchHistory.searchHistoryTrackList
+            searchHistoryTrackAdapter.trackList = trackSearchHistory.loadHistoryTrackList()
             searchHistoryTrackAdapter.notifyDataSetChanged()
         }
     }

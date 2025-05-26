@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.model.TrackUi
 
 interface OnTrackClickListener {
-    fun onTrackClick(track: Track)
-}
+    fun onTrackClick(track: TrackUi)}

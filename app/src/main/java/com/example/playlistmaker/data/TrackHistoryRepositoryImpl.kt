@@ -1,25 +1,27 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.PreferencesConstants.SEARCH_HISTORY_KEY
+import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 
-class SearchHistory(private val sharedPreferences: SharedPreferences) {
-
+class TrackHistoryRepositoryImpl(
+    private val sharedPreferences: SharedPreferences
+): TrackHistoryRepository  {
     private val gson = Gson()
+    private var searchHistoryTrackList: MutableList<Track> = mutableListOf()
 
-    var searchHistoryTrackList: MutableList<Track> = mutableListOf()
 
-    fun loadHistoryTrackList() {
+    override fun loadHistoryTrackList(): MutableList<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY_KEY, "")
-        if (json.isNullOrEmpty()) {
-            return
+        if (!json.isNullOrEmpty()){
+            searchHistoryTrackList = gson.fromJson(json, Array<Track>::class.java).toMutableList()
         }
-        searchHistoryTrackList = gson.fromJson(json, Array<Track>::class.java).toMutableList()
+        return searchHistoryTrackList
     }
 
-    fun addTrackToSearchHistoryList(track: Track) {
+    override fun addTrackToSearchHistoryList(track: Track) {
         searchHistoryTrackList.removeIf {
             it.trackId == track.trackId
         }
@@ -31,7 +33,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         saveSearchHistory()
     }
 
-    fun clearSearchHistoryTrackList() {
+    override fun clearSearchHistoryTrackList() {
         searchHistoryTrackList.clear()
         saveSearchHistory()
     }

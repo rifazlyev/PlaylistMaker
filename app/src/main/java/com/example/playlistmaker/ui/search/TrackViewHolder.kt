@@ -10,6 +10,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.UiUtils.dpToPx
 import com.example.playlistmaker.UiUtils.formatTrackTime
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.model.TrackUi
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackName = itemView.findViewById<TextView>(R.id.track_title)
@@ -17,10 +18,10 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackTime = itemView.findViewById<TextView>(R.id.track_duration)
     private val trackImage = itemView.findViewById<ImageView>(R.id.track_image)
 
-    fun bind(track: Track) {
+    fun bind(track: TrackUi) {
         trackName.text = track.trackName
         artistName.text = track.artistName
-        trackTime.text = formatTrackTime(track.trackTime)
+        trackTime.text = track.formattedTime
 
         val radiusPx = dpToPx(2F, itemView.context)
 

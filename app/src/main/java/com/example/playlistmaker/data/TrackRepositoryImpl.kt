@@ -7,14 +7,13 @@ import com.example.playlistmaker.domain.api.TrackRepository
 import com.example.playlistmaker.domain.models.Track
 
 class TrackRepositoryImpl(private val networkClient: NetworkClient) : TrackRepository {
-    override fun searchTrack(expression: String): List<Track> {
+    override fun searchTrack(expression: String, callback: (Result<List<Track>>) -> Unit) {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
-        return if (response.resultCode == 200) {
-            (response as TrackSearchResponse).results.map {
-                it.toTrackDomain()
-            }
+        if (response.resultCode == 200 && response is TrackSearchResponse) {
+            val trackDomainList = response.results.map { it.toTrackDomain() }
+            callback(Result.success(trackDomainList))
         } else {
-            emptyList()
+            callback(Result.failure(Exception(response.resultCode.toString())))
         }
     }
 }
