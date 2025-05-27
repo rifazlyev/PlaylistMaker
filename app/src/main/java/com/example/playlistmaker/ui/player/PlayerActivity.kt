@@ -1,6 +1,5 @@
 package com.example.playlistmaker.ui.player
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -20,20 +19,14 @@ import com.example.playlistmaker.IntentKeys.TRACK
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UiUtils.dpToPx
 import com.example.playlistmaker.UiUtils.formatTrackTime
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.data.AudioPlayerImpl
 import com.example.playlistmaker.presentation.model.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
-
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
         private const val CUSTOM_DELAY = 300L
     }
 
-    private var playerState = STATE_DEFAULT
     private var track: TrackUi? = null
     private lateinit var buttonBack: ImageButton
     private lateinit var trackImage: ImageView
@@ -47,17 +40,8 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
-    private var handler: Handler = Handler(Looper.getMainLooper())
-    private val mediaPlayer = MediaPlayer()
-    private val updateTime = object : Runnable {
-        override fun run() {
-            if (playerState == STATE_PLAYING) {
-                val currentPosition = mediaPlayer.currentPosition.toLong()
-                trackDuration.text = formatTrackTime(currentPosition)
-                handler.postDelayed(this, CUSTOM_DELAY)
-            }
-        }
-    }
+    private val handler = Handler(Looper.getMainLooper())
+    private val audioPlayer = AudioPlayerImpl(handler)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,10 +70,32 @@ class PlayerActivity : AppCompatActivity() {
         albumGroupInfo.visibility = View.GONE
 
         track = getTrack()
-        preparePlayer()
+
+        audioPlayer.setActionOnTimeUpdate {
+            trackDuration.text = formatTrackTime(it)
+        }
+        audioPlayer.preparePlayer(track?.previewUrl,
+            onCompletion = {
+                playButton.setImageResource(R.drawable.ic_play)
+                trackDuration.text = formatTrackTime(0)
+            },
+            onError = {
+                playButton.isEnabled = false
+                handler.postDelayed({
+                    Toast.makeText(this, getString(R.string.audio_error), Toast.LENGTH_SHORT).show()
+                }, CUSTOM_DELAY)
+            }
+        )
 
         playButton.setOnClickListener {
-            playbackControl()
+            audioPlayer.playbackControl(
+                onPlay = {
+                    playButton.setImageResource(R.drawable.ic_pause_track)
+                },
+                onPause = {
+                    playButton.setImageResource(R.drawable.ic_play)
+                }
+            )
         }
 
         val radiusPx = dpToPx(8F, context = this)
@@ -118,13 +124,13 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        audioPlayer.pausePlayer()
+        playButton.setImageResource(R.drawable.ic_play)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(updateTime)
-        mediaPlayer.release()
+        audioPlayer.destroy()
     }
 
     private fun getTrack(): TrackUi? {
@@ -133,52 +139,6 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(TRACK)
-        }
-    }
-
-    private fun preparePlayer() {
-        val dataSource = track?.previewUrl
-        if (dataSource.isNullOrEmpty()) {
-            playButton.isEnabled = false
-            //Такого в требованиях нет, я сделал в случае если придет null,
-            //пользователь узнает, что нельзя воспроизвести трек
-            handler.postDelayed({
-                Toast.makeText(this, getString(R.string.audio_error), Toast.LENGTH_SHORT).show()
-            }, CUSTOM_DELAY)
-            return
-        }
-        mediaPlayer.setDataSource(dataSource)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
-            handler.post(updateTime)
-        }
-        mediaPlayer.setOnCompletionListener {
-            handler.removeCallbacks(updateTime)
-            playButton.setImageResource(R.drawable.ic_play)
-            trackDuration.text = formatTrackTime(0)
-        }
-        playerState = STATE_PREPARED
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playButton.setImageResource(R.drawable.ic_pause_track)
-        handler.post(updateTime)
-        playerState = STATE_PLAYING
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        handler.removeCallbacks(updateTime)
-        playButton.setImageResource(R.drawable.ic_play)
-        playerState = STATE_PAUSED
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
         }
     }
 }
