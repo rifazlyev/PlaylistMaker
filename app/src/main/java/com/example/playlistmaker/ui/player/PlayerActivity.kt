@@ -2,8 +2,6 @@ package com.example.playlistmaker.ui.player
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -15,8 +13,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.R
+import com.example.playlistmaker.common.Creator.getHandler
+import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.common.UiUtils.formatTrackTime
 import com.example.playlistmaker.data.AudioPlayerImpl
@@ -40,7 +39,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
-    private val handler = Handler(Looper.getMainLooper())
+    private val handler = getHandler()
     private val audioPlayer = AudioPlayerImpl(handler)
 
     override fun onCreate(savedInstanceState: Bundle?) {

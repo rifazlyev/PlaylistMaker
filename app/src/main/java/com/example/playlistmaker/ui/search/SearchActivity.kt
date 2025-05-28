@@ -2,10 +2,7 @@ package com.example.playlistmaker.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -22,14 +19,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.common.Creator
-import com.example.playlistmaker.common.IntentKeys.TRACK
-import com.example.playlistmaker.presentation.OnTrackClickListener
-import com.example.playlistmaker.common.PreferencesConstants.PLAYLIST_PREFERENCES
-import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.R
+import com.example.playlistmaker.common.Creator
+import com.example.playlistmaker.common.Creator.getHandler
+import com.example.playlistmaker.common.IntentKeys.TRACK
+import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor
+import com.example.playlistmaker.presentation.OnTrackClickListener
 import com.example.playlistmaker.presentation.mapper.toTrackDomain
 import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
@@ -39,7 +36,7 @@ import com.example.playlistmaker.ui.player.PlayerActivity
 class SearchActivity : AppCompatActivity() {
     private var textValue: String = ""
     private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
+    private val handler = getHandler()
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -55,7 +52,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var refreshButton: Button
     private lateinit var clearSearchHistory: Button
     private lateinit var searchHistoryViewGroup: LinearLayout
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var trackSearchHistory: TrackHistoryRepository
     private lateinit var trackInteractor: TrackInteractor
     private lateinit var searchResultTrackAdapter: TrackAdapter
@@ -87,8 +83,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryViewGroup = findViewById(R.id.search_history_view_group)
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progress_bar)
-        sharedPreferences = getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
-        trackSearchHistory = Creator.provideTrackHistory(sharedPreferences)
+        trackSearchHistory = Creator.provideTrackHistory(this)
         trackInteractor = Creator.provideTrackInteractor()
 
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
