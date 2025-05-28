@@ -1,6 +1,6 @@
 package com.example.playlistmaker.presentation.mapper
 
-import com.example.playlistmaker.UiUtils.formatTrackTime
+import com.example.playlistmaker.common.UiUtils.formatTrackTime
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.model.TrackUi
 

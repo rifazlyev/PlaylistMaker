@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.common
 
 object PreferencesConstants {
     const val PLAYLIST_PREFERENCES = "playlist_prefs"

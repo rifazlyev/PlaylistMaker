@@ -3,8 +3,8 @@ package com.example.playlistmaker
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.PreferencesConstants.APP_THEME_KEY
-import com.example.playlistmaker.PreferencesConstants.PLAYLIST_PREFERENCES
+import com.example.playlistmaker.common.PreferencesConstants.APP_THEME_KEY
+import com.example.playlistmaker.common.PreferencesConstants.PLAYLIST_PREFERENCES
 
 class App : Application() {
     private var darkTheme: Boolean = false

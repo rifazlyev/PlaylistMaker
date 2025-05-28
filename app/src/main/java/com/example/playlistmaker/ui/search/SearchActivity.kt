@@ -22,11 +22,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.Creator
-import com.example.playlistmaker.IntentKeys.TRACK
-import com.example.playlistmaker.OnTrackClickListener
-import com.example.playlistmaker.PreferencesConstants.PLAYLIST_PREFERENCES
-import com.example.playlistmaker.PreferencesConstants.SEARCH_TEXT_KEY
+import com.example.playlistmaker.common.Creator
+import com.example.playlistmaker.common.IntentKeys.TRACK
+import com.example.playlistmaker.presentation.OnTrackClickListener
+import com.example.playlistmaker.common.PreferencesConstants.PLAYLIST_PREFERENCES
+import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor

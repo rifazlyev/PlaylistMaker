@@ -1,7 +1,7 @@
 package com.example.playlistmaker.data
 
 import android.content.SharedPreferences
-import com.example.playlistmaker.PreferencesConstants.SEARCH_HISTORY_KEY
+import com.example.playlistmaker.common.PreferencesConstants.SEARCH_HISTORY_KEY
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson

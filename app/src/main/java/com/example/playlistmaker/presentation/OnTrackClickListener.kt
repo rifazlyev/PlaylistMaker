@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation
 
 import com.example.playlistmaker.presentation.model.TrackUi
 
