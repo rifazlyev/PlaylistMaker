@@ -8,7 +8,7 @@
     android:background="@color/background_color"
     android:orientation="vertical"
     android:padding="@dimen/_16dp"
-    tools:context=".SettingsActivity">
+    tools:context=".ui.settings.SettingsActivity">
 
     <LinearLayout
         android:id="@+id/settings_screen"
