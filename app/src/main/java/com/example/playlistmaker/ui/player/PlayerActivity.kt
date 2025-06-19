@@ -1,32 +1,28 @@
 package com.example.playlistmaker.ui.player
 
+import PlayerViewModel
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
-import com.example.playlistmaker.common.UiUtils.formatTrackTime
-import com.example.playlistmaker.data.AudioPlayerImpl
 import com.example.playlistmaker.presentation.model.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
-    companion object {
-        private const val CUSTOM_DELAY = 300L
-    }
 
     private var track: TrackUi? = null
+    private lateinit var playerViewModel: PlayerViewModel
     private lateinit var buttonBack: ImageButton
     private lateinit var trackImage: ImageView
     private lateinit var trackTitle: TextView
@@ -39,8 +35,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
-    private val handler = getHandler()
-    private val audioPlayer = AudioPlayerImpl(handler)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +44,6 @@ class PlayerActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         buttonBack = findViewById(R.id.back_button_player_screen)
         buttonBack.setOnClickListener {
             finish()
@@ -70,31 +63,26 @@ class PlayerActivity : AppCompatActivity() {
 
         track = getTrack()
 
-        audioPlayer.setActionOnTimeUpdate {
-            trackDuration.text = formatTrackTime(it)
-        }
-        audioPlayer.preparePlayer(track?.previewUrl,
-            onCompletion = {
-                playButton.setImageResource(R.drawable.ic_play)
-                trackDuration.text = formatTrackTime(0)
-            },
-            onError = {
-                playButton.isEnabled = false
-                handler.postDelayed({
-                    Toast.makeText(this, getString(R.string.audio_error), Toast.LENGTH_SHORT).show()
-                }, CUSTOM_DELAY)
+        playerViewModel =
+            ViewModelProvider(this, PlayerViewModel.getFactory(track?.previewUrl)).get(
+                PlayerViewModel::class.java
+            )
+
+        playerViewModel.observePlayerState().observe(this) {
+            if (it == PlayerViewModel.STATE_PLAYING) {
+                enabledButtonPause()
+            } else {
+                enableButtonPlay()
             }
-        )
+        }
+
+        playerViewModel.observeProgressTime().observe(this){
+            trackDuration.text = it
+        }
 
         playButton.setOnClickListener {
-            audioPlayer.playbackControl(
-                onPlay = {
-                    playButton.setImageResource(R.drawable.ic_pause_track)
-                },
-                onPause = {
-                    playButton.setImageResource(R.drawable.ic_play)
-                }
-            )
+            playerViewModel.onPlayButtonClicked()
+
         }
 
         val radiusPx = dpToPx(8F, context = this)
@@ -123,13 +111,13 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        audioPlayer.pausePlayer()
-        playButton.setImageResource(R.drawable.ic_play)
+        playerViewModel.onPaused()
+        enableButtonPlay()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        audioPlayer.destroy()
+        playerViewModel.onDestroy()
     }
 
     private fun getTrack(): TrackUi? {
@@ -140,4 +128,6 @@ class PlayerActivity : AppCompatActivity() {
             intent.getParcelableExtra(TRACK)
         }
     }
+    private fun enableButtonPlay() = playButton.setImageResource(R.drawable.ic_play)
+    private fun enabledButtonPause() = playButton.setImageResource(R.drawable.ic_pause_track)
 }
