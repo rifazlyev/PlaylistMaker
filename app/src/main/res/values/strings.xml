@@ -25,4 +25,5 @@
     <string name="genre_title">Жанр</string>
     <string name="country_title">Страна</string>
     <string name="audio_error">Аудио недоступно для этого трека</string>
+    <string name="track_not_found">Трек не найден</string>
 </resources>

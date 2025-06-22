@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.ViewCompat
@@ -33,8 +34,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
-    var trackId: Int = 0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +61,12 @@ class PlayerActivity : AppCompatActivity() {
         playButton = findViewById(R.id.player_play_button)
         albumGroupInfo.visibility = View.GONE
 
-        trackId = intent.getIntExtra(TRACK, -1)
+        val trackId = intent.getIntExtra(TRACK, -1)
+        if (trackId == -1){
+            Toast.makeText(this, getString(R.string.track_not_found), Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         playerViewModel =
             ViewModelProvider(this, PlayerViewModel.getFactory(trackId, this)).get(
