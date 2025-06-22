@@ -8,9 +8,11 @@ import com.example.playlistmaker.data.TrackHistoryRepositoryImpl
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.domain.ThemeController
+import com.example.playlistmaker.domain.api.PlayerInteractor
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor
 import com.example.playlistmaker.domain.api.TrackRepository
+import com.example.playlistmaker.domain.impl.PlayerInteractorImpl
 import com.example.playlistmaker.domain.impl.TrackInteractorImpl
 
 object Creator {
@@ -30,7 +32,12 @@ object Creator {
         return TrackHistoryRepositoryImpl(context)
     }
 
-    fun provideThemeController(context: Context): ThemeController{
+    fun provideThemeController(context: Context): ThemeController {
         return ThemeControllerImpl(context)
+    }
+
+    fun providePlayerInteractor(context: Context): PlayerInteractor {
+        val trackHistoryRepositoryImpl = provideTrackHistory(context)
+        return PlayerInteractorImpl(trackHistoryRepositoryImpl)
     }
 }

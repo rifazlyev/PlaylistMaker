@@ -303,7 +303,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun openPlayer(track: TrackUi) {
         val playerIntent = Intent(this, PlayerActivity::class.java)
-        playerIntent.putExtra(TRACK, track)
+        playerIntent.putExtra(TRACK, track.trackId)
         startActivity(playerIntent)
     }
 }

@@ -9,7 +9,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 
 class TrackHistoryRepositoryImpl(
-    private val context: Context
+    context: Context
 ) : TrackHistoryRepository {
     private val gson = Gson()
     private val sharedPreferences = context.getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
@@ -45,5 +45,9 @@ class TrackHistoryRepositoryImpl(
         sharedPreferences.edit()
             .putString(SEARCH_HISTORY_KEY, json)
             .apply()
+    }
+
+    override fun getTrackById(id: Int): Track {
+        return loadHistoryTrackList().first { it.trackId == id }
     }
 }

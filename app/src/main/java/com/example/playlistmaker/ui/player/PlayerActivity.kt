@@ -1,7 +1,6 @@
 package com.example.playlistmaker.ui.player
 
 import PlayerViewModel
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -17,11 +16,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
+import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
-
-    private var track: TrackUi? = null
     private lateinit var playerViewModel: PlayerViewModel
     private lateinit var buttonBack: ImageButton
     private lateinit var trackImage: ImageView
@@ -35,6 +33,8 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countryTitle: TextView
     private lateinit var albumGroupInfo: Group
     private lateinit var playButton: ImageButton
+    var trackId: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +51,7 @@ class PlayerActivity : AppCompatActivity() {
 
         trackTitle = findViewById(R.id.player_track_title)
         trackArtistTitle = findViewById(R.id.player_artist_title)
+        trackImage = findViewById(R.id.player_image_placeholder)
         trackDuration = findViewById(R.id.player_track_duration)
         trackDurationValue = findViewById(R.id.player_duration_value)
         albumTitle = findViewById(R.id.player_album_value)
@@ -61,58 +62,39 @@ class PlayerActivity : AppCompatActivity() {
         playButton = findViewById(R.id.player_play_button)
         albumGroupInfo.visibility = View.GONE
 
-        track = getTrack()
+        trackId = intent.getIntExtra(TRACK, -1)
 
         playerViewModel =
-            ViewModelProvider(this, PlayerViewModel.getFactory(track?.previewUrl)).get(
+            ViewModelProvider(this, PlayerViewModel.getFactory(trackId, this)).get(
                 PlayerViewModel::class.java
             )
 
         playerViewModel.observePlayerState().observe(this) {
             if (it == PlayerViewModel.STATE_PLAYING) {
-                enabledButtonPause()
+                enabledPauseButton()
             } else {
-                enableButtonPlay()
+                enablePlayButton()
             }
         }
 
-        playerViewModel.observeProgressTime().observe(this){
+        playerViewModel.observeProgressTime().observe(this) {
             trackDuration.text = it
         }
 
         playButton.setOnClickListener {
             playerViewModel.onPlayButtonClicked()
-
         }
 
-        val radiusPx = dpToPx(8F, context = this)
-        track?.let {
-            trackTitle.text = it.trackName
-            trackArtistTitle.text = it.artistName
-            trackDuration.text = it.formattedTime
-            trackDurationValue.text = it.formattedTime
-            if (it.collectionName.isNotBlank()) {
-                albumGroupInfo.visibility = View.VISIBLE
-                albumTitle.text = it.collectionName
-            }
-            yearTitle.text = it.releaseDate
-            genreTitle.text = it.primaryGenreName
-            countryTitle.text = it.country
+        playerViewModel.observeTrackLiveData().observe(this) { trackDomain ->
+            val ui = trackDomain.toTrackUi()
+            renderTrackUi(ui)
         }
-
-        trackImage = findViewById(R.id.player_image_placeholder)
-        Glide.with(this)
-            .load(track?.getCoverArtwork())
-            .placeholder(R.drawable.ic_placeholder_player_screen)
-            .centerCrop()
-            .transform(RoundedCorners(radiusPx))
-            .into(trackImage)
     }
 
     override fun onPause() {
         super.onPause()
         playerViewModel.onPaused()
-        enableButtonPlay()
+        enablePlayButton()
     }
 
     override fun onDestroy() {
@@ -120,14 +102,29 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.onDestroy()
     }
 
-    private fun getTrack(): TrackUi? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK, TrackUi::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK)
+    private fun enablePlayButton() = playButton.setImageResource(R.drawable.ic_play)
+    private fun enabledPauseButton() = playButton.setImageResource(R.drawable.ic_pause_track)
+
+    private fun renderTrackUi(trackUi: TrackUi) {
+        val radiusPx = dpToPx(8F, context = this)
+
+        trackTitle.text = trackUi.trackName
+        trackArtistTitle.text = trackUi.artistName
+        trackDuration.text = trackUi.formattedTime
+        trackDurationValue.text = trackUi.formattedTime
+        if (trackUi.collectionName.isNotBlank()) {
+            albumGroupInfo.visibility = View.VISIBLE
+            albumTitle.text = trackUi.collectionName
         }
+        yearTitle.text = trackUi.releaseDate
+        genreTitle.text = trackUi.primaryGenreName
+        countryTitle.text = trackUi.country
+
+        Glide.with(this)
+            .load(trackUi.getCoverArtwork())
+            .placeholder(R.drawable.ic_placeholder_player_screen)
+            .centerCrop()
+            .transform(RoundedCorners(radiusPx))
+            .into(trackImage)
     }
-    private fun enableButtonPlay() = playButton.setImageResource(R.drawable.ic_play)
-    private fun enabledButtonPause() = playButton.setImageResource(R.drawable.ic_pause_track)
 }

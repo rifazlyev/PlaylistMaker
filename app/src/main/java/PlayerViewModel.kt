@@ -1,3 +1,4 @@
+import android.content.Context
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -5,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.common.Creator
 import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.UiUtils.formatTrackTime
+import com.example.playlistmaker.domain.api.PlayerInteractor
+import com.example.playlistmaker.domain.models.Track
 
-class PlayerViewModel(private val url: String) : ViewModel() {
+class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
     companion object {
         const val STATE_DEFAULT = 0
         const val STATE_PREPARED = 1
@@ -16,18 +20,25 @@ class PlayerViewModel(private val url: String) : ViewModel() {
         const val STATE_PAUSED = 3
         const val CUSTOM_DELAY = 300L
 
-        fun getFactory(url: String?): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(url ?: "")
+        fun getFactory(trackId: Int, context: Context): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    PlayerViewModel(Creator.providePlayerInteractor(context)).apply {
+                        initializePlayer(trackId)
+                    }
+                }
             }
-        }
     }
 
-    var mediaPlayer: MediaPlayer
+    var mediaPlayer: MediaPlayer = MediaPlayer()
 
-    init {
-        mediaPlayer = MediaPlayer()
-        preparePlayer()
+    private val trackLiveData = MutableLiveData<Track>()
+    fun observeTrackLiveData(): LiveData<Track> = trackLiveData
+
+    fun initializePlayer(trackId: Int) {
+        val track = playerInteractor.getTrackById(trackId)
+        trackLiveData.postValue(track)
+        preparePlayer(track.previewUrl ?: "")
     }
 
     private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
@@ -74,7 +85,7 @@ class PlayerViewModel(private val url: String) : ViewModel() {
         handler.post(runnableUpdateTime)
     }
 
-    private fun preparePlayer() {
+    private fun preparePlayer(url: String) {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
