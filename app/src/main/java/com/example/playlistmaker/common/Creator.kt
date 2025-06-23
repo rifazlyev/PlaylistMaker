@@ -20,12 +20,12 @@ object Creator {
 
     fun getHandler(): Handler = handler
 
-    private fun getTrackRepository(): TrackRepository {
-        return TrackRepositoryImpl(RetrofitNetworkClient())
+    private fun getTrackRepository(context: Context): TrackRepository {
+        return TrackRepositoryImpl(RetrofitNetworkClient(context))
     }
 
-    fun provideTrackInteractor(): TrackInteractor {
-        return TrackInteractorImpl(getTrackRepository())
+    fun provideTrackInteractor(context: Context): TrackInteractor {
+        return TrackInteractorImpl(getTrackRepository(context))
     }
 
     fun provideTrackHistory(context: Context): TrackHistoryRepository {

@@ -26,6 +26,7 @@ import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor
+import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.OnTrackClickListener
 import com.example.playlistmaker.presentation.mapper.toTrackDomain
 import com.example.playlistmaker.presentation.mapper.toTrackUi
@@ -84,7 +85,7 @@ class SearchActivity : AppCompatActivity() {
         clearSearchHistory = findViewById(R.id.clearHistoryButton)
         progressBar = findViewById(R.id.progress_bar)
         trackSearchHistory = Creator.provideTrackHistory(this)
-        trackInteractor = Creator.provideTrackInteractor()
+        trackInteractor = Creator.provideTrackInteractor(this)
 
         searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
             override fun onTrackClick(track: TrackUi) {
@@ -241,39 +242,36 @@ class SearchActivity : AppCompatActivity() {
     private fun search() {
         val query = inputEditText.text.toString()
         if (query.isBlank()) return
-
         allViewIsGone()
         progressBar.visibility = View.VISIBLE
         searchResultRecycler.visibility = View.GONE
-
-        trackInteractor.searchTrack(query) { result ->
-            runOnUiThread {
-                progressBar.visibility = View.GONE
-                listOfTrack.clear()
-                searchResultTrackAdapter.notifyDataSetChanged()
-                allViewIsGone()
-
-                result.fold(
-                    onSuccess = { tracks ->
-                        if (tracks.isNotEmpty()) {
-                            val uiTracks = tracks.map { it.toTrackUi() }
-                            listOfTrack.addAll(uiTracks)
-                            searchResultTrackAdapter.notifyDataSetChanged()
-                            searchResultRecycler.visibility = View.VISIBLE
-                        } else {
-                            showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
-                        }
-                    },
-                    onFailure = {
+        trackInteractor.searchTrack(query, object : TrackInteractor.TrackConsumer {
+            override fun consume(foundTrack: List<Track>?, errorMessage: String?) {
+                handler.post {
+                    progressBar.visibility = View.GONE
+                    listOfTrack.clear()
+                    searchResultTrackAdapter.notifyDataSetChanged()
+                    allViewIsGone()
+                    if (foundTrack != null) {
+                        val uiTracks = foundTrack.map { it.toTrackUi() }
+                        listOfTrack.addAll(uiTracks)
+                        searchResultTrackAdapter.notifyDataSetChanged()
+                        searchResultRecycler.visibility = View.VISIBLE
+                    }
+                    if (errorMessage != null) {
                         showError(
                             getString(R.string.something_wrong),
                             R.drawable.ic_something_wrong,
                             true
                         )
+                    } else if (listOfTrack.isEmpty()) {
+                        showError(getString(R.string.empty_list), R.drawable.ic_empty_list)
+                    } else {
+                        allViewIsGone()
                     }
-                )
+                }
             }
-        }
+        })
     }
 
     fun searchHistoryIsVisible(flag: Boolean) {
