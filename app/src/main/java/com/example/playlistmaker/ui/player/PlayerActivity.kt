@@ -1,6 +1,6 @@
 package com.example.playlistmaker.ui.player
 
-import PlayerViewModel
+import com.example.playlistmaker.PlayerViewModel
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
