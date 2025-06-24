@@ -8,5 +8,7 @@ interface TrackInteractor {
     interface TrackConsumer{
         fun consume(foundTrack: List<Track>?, errorMessage: String?)
     }
-
+    fun loadHistoryTrackList(): MutableList<Track>
+    fun addTrackToSearchHistoryList(track: Track)
+    fun clearSearchHistoryTrackList()
 }
