@@ -25,7 +25,10 @@ object Creator {
     }
 
     fun provideTrackInteractor(context: Context): TrackInteractor {
-        return TrackInteractorImpl(getTrackRepository(context))
+        return TrackInteractorImpl(
+            getTrackRepository(context),
+            provideTrackHistory(context)
+        )
     }
 
     fun provideTrackHistory(context: Context): TrackHistoryRepository {

@@ -1,5 +1,6 @@
 package com.example.playlistmaker.ui.search
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@ class TrackAdapter(private val listener: OnTrackClickListener) :
     }
 
     override fun getItemCount(): Int {
+        Log.d("TrackAdapter", "getItemCount = ${trackList.size}")
         return trackList.size
     }
 

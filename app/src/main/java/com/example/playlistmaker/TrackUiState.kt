@@ -1,11 +1,12 @@
 package com.example.playlistmaker
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.model.TrackUi
 
 sealed interface TrackUiState {
     object Loading : TrackUiState
-    data class Content(val tracks: List<Track>) : TrackUiState
+    data class Content(val tracks: List<TrackUi>) : TrackUiState
     object Error : TrackUiState
-    object Empty : TrackUiState
-    data class History(val tracks: List<Track>) : TrackUiState
+    object EmptyResult : TrackUiState
+    object EmptyScreen: TrackUiState
+    data class HistoryContent(val tracks: List<TrackUi>): TrackUiState
 }
