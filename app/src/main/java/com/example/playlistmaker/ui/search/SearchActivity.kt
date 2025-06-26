@@ -35,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
 
     private var isClickAllowed = true
     private val handler = getHandler()
-    private var viewModel: SearchViewModel? = null
+    private lateinit var viewModel: SearchViewModel
     private var textWatcher: TextWatcher? = null
 
     companion object {
@@ -68,7 +68,7 @@ class SearchActivity : AppCompatActivity() {
     private val searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: TrackUi) {
             if (clickDebounce()) {
-                viewModel?.addTrackToHistory(track)
+                viewModel.addTrackToHistory(track)
                 openPlayer(track)
             }
         }
@@ -107,7 +107,7 @@ class SearchActivity : AppCompatActivity() {
             SearchViewModel.getFactory(this)
         ).get(SearchViewModel::class.java)
 
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(this) {
             render(it)
         }
 
@@ -116,7 +116,7 @@ class SearchActivity : AppCompatActivity() {
 
         inputEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputEditText.text.isEmpty()) {
-                viewModel?.loadSearchHistory()
+                viewModel.loadSearchHistory()
             }
         }
         inputEditText.requestFocus()
@@ -135,19 +135,19 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.clearFocus()
             this.hideKeyboard(inputEditText)
             buttonClear.visibility = View.GONE
-            viewModel?.clearLastSearch()
+            viewModel.clearLastSearch()
             hideStubViews()
             hideHistory()
         }
 
         refreshButton.setOnClickListener {
             textPlaceholder.text.toString().let {
-                viewModel?.searchDebounce(it)
+                viewModel.searchDebounce(it)
             }
         }
 
         clearSearchHistory.setOnClickListener {
-            viewModel?.clearSearchHistory()
+            viewModel.clearSearchHistory()
         }
 
         textWatcher = object : TextWatcher {
@@ -158,7 +158,7 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
                 buttonClear.visibility = clearButtonVisibility(p0)
                 hideHistory()
-                viewModel?.searchDebounce(p0.toString())
+                viewModel.searchDebounce(p0.toString())
             }
         }
         inputEditText.addTextChangedListener(textWatcher)
@@ -291,7 +291,6 @@ class SearchActivity : AppCompatActivity() {
         hideStubViews()
         progressBar.visibility = View.GONE
         searchResultRecycler.visibility = View.GONE
-        searchHistoryRecycler.visibility = View.GONE
         hideHistory()
     }
 }
