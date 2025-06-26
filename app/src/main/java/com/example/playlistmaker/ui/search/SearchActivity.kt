@@ -22,18 +22,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.SearchViewModel
 import com.example.playlistmaker.TrackUiState
-import com.example.playlistmaker.common.Creator
 import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.common.UiUtils.hideKeyboard
-import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.presentation.OnTrackClickListener
-import com.example.playlistmaker.presentation.mapper.toTrackDomain
-import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
 import com.example.playlistmaker.ui.player.PlayerActivity
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 
 @SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
@@ -74,7 +69,6 @@ class SearchActivity : AppCompatActivity() {
         override fun onTrackClick(track: TrackUi) {
             if (clickDebounce()) {
                 viewModel?.addTrackToHistory(track)
-                searchHistoryTrackAdapter.notifyDataSetChanged()
                 openPlayer(track)
             }
         }
@@ -159,20 +153,13 @@ class SearchActivity : AppCompatActivity() {
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (!p0.isNullOrBlank()) {
-                    buttonClear.visibility = clearButtonVisibility(p0)
-                    hideHistory()
-                    viewModel?.searchDebounce(p0.toString())
-                } else {
-                    viewModel?.loadSearchHistory()
-                    searchResultRecycler.visibility = View.GONE
-                    hideStubViews()
-                    progressBar.visibility = View.GONE
-                }
-            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun afterTextChanged(p0: Editable?) {}
+            override fun afterTextChanged(p0: Editable?) {
+                buttonClear.visibility = clearButtonVisibility(p0)
+                hideHistory()
+                viewModel?.searchDebounce(p0.toString())
+            }
         }
         inputEditText.addTextChangedListener(textWatcher)
     }
@@ -239,6 +226,7 @@ class SearchActivity : AppCompatActivity() {
         iconResId: Int,
         showRefreshButton: Boolean = false
     ) {
+        progressBar.visibility = View.GONE
         searchResultTrackAdapter.trackList.clear()
         searchResultTrackAdapter.notifyDataSetChanged()
 
@@ -279,6 +267,9 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showHistory(tracks: List<TrackUi>) {
         hideStubViews()
+        searchResultTrackAdapter.trackList.clear()
+        searchResultRecycler.visibility = View.GONE
+        searchResultTrackAdapter.notifyDataSetChanged()
         searchHistoryTrackAdapter.trackList.clear()
         searchHistoryTrackAdapter.trackList.addAll(tracks)
         searchHistoryTrackAdapter.notifyDataSetChanged()
@@ -301,5 +292,6 @@ class SearchActivity : AppCompatActivity() {
         progressBar.visibility = View.GONE
         searchResultRecycler.visibility = View.GONE
         searchHistoryRecycler.visibility = View.GONE
+        hideHistory()
     }
 }

@@ -20,7 +20,6 @@ class TrackAdapter(private val listener: OnTrackClickListener) :
     }
 
     override fun getItemCount(): Int {
-        Log.d("TrackAdapter", "getItemCount = ${trackList.size}")
         return trackList.size
     }
 

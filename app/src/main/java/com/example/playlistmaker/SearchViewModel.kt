@@ -35,9 +35,8 @@ class SearchViewModel(private val trackInteractor: TrackInteractor) : ViewModel(
 
     fun loadSearchHistory() {
         val history = trackInteractor.loadHistoryTrackList()
-        if (history.isEmpty()) {
-            renderState(TrackUiState.EmptyScreen)
-        } else {
+        renderState(TrackUiState.EmptyScreen)
+        if (history.isNotEmpty()) {
             renderState(TrackUiState.HistoryContent(history.map { it.toTrackUi() }))
         }
     }
@@ -83,7 +82,10 @@ class SearchViewModel(private val trackInteractor: TrackInteractor) : ViewModel(
     }
 
     private fun searchRequest(newSearchText: String) {
-        if (newSearchText.isBlank()) return
+        if (newSearchText.isBlank()) {
+            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+            return
+        }
         renderState(TrackUiState.Loading)
 
         trackInteractor.searchTrack(newSearchText, object : TrackInteractor.TrackConsumer {
