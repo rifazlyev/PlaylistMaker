@@ -1,24 +1,19 @@
 package com.example.playlistmaker.ui.player
 
-import com.example.playlistmaker.PlayerViewModel
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.PlayerViewModel
 import com.example.playlistmaker.R
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
-import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
 
