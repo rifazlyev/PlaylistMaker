@@ -5,23 +5,23 @@ import android.content.Context.MODE_PRIVATE
 import android.os.Handler
 import android.os.Looper
 import com.example.playlistmaker.common.PreferencesConstants.PLAYLIST_PREFERENCES
-import com.example.playlistmaker.data.ExternalNavigatorImpl
-import com.example.playlistmaker.domain.impl.ThemeInteractorImpl
-import com.example.playlistmaker.data.ThemeRepositoryImpl
-import com.example.playlistmaker.data.TrackHistoryRepositoryImpl
-import com.example.playlistmaker.data.TrackRepositoryImpl
-import com.example.playlistmaker.data.network.RetrofitNetworkClient
-import com.example.playlistmaker.domain.api.ExternalNavigator
-import com.example.playlistmaker.domain.api.PlayerInteractor
-import com.example.playlistmaker.domain.api.SharingInteractor
-import com.example.playlistmaker.domain.api.ThemeInteractor
-import com.example.playlistmaker.domain.api.ThemeRepository
-import com.example.playlistmaker.domain.api.TrackHistoryRepository
-import com.example.playlistmaker.domain.api.TrackInteractor
-import com.example.playlistmaker.domain.api.TrackRepository
-import com.example.playlistmaker.domain.impl.PlayerInteractorImpl
-import com.example.playlistmaker.domain.impl.SharingInteractorImpl
-import com.example.playlistmaker.domain.impl.TrackInteractorImpl
+import com.example.playlistmaker.sharing.data.ExternalNavigatorImpl
+import com.example.playlistmaker.settings.domain.ThemeInteractorImpl
+import com.example.playlistmaker.settings.data.ThemeRepositoryImpl
+import com.example.playlistmaker.search.data.TrackHistoryRepositoryImpl
+import com.example.playlistmaker.search.data.TrackRepositoryImpl
+import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
+import com.example.playlistmaker.sharing.domain.ExternalNavigator
+import com.example.playlistmaker.player.domain.PlayerInteractor
+import com.example.playlistmaker.sharing.domain.SharingInteractor
+import com.example.playlistmaker.settings.domain.ThemeInteractor
+import com.example.playlistmaker.settings.domain.ThemeRepository
+import com.example.playlistmaker.search.domain.TrackHistoryRepository
+import com.example.playlistmaker.search.domain.TrackInteractor
+import com.example.playlistmaker.search.domain.TrackRepository
+import com.example.playlistmaker.player.domain.PlayerInteractorImpl
+import com.example.playlistmaker.sharing.domain.SharingInteractorImpl
+import com.example.playlistmaker.search.domain.TrackInteractorImpl
 
 object Creator {
     private val handler = Handler(Looper.getMainLooper())

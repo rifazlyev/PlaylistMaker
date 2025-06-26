@@ -8,7 +8,7 @@
     android:background="?attr/backgroundColorMainPage"
     android:orientation="vertical"
     android:padding="@dimen/_16dp"
-    tools:context=".ui.MainActivity">
+    tools:context=".main.ui.MainActivity">
 
     <TextView
         style="@style/TitleText"
