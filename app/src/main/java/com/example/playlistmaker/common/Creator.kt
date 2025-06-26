@@ -10,15 +10,14 @@ import com.example.playlistmaker.data.ThemeRepositoryImpl
 import com.example.playlistmaker.data.TrackHistoryRepositoryImpl
 import com.example.playlistmaker.data.TrackRepositoryImpl
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
-import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.example.playlistmaker.domain.api.PlayerInteractor
+import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.example.playlistmaker.domain.api.ThemeRepository
 import com.example.playlistmaker.domain.api.TrackHistoryRepository
 import com.example.playlistmaker.domain.api.TrackInteractor
 import com.example.playlistmaker.domain.api.TrackRepository
 import com.example.playlistmaker.domain.impl.PlayerInteractorImpl
 import com.example.playlistmaker.domain.impl.TrackInteractorImpl
-import kotlinx.serialization.EncodeDefault
 
 object Creator {
     private val handler = Handler(Looper.getMainLooper())
