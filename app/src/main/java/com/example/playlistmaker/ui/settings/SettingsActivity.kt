@@ -1,22 +1,20 @@
 package com.example.playlistmaker.ui.settings
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.Creator.provideThemeInteractor
-import com.example.playlistmaker.domain.api.ThemeInteractor
+import com.example.playlistmaker.SettingsViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var themeSwitcher: SwitchMaterial
-    private lateinit var themeInteractor: ThemeInteractor
+    private lateinit var settingsViewModel: SettingsViewModel
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,12 +26,18 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        themeInteractor = provideThemeInteractor(applicationContext)
+        settingsViewModel = ViewModelProvider(this, SettingsViewModel.getFactory(this)).get(
+            SettingsViewModel::class.java
+        )
+
         themeSwitcher = findViewById(R.id.themeSwitcher)
-        themeSwitcher.isChecked = themeInteractor.isDarkThemeEnabled()
+
+        settingsViewModel.observeThemeState().observe(this){
+            themeSwitcher.isChecked = it
+        }
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            themeInteractor.switchTheme(checked)
+            settingsViewModel.switchTheme(checked)
         }
 
         //Тут сделал кликабельным весь контейнер
@@ -50,30 +54,17 @@ class SettingsActivity : AppCompatActivity() {
 
         val buttonShareApp = findViewById<LinearLayout>(R.id.share_app)
         buttonShareApp.setOnClickListener {
-            val message = getString(R.string.course_link)
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.putExtra(Intent.EXTRA_TEXT, message)
-            intent.type = "text/plain"
-            startActivity(Intent.createChooser(intent, getString(R.string.choose_the_app)))
+            settingsViewModel.shareApp()
         }
 
         val buttonSupport = findViewById<LinearLayout>(R.id.support)
         buttonSupport.setOnClickListener {
-            val themeText = getString(R.string.theme_text)
-            val bodyMessage = getString(R.string.body_message)
-            val intent = Intent(Intent.ACTION_SENDTO)
-            intent.data = Uri.parse("mailto:")
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.user_email)))
-            intent.putExtra(Intent.EXTRA_SUBJECT, themeText)
-            intent.putExtra(Intent.EXTRA_TEXT, bodyMessage)
-            startActivity(intent)
+           settingsViewModel.openSupport()
         }
 
         val buttonPrivacyPolicy = findViewById<LinearLayout>(R.id.privacy_policy)
         buttonPrivacyPolicy.setOnClickListener {
-            val url = Uri.parse(getString(R.string.privacy_link))
-            val intent = Intent(Intent.ACTION_VIEW, url)
-            startActivity(intent)
+            settingsViewModel.openTerms()
         }
     }
 }

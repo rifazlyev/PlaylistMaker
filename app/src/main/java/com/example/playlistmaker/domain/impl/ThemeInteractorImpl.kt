@@ -1,4 +1,4 @@
-package com.example.playlistmaker.data
+package com.example.playlistmaker.domain.impl
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.domain.api.ThemeInteractor
