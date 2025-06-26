@@ -10,13 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.Creator.provideThemeController
-import com.example.playlistmaker.domain.ThemeController
+import com.example.playlistmaker.common.Creator.provideThemeInteractor
+import com.example.playlistmaker.domain.api.ThemeInteractor
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var themeSwitcher: SwitchMaterial
-    private lateinit var themeController: ThemeController
+    private lateinit var themeInteractor: ThemeInteractor
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,12 +28,12 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        themeController = provideThemeController(applicationContext)
+        themeInteractor = provideThemeInteractor(applicationContext)
         themeSwitcher = findViewById(R.id.themeSwitcher)
-        themeSwitcher.isChecked = themeController.isDarkThemeEnabled()
+        themeSwitcher.isChecked = themeInteractor.isDarkThemeEnabled()
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            themeController.switchTheme(checked)
+            themeInteractor.switchTheme(checked)
         }
 
         //Тут сделал кликабельным весь контейнер

@@ -1,16 +1,15 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import com.example.playlistmaker.data.ThemeControllerImpl
+import com.example.playlistmaker.common.Creator
+import com.example.playlistmaker.domain.api.ThemeInteractor
 
 class App : Application() {
-    private lateinit var themeController : ThemeControllerImpl
-    private var darkTheme: Boolean = false
-
+    private lateinit var themeInteractor: ThemeInteractor
     override fun onCreate() {
         super.onCreate()
-        themeController = ThemeControllerImpl(this)
-        darkTheme = themeController.isDarkThemeEnabled()
-        themeController.switchTheme(darkTheme)
+        themeInteractor = Creator.provideThemeInteractor(applicationContext)
+        val isDarkTheme = themeInteractor.isDarkThemeEnabled()
+        themeInteractor.switchTheme(isDarkTheme)
     }
 }

@@ -1,6 +1,6 @@
-package com.example.playlistmaker.domain
+package com.example.playlistmaker.domain.api
 
-interface ThemeController {
+interface ThemeInteractor {
     fun isDarkThemeEnabled(): Boolean
     fun switchTheme(enabled: Boolean)
 }
