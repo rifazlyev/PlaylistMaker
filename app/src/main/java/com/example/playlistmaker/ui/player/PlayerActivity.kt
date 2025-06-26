@@ -17,49 +17,30 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
+import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.presentation.mapper.toTrackUi
 import com.example.playlistmaker.presentation.model.TrackUi
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var playerViewModel: PlayerViewModel
-    private lateinit var buttonBack: ImageButton
-    private lateinit var trackImage: ImageView
-    private lateinit var trackTitle: TextView
-    private lateinit var trackArtistTitle: TextView
-    private lateinit var trackDuration: TextView
-    private lateinit var trackDurationValue: TextView
-    private lateinit var albumTitle: TextView
-    private lateinit var yearTitle: TextView
-    private lateinit var genreTitle: TextView
-    private lateinit var countryTitle: TextView
-    private lateinit var albumGroupInfo: Group
-    private lateinit var playButton: ImageButton
+    private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        buttonBack = findViewById(R.id.back_button_player_screen)
-        buttonBack.setOnClickListener {
+
+        binding.backButtonPlayerScreen.setOnClickListener {
             finish()
         }
 
-        trackTitle = findViewById(R.id.player_track_title)
-        trackArtistTitle = findViewById(R.id.player_artist_title)
-        trackImage = findViewById(R.id.player_image_placeholder)
-        trackDuration = findViewById(R.id.player_track_duration)
-        trackDurationValue = findViewById(R.id.player_duration_value)
-        albumTitle = findViewById(R.id.player_album_value)
-        yearTitle = findViewById(R.id.player_year_value)
-        genreTitle = findViewById(R.id.player_genre_value)
-        countryTitle = findViewById(R.id.player_country_value)
-        albumGroupInfo = findViewById(R.id.player_album_info_group)
-        playButton = findViewById(R.id.player_play_button)
-        albumGroupInfo.visibility = View.GONE
+        binding.playerAlbumInfoGroup.visibility = View.GONE
 
         val trackId = intent.getIntExtra(TRACK, -1)
         if (trackId == -1) {
@@ -82,10 +63,11 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         playerViewModel.observeProgressTime().observe(this) {
-            trackDuration.text = it
+            binding.playerTrackDuration.text = it
         }
 
-        playButton.setOnClickListener {
+
+        binding.playerPlayButton.setOnClickListener {
             playerViewModel.onPlayButtonClicked()
         }
 
@@ -106,29 +88,32 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.onDestroy()
     }
 
-    private fun enablePlayButton() = playButton.setImageResource(R.drawable.ic_play)
-    private fun enabledPauseButton() = playButton.setImageResource(R.drawable.ic_pause_track)
+    private fun enablePlayButton() = binding.playerPlayButton.setImageResource(R.drawable.ic_play)
+    private fun enabledPauseButton() =
+        binding.playerPlayButton.setImageResource(R.drawable.ic_pause_track)
 
     private fun renderTrackUi(trackUi: TrackUi) {
         val radiusPx = dpToPx(8F, context = this)
 
-        trackTitle.text = trackUi.trackName
-        trackArtistTitle.text = trackUi.artistName
-        trackDuration.text = trackUi.formattedTime
-        trackDurationValue.text = trackUi.formattedTime
+        binding.playerTrackTitle.text = trackUi.trackName
+        binding.playerArtistTitle.text = trackUi.artistName
+        binding.playerTrackDuration.text = trackUi.formattedTime
+        binding.playerDurationValue.text = trackUi.formattedTime
+
         if (trackUi.collectionName.isNotBlank()) {
-            albumGroupInfo.visibility = View.VISIBLE
-            albumTitle.text = trackUi.collectionName
+            binding.playerAlbumInfoGroup.visibility = View.VISIBLE
+            binding.playerAlbumValue.text = trackUi.collectionName
+
         }
-        yearTitle.text = trackUi.releaseDate
-        genreTitle.text = trackUi.primaryGenreName
-        countryTitle.text = trackUi.country
+        binding.playerYearValue.text = trackUi.releaseDate
+        binding.playerGenreValue.text = trackUi.primaryGenreName
+        binding.playerCountryValue.text = trackUi.country
 
         Glide.with(this)
             .load(trackUi.getCoverArtwork())
             .placeholder(R.drawable.ic_placeholder_player_screen)
             .centerCrop()
             .transform(RoundedCorners(radiusPx))
-            .into(trackImage)
+            .into(binding.playerImagePlaceholder)
     }
 }

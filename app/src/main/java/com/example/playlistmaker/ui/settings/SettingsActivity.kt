@@ -2,24 +2,25 @@ package com.example.playlistmaker.ui.settings
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
 import com.example.playlistmaker.SettingsViewModel
+import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySettingsBinding
     private lateinit var themeSwitcher: SwitchMaterial
     private lateinit var settingsViewModel: SettingsViewModel
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -30,40 +31,31 @@ class SettingsActivity : AppCompatActivity() {
             SettingsViewModel::class.java
         )
 
-        themeSwitcher = findViewById(R.id.themeSwitcher)
-
         settingsViewModel.observeThemeState().observe(this){
-            themeSwitcher.isChecked = it
+            binding.themeSwitcher.isChecked = it
         }
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
             settingsViewModel.switchTheme(checked)
         }
 
-        //Тут сделал кликабельным весь контейнер
-        val backSettings = findViewById<LinearLayout>(R.id.settings_screen)
-        backSettings.setOnClickListener {
+        binding.settingsScreen.setOnClickListener {
             finish()
         }
 
-        //Тут кликабельна и сама 'стрелочка'
-        val buttonBack = findViewById<ImageButton>(R.id.back_button_settings_screen)
-        buttonBack.setOnClickListener {
-            backSettings.performClick()
+        binding.backButtonSettingsScreen.setOnClickListener {
+            finish()
         }
 
-        val buttonShareApp = findViewById<LinearLayout>(R.id.share_app)
-        buttonShareApp.setOnClickListener {
+        binding.shareApp.setOnClickListener {
             settingsViewModel.shareApp()
         }
 
-        val buttonSupport = findViewById<LinearLayout>(R.id.support)
-        buttonSupport.setOnClickListener {
+        binding.support.setOnClickListener {
            settingsViewModel.openSupport()
         }
 
-        val buttonPrivacyPolicy = findViewById<LinearLayout>(R.id.privacy_policy)
-        buttonPrivacyPolicy.setOnClickListener {
+        binding.privacyPolicy.setOnClickListener {
             settingsViewModel.openTerms()
         }
     }
