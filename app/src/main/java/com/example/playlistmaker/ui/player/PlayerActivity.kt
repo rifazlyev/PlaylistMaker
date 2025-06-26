@@ -62,7 +62,7 @@ class PlayerActivity : AppCompatActivity() {
         albumGroupInfo.visibility = View.GONE
 
         val trackId = intent.getIntExtra(TRACK, -1)
-        if (trackId == -1){
+        if (trackId == -1) {
             Toast.makeText(this, getString(R.string.track_not_found), Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -74,7 +74,7 @@ class PlayerActivity : AppCompatActivity() {
             )
 
         playerViewModel.observePlayerState().observe(this) {
-            if (it == PlayerViewModel.STATE_PLAYING) {
+            if (it == PlayerViewModel.PlayerState.Playing) {
                 enabledPauseButton()
             } else {
                 enablePlayButton()

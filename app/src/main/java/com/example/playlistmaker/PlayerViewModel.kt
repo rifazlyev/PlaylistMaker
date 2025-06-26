@@ -16,10 +16,6 @@ import com.example.playlistmaker.domain.models.Track
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
     companion object {
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
         const val CUSTOM_DELAY = 300L
 
         fun getFactory(trackId: Int, context: Context): ViewModelProvider.Factory =
@@ -30,6 +26,13 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
                     }
                 }
             }
+    }
+
+    sealed interface PlayerState {
+        data object Default : PlayerState
+        data object Prepared : PlayerState
+        data object Playing : PlayerState
+        data object Paused : PlayerState
     }
 
     var mediaPlayer: MediaPlayer = MediaPlayer()
@@ -43,8 +46,8 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         preparePlayer(track.previewUrl ?: "")
     }
 
-    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = playerStateLiveData
+    private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default)
+    fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
     private val progressTimeLiveData = MutableLiveData(formatTrackTime(0))
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
@@ -52,14 +55,17 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PAUSED, STATE_PREPARED -> startPlayer()
+            PlayerState.Playing -> pausePlayer()
+            PlayerState.Paused, PlayerState.Prepared -> startPlayer()
+            //Состояне дефолт, ничего неделаем
+            else -> {}
         }
     }
 
+
     private val runnableUpdateTime = object : Runnable {
         override fun run() {
-            if (playerStateLiveData.value == STATE_PLAYING) {
+            if (playerStateLiveData.value == PlayerState.Playing) {
                 progressTimeLiveData.postValue(formatTrackTime(mediaPlayer.currentPosition.toLong()))
                 handler.postDelayed(this, CUSTOM_DELAY)
             }
@@ -78,12 +84,12 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private fun pausePlayer() {
         pauseTimer()
         mediaPlayer.pause()
-        playerStateLiveData.postValue(STATE_PAUSED)
+        playerStateLiveData.postValue(PlayerState.Paused)
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerStateLiveData.postValue(STATE_PLAYING)
+        playerStateLiveData.postValue(PlayerState.Playing)
         handler.post(runnableUpdateTime)
     }
 
@@ -91,10 +97,10 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.value = STATE_PREPARED
+            playerStateLiveData.value = PlayerState.Prepared
         }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.value = STATE_PREPARED
+            playerStateLiveData.value = PlayerState.Prepared
             resetTimer()
         }
     }
