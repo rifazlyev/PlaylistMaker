@@ -8,11 +8,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var themeSwitcher: SwitchMaterial
     private lateinit var settingsViewModel: SettingsViewModel
 
     @SuppressLint("MissingInflatedId")
@@ -34,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
             binding.themeSwitcher.isChecked = it
         }
 
-        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+        binding.themeSwitcher.setOnCheckedChangeListener { _, checked ->
             settingsViewModel.switchTheme(checked)
         }
 
