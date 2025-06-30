@@ -1,6 +1,12 @@
 package com.example.playlistmaker.main.app
 
 import android.app.Application
+import com.example.playlistmaker.player.di.playerInteractorModule
+import com.example.playlistmaker.player.di.playerViewModelModule
+import com.example.playlistmaker.search.di.searchDataModule
+import com.example.playlistmaker.search.di.searchInteractorModule
+import com.example.playlistmaker.search.di.searchRepositoryModule
+import com.example.playlistmaker.search.di.searchViewModelModule
 import com.example.playlistmaker.settings.di.settingsDataModule
 import com.example.playlistmaker.settings.di.settingsInteractorModule
 import com.example.playlistmaker.settings.di.settingsRepositoryModule
@@ -19,15 +25,25 @@ class App : Application() {
         settingsViewModelModule
     )
 
+    private val searchModules = listOf(
+        searchDataModule,
+        searchRepositoryModule,
+        searchInteractorModule,
+        searchViewModelModule
+    )
+
+    private val playerModules = listOf(
+        playerInteractorModule,
+        playerViewModelModule
+    )
+
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
             modules(
-                settingsModules,
-
-                )
-
+                settingsModules + searchModules + playerModules
+            )
         }
         themeInteractor = get<ThemeInteractor>()
         val isDarkTheme = themeInteractor.isDarkThemeEnabled()

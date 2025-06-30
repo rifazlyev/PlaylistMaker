@@ -1,31 +1,20 @@
 package com.example.playlistmaker.player.ui
 
-import android.content.Context
 import android.media.MediaPlayer
+import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.common.Creator
-import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.UiUtils.formatTrackTime
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.domain.Track
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+    private val handler: Handler,
+) : ViewModel() {
     companion object {
         const val CUSTOM_DELAY = 300L
-
-        fun getFactory(trackId: Int, context: Context): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    PlayerViewModel(Creator.providePlayerInteractor(context)).apply {
-                        initializePlayer(trackId)
-                    }
-                }
-            }
     }
 
     sealed interface PlayerState {
@@ -51,7 +40,6 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     private val progressTimeLiveData = MutableLiveData(formatTrackTime(0))
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-    private val handler = getHandler()
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
@@ -61,7 +49,6 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
             else -> {}
         }
     }
-
 
     private val runnableUpdateTime = object : Runnable {
         override fun run() {
