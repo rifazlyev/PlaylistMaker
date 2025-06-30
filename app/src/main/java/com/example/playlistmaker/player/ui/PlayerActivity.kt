@@ -14,9 +14,7 @@ import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
     private val playerViewModel: PlayerViewModel by viewModel<PlayerViewModel>()
