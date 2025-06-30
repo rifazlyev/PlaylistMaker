@@ -6,7 +6,7 @@ import com.example.playlistmaker.sharing.data.ExternalNavigatorImpl
 import com.example.playlistmaker.sharing.domain.ExternalNavigator
 import org.koin.dsl.module
 
-val repositoryModule = module {
+val settingsRepositoryModule = module {
     single<ThemeRepository>{
         ThemeRepositoryImpl(get())
     }

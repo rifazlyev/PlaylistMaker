@@ -6,7 +6,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 
-val dataModule = module {
+val settingsDataModule = module {
     single{
         androidContext().getSharedPreferences(PLAYLIST_PREFERENCES, MODE_PRIVATE)
     }
