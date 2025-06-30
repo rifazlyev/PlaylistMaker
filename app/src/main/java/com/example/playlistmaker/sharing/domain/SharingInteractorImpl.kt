@@ -5,7 +5,6 @@ class SharingInteractorImpl(
 ) : SharingInteractor {
     override fun shareApp() {
         externalNavigator.shareLink(getShareAppLink())
-
     }
 
     override fun openSupport() {
