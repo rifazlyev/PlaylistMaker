@@ -1,6 +1,7 @@
 package com.example.playlistmaker.search.ui
 
 import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,10 +14,10 @@ import com.example.playlistmaker.search.ui.model.TrackUi
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
-    private val handler: Handler
-) : ViewModel() {
+    ) : ViewModel() {
     private var isClickAllowed = true
     private var lastSearch: String? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L

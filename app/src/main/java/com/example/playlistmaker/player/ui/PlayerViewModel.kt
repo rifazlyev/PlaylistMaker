@@ -1,7 +1,7 @@
 package com.example.playlistmaker.player.ui
 
-import android.media.MediaPlayer
 import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +11,6 @@ import com.example.playlistmaker.search.domain.Track
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val handler: Handler,
 ) : ViewModel() {
     companion object {
         const val CUSTOM_DELAY = 300L
@@ -24,7 +23,7 @@ class PlayerViewModel(
         data object Paused : PlayerState
     }
 
-    var mediaPlayer: MediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
 
     private val trackLiveData = MutableLiveData<Track>()
     fun observeTrackLiveData(): LiveData<Track> = trackLiveData
@@ -53,7 +52,7 @@ class PlayerViewModel(
     private val runnableUpdateTime = object : Runnable {
         override fun run() {
             if (playerStateLiveData.value == PlayerState.Playing) {
-                progressTimeLiveData.postValue(formatTrackTime(mediaPlayer.currentPosition.toLong()))
+                progressTimeLiveData.postValue(formatTrackTime(playerInteractor.getCurrentPosition()))
                 handler.postDelayed(this, CUSTOM_DELAY)
             }
         }
@@ -70,31 +69,30 @@ class PlayerViewModel(
 
     private fun pausePlayer() {
         pauseTimer()
-        mediaPlayer.pause()
+        playerInteractor.pausePlayer()
         playerStateLiveData.postValue(PlayerState.Paused)
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        playerInteractor.startPlayer()
         playerStateLiveData.postValue(PlayerState.Playing)
         handler.post(runnableUpdateTime)
     }
 
     private fun preparePlayer(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.value = PlayerState.Prepared
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.value = PlayerState.Prepared
-            resetTimer()
-        }
+        playerInteractor.preparePlayer(url = url,
+            onPrepared = {
+                playerStateLiveData.value = PlayerState.Prepared
+            },
+            onCompletion = {
+                playerStateLiveData.value = PlayerState.Prepared
+                resetTimer()
+            })
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaPlayer.release()
+        playerInteractor.release()
         resetTimer()
     }
 
@@ -103,7 +101,7 @@ class PlayerViewModel(
     }
 
     fun onDestroy() {
-        mediaPlayer.release()
+        playerInteractor.release()
         pauseTimer()
     }
 }
