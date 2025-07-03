@@ -2,6 +2,7 @@
 <resources>
     <!--Common dimensions-->
     <dimen name="_0dp">0dp</dimen>
+    <dimen name="_2dp">2dp</dimen>
     <dimen name="_5dp">5dp</dimen>
     <dimen name="_8dp">8dp</dimen>
     <dimen name="_9dp">9dp</dimen>
@@ -18,9 +19,11 @@
     <dimen name="_42dp">42dp</dimen>
     <dimen name="_44dp">44dp</dimen>
     <dimen name="_45dp">45dp</dimen>
+    <dimen name="_46dp">46dp</dimen>
     <dimen name="_54dp">54dp</dimen>
     <dimen name="_60dp">60dp</dimen>
     <dimen name="_102dp">102dp</dimen>
+    <dimen name="_106dp">106dp</dimen>
     <dimen name="_140dp">140dp</dimen>
     <dimen name="_238dp">238dp</dimen>
     <dimen name="_356dp">356dp</dimen>

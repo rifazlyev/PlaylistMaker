@@ -1,6 +1,7 @@
 package com.example.playlistmaker.main.app
 
 import android.app.Application
+import com.example.playlistmaker.media.di.mediaModule
 import com.example.playlistmaker.player.di.playerModule
 import com.example.playlistmaker.search.di.searchModule
 import com.example.playlistmaker.settings.di.settingsModule
@@ -19,7 +20,8 @@ class App : Application() {
                 listOf(
                     settingsModule,
                     searchModule,
-                    playerModule
+                    playerModule,
+                    mediaModule
                 )
             )
         }

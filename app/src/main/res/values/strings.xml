@@ -26,4 +26,9 @@
     <string name="country_title">Страна</string>
     <string name="audio_error">Аудио недоступно для этого трека</string>
     <string name="track_not_found">Трек не найден</string>
+    <string name="empty_favorite_text">Ваша медиатека пуста</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="no_playlist">Вы не создали\nни одного плейлиста</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="favorite_tracks">Избранные треки</string>
 </resources>
