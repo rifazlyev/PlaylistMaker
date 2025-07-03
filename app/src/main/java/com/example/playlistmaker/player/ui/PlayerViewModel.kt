@@ -1,31 +1,19 @@
 package com.example.playlistmaker.player.ui
 
-import android.content.Context
-import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.common.Creator
-import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.UiUtils.formatTrackTime
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.domain.Track
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+) : ViewModel() {
     companion object {
         const val CUSTOM_DELAY = 300L
-
-        fun getFactory(trackId: Int, context: Context): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    PlayerViewModel(Creator.providePlayerInteractor(context)).apply {
-                        initializePlayer(trackId)
-                    }
-                }
-            }
     }
 
     sealed interface PlayerState {
@@ -35,7 +23,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         data object Paused : PlayerState
     }
 
-    var mediaPlayer: MediaPlayer = MediaPlayer()
+    private val handler = Handler(Looper.getMainLooper())
 
     private val trackLiveData = MutableLiveData<Track>()
     fun observeTrackLiveData(): LiveData<Track> = trackLiveData
@@ -51,7 +39,6 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     private val progressTimeLiveData = MutableLiveData(formatTrackTime(0))
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-    private val handler = getHandler()
 
     fun onPlayButtonClicked() {
         when (playerStateLiveData.value) {
@@ -62,11 +49,10 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         }
     }
 
-
     private val runnableUpdateTime = object : Runnable {
         override fun run() {
             if (playerStateLiveData.value == PlayerState.Playing) {
-                progressTimeLiveData.postValue(formatTrackTime(mediaPlayer.currentPosition.toLong()))
+                progressTimeLiveData.postValue(formatTrackTime(playerInteractor.getCurrentPosition()))
                 handler.postDelayed(this, CUSTOM_DELAY)
             }
         }
@@ -83,31 +69,30 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     private fun pausePlayer() {
         pauseTimer()
-        mediaPlayer.pause()
+        playerInteractor.pausePlayer()
         playerStateLiveData.postValue(PlayerState.Paused)
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        playerInteractor.startPlayer()
         playerStateLiveData.postValue(PlayerState.Playing)
         handler.post(runnableUpdateTime)
     }
 
     private fun preparePlayer(url: String) {
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerStateLiveData.value = PlayerState.Prepared
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.value = PlayerState.Prepared
-            resetTimer()
-        }
+        playerInteractor.preparePlayer(url = url,
+            onPrepared = {
+                playerStateLiveData.value = PlayerState.Prepared
+            },
+            onCompletion = {
+                playerStateLiveData.value = PlayerState.Prepared
+                resetTimer()
+            })
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaPlayer.release()
+        playerInteractor.release()
         resetTimer()
     }
 
@@ -116,7 +101,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     }
 
     fun onDestroy() {
-        mediaPlayer.release()
+        playerInteractor.release()
         pauseTimer()
     }
 }

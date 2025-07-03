@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -15,9 +14,10 @@ import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
-    private lateinit var playerViewModel: PlayerViewModel
+    private val playerViewModel: PlayerViewModel by viewModel<PlayerViewModel>()
     private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +43,7 @@ class PlayerActivity : AppCompatActivity() {
             return
         }
 
-        playerViewModel =
-            ViewModelProvider(this, PlayerViewModel.getFactory(trackId, this)).get(
-                PlayerViewModel::class.java
-            )
+        playerViewModel.initializePlayer(trackId)
 
         playerViewModel.observePlayerState().observe(this) {
             if (it == PlayerViewModel.PlayerState.Playing) {

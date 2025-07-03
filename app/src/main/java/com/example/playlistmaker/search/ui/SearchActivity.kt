@@ -9,33 +9,26 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.Creator.getHandler
 import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.common.UiUtils.hideKeyboard
 import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.search.ui.model.TrackUi
 import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.search.ui.model.TrackUi
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @SuppressLint("NotifyDataSetChanged")
 class SearchActivity : AppCompatActivity() {
 
-    private var isClickAllowed = true
-    private val handler = getHandler()
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel<SearchViewModel>()
     private var textWatcher: TextWatcher? = null
     private lateinit var binding: ActivitySearchBinding
 
-    companion object {
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
     private val searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: TrackUi) {
-            if (clickDebounce()) {
+            if (viewModel.clickDebounce()) {
                 openPlayer(track)
             }
         }
@@ -44,7 +37,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val searchResultTrackAdapter = TrackAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: TrackUi) {
-            if (clickDebounce()) {
+            if (viewModel.clickDebounce()) {
                 viewModel.addTrackToHistory(track)
                 openPlayer(track)
             }
@@ -66,12 +59,6 @@ class SearchActivity : AppCompatActivity() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
 
-
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getFactory(this)
-        ).get(SearchViewModel::class.java)
-
         viewModel.observeState().observe(this) {
             render(it)
         }
@@ -86,7 +73,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.searchEditText.requestFocus()
-
 
         binding.searchScreen.setOnClickListener {
             finish()
@@ -148,15 +134,6 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         val restoredText = savedInstanceState.getString(SEARCH_TEXT_KEY, "")
         binding.searchEditText.setText(restoredText)
-    }
-
-    private fun clickDebounce(): Boolean {
-        val currentValue = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return currentValue
     }
 
     private fun openPlayer(track: TrackUi) {
