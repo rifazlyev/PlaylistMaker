@@ -29,10 +29,6 @@ class MediaActivity : AppCompatActivity() {
         binding.backGroupMediaScreen.setOnClickListener {
             finish()
         }
-        binding.backButtonMediaScreen.setOnClickListener {
-            finish()
-        }
-
     }
 
     override fun onDestroy() {

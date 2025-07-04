@@ -10,13 +10,8 @@ import androidx.fragment.app.viewModels
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 
 class PlaylistsFragment : Fragment() {
-    companion object {
-        fun newInstance(): Fragment {
-            return PlaylistsFragment()
-        }
-    }
-
-    private var binding: FragmentPlaylistsBinding? = null
+    private var _binding: FragmentPlaylistsBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: PlaylistsViewModel by viewModels()
 
     override fun onCreateView(
@@ -24,20 +19,25 @@ class PlaylistsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
-        return binding!!.root
+        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding!!.newPlaylistButton.setOnClickListener {
+        binding.newPlaylistButton.setOnClickListener {
             Toast.makeText(context, "Пока ничего", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding = null
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance(): Fragment {
+            return PlaylistsFragment()
+        }
     }
 }
-

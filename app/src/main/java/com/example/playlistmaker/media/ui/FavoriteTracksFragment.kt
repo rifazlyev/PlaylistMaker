@@ -9,26 +9,27 @@ import androidx.fragment.app.viewModels
 import com.example.playlistmaker.databinding.FragmentFavoriteTracksBinding
 
 class FavoriteTracksFragment : Fragment() {
-    companion object {
-        fun newInstance(): Fragment {
-            return FavoriteTracksFragment()
-        }
-    }
-
     private val viewModel: FavoriteTracksViewModel by viewModels()
-    private var binding: FragmentFavoriteTracksBinding? = null
+    private var _binding: FragmentFavoriteTracksBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFavoriteTracksBinding.inflate(inflater, container, false)
-        return binding!!.root
+        _binding = FragmentFavoriteTracksBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding = null
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance(): Fragment {
+            return FavoriteTracksFragment()
+        }
     }
 }
