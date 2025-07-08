@@ -1,51 +1,58 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.UiUtils.dpToPx
-import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
     private val playerViewModel: PlayerViewModel by viewModel<PlayerViewModel>()
-    private lateinit var binding: ActivityPlayerBinding
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val trackId = requireArguments().getInt(TRACK_ID, -1)
+        if (trackId == -1) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.track_not_found),
+                Toast.LENGTH_SHORT
+            ).show()
+            requireActivity().supportFragmentManager.popBackStack()
+            return
         }
 
         binding.backButtonPlayerScreen.setOnClickListener {
-            finish()
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
         binding.playerAlbumInfoGroup.visibility = View.GONE
 
-        val trackId = intent.getIntExtra(TRACK, -1)
-        if (trackId == -1) {
-            Toast.makeText(this, getString(R.string.track_not_found), Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
         playerViewModel.initializePlayer(trackId)
 
-        playerViewModel.observePlayerState().observe(this) {
+        playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
             if (it == PlayerViewModel.PlayerState.Playing) {
                 enabledPauseButton()
             } else {
@@ -53,16 +60,15 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
-        playerViewModel.observeProgressTime().observe(this) {
+        playerViewModel.observeProgressTime().observe(viewLifecycleOwner) {
             binding.playerTrackDuration.text = it
         }
-
 
         binding.playerPlayButton.setOnClickListener {
             playerViewModel.onPlayButtonClicked()
         }
 
-        playerViewModel.observeTrackLiveData().observe(this) { trackDomain ->
+        playerViewModel.observeTrackLiveData().observe(viewLifecycleOwner) { trackDomain ->
             val ui = trackDomain.toTrackUi()
             renderTrackUi(ui)
         }
@@ -84,7 +90,7 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerPlayButton.setImageResource(R.drawable.ic_pause_track)
 
     private fun renderTrackUi(trackUi: TrackUi) {
-        val radiusPx = dpToPx(8F, context = this)
+        val radiusPx = dpToPx(8F, context = requireContext())
 
         binding.playerTrackTitle.text = trackUi.trackName
         binding.playerArtistTitle.text = trackUi.artistName
@@ -106,5 +112,18 @@ class PlayerActivity : AppCompatActivity() {
             .centerCrop()
             .transform(RoundedCorners(radiusPx))
             .into(binding.playerImagePlaceholder)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+        private const val TRACK_ID = "trackId"
+
+        fun newInstance(trackId: Int) = PlayerFragment().apply {
+            arguments = bundleOf(TRACK_ID to trackId)
+        }
     }
 }

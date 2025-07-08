@@ -1,30 +1,28 @@
 package com.example.playlistmaker.search.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.IntentKeys.TRACK
 import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.common.UiUtils.hideKeyboard
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.ui.model.TrackUi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @SuppressLint("NotifyDataSetChanged")
-class SearchActivity : AppCompatActivity() {
-
+class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModel<SearchViewModel>()
     private var textWatcher: TextWatcher? = null
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private val searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: TrackUi) {
@@ -45,21 +43,31 @@ class SearchActivity : AppCompatActivity() {
     }
     )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    private fun openPlayer(track: TrackUi) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.rootFragmentContainerView, PlayerFragment.newInstance(track.trackId))
+            .addToBackStack(null)
+            .commit()
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val restoredText = savedInstanceState?.getString(SEARCH_TEXT_KEY, "")
+        binding.searchEditText.setText(restoredText)
 
-        viewModel.observeState().observe(this) {
+        binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
@@ -75,18 +83,14 @@ class SearchActivity : AppCompatActivity() {
         binding.searchEditText.requestFocus()
 
         binding.searchScreen.setOnClickListener {
-            finish()
-        }
-
-        binding.backButtonSearchScreen.setOnClickListener {
-            finish()
+            parentFragmentManager.popBackStack()
         }
 
         binding.clearButton.setOnClickListener {
             binding.searchEditText.setText("")
             searchResultTrackAdapter.trackList.clear()
             binding.searchScreen.clearFocus()
-            this.hideKeyboard(binding.searchScreen)
+            requireActivity().hideKeyboard(binding.searchScreen)
             binding.clearButton.visibility = View.GONE
             viewModel.clearLastSearch()
             hideStubViews()
@@ -130,18 +134,6 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(SEARCH_TEXT_KEY, binding.searchEditText.text.toString())
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val restoredText = savedInstanceState.getString(SEARCH_TEXT_KEY, "")
-        binding.searchEditText.setText(restoredText)
-    }
-
-    private fun openPlayer(track: TrackUi) {
-        val playerIntent = Intent(this, PlayerActivity::class.java)
-        playerIntent.putExtra(TRACK, track.trackId)
-        startActivity(playerIntent)
-    }
-
     private fun render(state: TrackUiState) {
         when (state) {
             is TrackUiState.EmptyResult -> showError(
@@ -162,7 +154,6 @@ class SearchActivity : AppCompatActivity() {
             is TrackUiState.HistoryContent -> showHistory(state.tracks)
             is TrackUiState.EmptyScreen -> hideAll()
         }
-
     }
 
     private fun showError(
@@ -224,17 +215,22 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryViewGroup.visibility = View.GONE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        textWatcher.let {
-            binding.searchEditText.removeTextChangedListener(it)
-        }
-    }
-
     private fun hideAll() {
         hideStubViews()
         binding.progressBar.visibility = View.GONE
         binding.searchResultRecyclerView.visibility = View.GONE
         hideHistory()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        textWatcher?.let {
+            binding.searchEditText.removeTextChangedListener(it)
+        }
+        _binding = null
+    }
+
+    companion object {
+        fun newInstance() = SearchFragment()
     }
 }
