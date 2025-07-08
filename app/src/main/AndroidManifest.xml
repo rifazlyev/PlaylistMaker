@@ -32,8 +32,5 @@
         <activity
             android:name=".media.ui.MediaActivity"
             android:exported="false" />
-        <activity
-            android:name=".settings.ui.SettingsActivity"
-            android:exported="false" />
     </application>
 </manifest>

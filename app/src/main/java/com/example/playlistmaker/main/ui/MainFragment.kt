@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentMainBinding
+import com.example.playlistmaker.settings.ui.SettingsFragment
 
 class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
@@ -32,9 +34,13 @@ class MainFragment : Fragment() {
         }
 
         binding.settings.setOnClickListener {
-
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.rootFragmentContainerView, SettingsFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
