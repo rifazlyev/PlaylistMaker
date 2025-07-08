@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentMainBinding
+import com.example.playlistmaker.media.ui.MediaFragment
 import com.example.playlistmaker.settings.ui.SettingsFragment
 
 class MainFragment : Fragment() {
@@ -30,7 +31,10 @@ class MainFragment : Fragment() {
 
 
         binding.media.setOnClickListener {
-
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.rootFragmentContainerView, MediaFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
         }
 
         binding.settings.setOnClickListener {
