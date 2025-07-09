@@ -6,6 +6,7 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="textColor">@color/white</item>
         <item name="artistAndDurationTextColor">@color/artist_and_duration_color</item>
+        <item name="bottomButtonColor">@color/white</item>
     </style>
 
 </resources>
