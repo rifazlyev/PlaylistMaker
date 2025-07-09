@@ -76,15 +76,11 @@ class SearchFragment : Fragment() {
 
         binding.searchEditText.requestFocus()
 
-        binding.searchScreen.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
-
         binding.clearButton.setOnClickListener {
             binding.searchEditText.setText("")
             searchResultTrackAdapter.trackList.clear()
-            binding.searchScreen.clearFocus()
-            requireActivity().hideKeyboard(binding.searchScreen)
+            binding.searchEditText.clearFocus()
+            requireActivity().hideKeyboard(binding.searchEditText)
             binding.clearButton.visibility = View.GONE
             viewModel.clearLastSearch()
             hideStubViews()
@@ -217,8 +213,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun openPlayer(track: TrackUi) {
-        findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
-            PlayerFragment.createArg(track.trackId))
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArg(track.trackId)
+        )
     }
 
     override fun onDestroyView() {

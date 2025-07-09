@@ -32,10 +32,6 @@ class SettingsFragment : Fragment() {
             settingsViewModel.switchTheme(checked)
         }
 
-        binding.settingsScreen.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-
         binding.shareApp.setOnClickListener {
             settingsViewModel.shareApp()
         }

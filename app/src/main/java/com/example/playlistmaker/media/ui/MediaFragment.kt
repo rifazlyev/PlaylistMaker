@@ -34,19 +34,11 @@ class MediaFragment : Fragment() {
             }
         }
         tabMediator.attach()
-
-        binding.backGroupMediaScreen.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        tabMediator.detach()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        tabMediator.detach()
         _binding = null
     }
 }

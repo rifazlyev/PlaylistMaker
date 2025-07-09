@@ -10,36 +10,15 @@
     android:padding="@dimen/_16dp"
     tools:context=".media.ui.MediaFragment">
 
-    <LinearLayout
-        android:id="@+id/back_group_media_screen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+    <TextView
+        style="@style/TitleText"
+        android:text="@string/media" />
 
-        <ImageButton
-            android:id="@+id/back_button_media_screen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:scaleType="center"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            style="@style/TitleText"
-            android:layout_marginStart="@dimen/_12dp"
-            android:text="@string/media" />
-
-    </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         style="@style/TabText"
-        app:tabTextAppearance="@style/TabText"
-        />
+        app:tabTextAppearance="@style/TabText" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
