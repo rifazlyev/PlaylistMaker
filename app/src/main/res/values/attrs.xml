@@ -3,5 +3,4 @@
     <attr name="backgroundColorMainPage" format="color"/>
     <attr name="textColor" format="color"/>
     <attr name="artistAndDurationTextColor" format="color"/>
-    <attr  name="bottomButtonColor" format="color"/>
 </resources>
