@@ -14,6 +14,15 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_graph" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        android:background="@color/divider"
+        />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
@@ -26,6 +35,7 @@
         app:itemTextColor="@color/bottom_nav_icon_color"
         app:itemTextAppearanceActive="@style/BottomNavTextAppearance"
         app:itemTextAppearanceInactive="@style/BottomNavTextAppearance"
+        android:background="@color/bottom_nav"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
