@@ -41,7 +41,7 @@ class PlayerFragment : Fragment() {
                 getString(R.string.track_not_found),
                 Toast.LENGTH_SHORT
             ).show()
-            requireActivity().supportFragmentManager.popBackStack()
+            findNavController().navigateUp()
             return
         }
 
