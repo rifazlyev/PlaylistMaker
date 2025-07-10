@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.common.UiUtils.hideKeyboard
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.PlayerFragment
@@ -55,7 +54,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val restoredText = savedInstanceState?.getString(SEARCH_TEXT_KEY, "")
+        val restoredText = viewModel.lastSearchQuery.orEmpty()
         binding.searchEditText.setText(restoredText)
 
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -103,6 +102,7 @@ class SearchFragment : Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(p0: Editable?) {
+                viewModel.lastSearchQuery = p0.toString()
                 binding.clearButton.visibility = clearButtonVisibility(p0)
                 hideHistory()
                 viewModel.searchDebounce(p0.toString())
@@ -117,11 +117,6 @@ class SearchFragment : Fragment() {
         } else {
             View.VISIBLE
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT_KEY, binding.searchEditText.text.toString())
     }
 
     private fun render(state: TrackUiState) {

@@ -17,6 +17,7 @@ class SearchViewModel(
     ) : ViewModel() {
     private var isClickAllowed = true
     private var lastSearch: String? = null
+    var lastSearchQuery: String? = null
     private val handler = Handler(Looper.getMainLooper())
 
     companion object {
