@@ -9,11 +9,9 @@
     android:padding="@dimen/_16dp"
     tools:context=".search.ui.SearchFragment">
 
-
     <TextView
         style="@style/TitleText"
         android:text="@string/search" />
-
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -68,36 +66,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/search_history_view_group"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/_40dp">
 
-            <TextView
-                style="@style/SearchScreenText"
-                android:layout_marginTop="@dimen/_42dp"
-                android:text="@string/you_found"
-                android:textFontWeight="500" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/searchHistoryRecyclerView"
+            <LinearLayout
+                android:id="@+id/search_history_view_group"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_weight="1"
-                android:maxHeight="200dp" />
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-            <Button
-                android:id="@+id/clearHistoryButton"
-                style="@style/SearchHistoryButton"
-                android:layout_marginTop="@dimen/_24dp"
-                android:text="@string/clear_history" />
-        </LinearLayout>
+                <TextView
+                    style="@style/SearchScreenText"
+                    android:layout_marginTop="@dimen/_42dp"
+                    android:text="@string/you_found"
+                    android:textFontWeight="500" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/searchHistoryRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:maxHeight="200dp" />
+
+                <Button
+                    android:id="@+id/clearHistoryButton"
+                    style="@style/SearchHistoryButton"
+                    android:layout_marginTop="@dimen/_24dp"
+                    android:text="@string/clear_history" />
+            </LinearLayout>
+
+        </ScrollView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchResultRecyclerView"
