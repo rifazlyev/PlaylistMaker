@@ -1,30 +1,28 @@
 package com.example.playlistmaker.search.ui
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.R
-import com.example.playlistmaker.common.IntentKeys.TRACK
-import com.example.playlistmaker.common.PreferencesConstants.SEARCH_TEXT_KEY
 import com.example.playlistmaker.common.UiUtils.hideKeyboard
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.ui.model.TrackUi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @SuppressLint("NotifyDataSetChanged")
-class SearchActivity : AppCompatActivity() {
-
+class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModel<SearchViewModel>()
     private var textWatcher: TextWatcher? = null
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private val searchHistoryTrackAdapter = TrackAdapter(object : OnTrackClickListener {
         override fun onTrackClick(track: TrackUi) {
@@ -45,21 +43,24 @@ class SearchActivity : AppCompatActivity() {
     }
     )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val restoredText = viewModel.lastSearchQuery.orEmpty()
+        binding.searchEditText.setText(restoredText)
 
-        binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.observeState().observe(this) {
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
@@ -74,19 +75,11 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchEditText.requestFocus()
 
-        binding.searchScreen.setOnClickListener {
-            finish()
-        }
-
-        binding.backButtonSearchScreen.setOnClickListener {
-            finish()
-        }
-
         binding.clearButton.setOnClickListener {
             binding.searchEditText.setText("")
             searchResultTrackAdapter.trackList.clear()
-            binding.searchScreen.clearFocus()
-            this.hideKeyboard(binding.searchScreen)
+            binding.searchEditText.clearFocus()
+            requireActivity().hideKeyboard(binding.searchEditText)
             binding.clearButton.visibility = View.GONE
             viewModel.clearLastSearch()
             hideStubViews()
@@ -109,6 +102,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(p0: Editable?) {
+                viewModel.lastSearchQuery = p0.toString()
                 binding.clearButton.visibility = clearButtonVisibility(p0)
                 hideHistory()
                 viewModel.searchDebounce(p0.toString())
@@ -123,23 +117,6 @@ class SearchActivity : AppCompatActivity() {
         } else {
             View.VISIBLE
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT_KEY, binding.searchEditText.text.toString())
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val restoredText = savedInstanceState.getString(SEARCH_TEXT_KEY, "")
-        binding.searchEditText.setText(restoredText)
-    }
-
-    private fun openPlayer(track: TrackUi) {
-        val playerIntent = Intent(this, PlayerActivity::class.java)
-        playerIntent.putExtra(TRACK, track.trackId)
-        startActivity(playerIntent)
     }
 
     private fun render(state: TrackUiState) {
@@ -162,7 +139,6 @@ class SearchActivity : AppCompatActivity() {
             is TrackUiState.HistoryContent -> showHistory(state.tracks)
             is TrackUiState.EmptyScreen -> hideAll()
         }
-
     }
 
     private fun showError(
@@ -224,17 +200,25 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryViewGroup.visibility = View.GONE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        textWatcher.let {
-            binding.searchEditText.removeTextChangedListener(it)
-        }
-    }
-
     private fun hideAll() {
         hideStubViews()
         binding.progressBar.visibility = View.GONE
         binding.searchResultRecyclerView.visibility = View.GONE
         hideHistory()
+    }
+
+    private fun openPlayer(track: TrackUi) {
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArg(track.trackId)
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        textWatcher?.let {
+            binding.searchEditText.removeTextChangedListener(it)
+        }
+        _binding = null
     }
 }

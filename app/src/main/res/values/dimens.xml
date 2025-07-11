@@ -30,6 +30,7 @@
 
     <!--Dimension for text-->
     <dimen name="_11sp">11sp</dimen>
+    <dimen name="_12sp">12sp</dimen>
     <dimen name="_13sp">13sp</dimen>
     <dimen name="_14sp">14sp</dimen>
     <dimen name="_16sp">16sp</dimen>
