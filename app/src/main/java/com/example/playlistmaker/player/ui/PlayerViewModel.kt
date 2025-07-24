@@ -87,6 +87,7 @@ class PlayerViewModel(
             },
             onCompletion = {
                 playerStateLiveData.value = PlayerState.Prepared
+                pausePlayer()
                 resetTimer()
             })
     }
