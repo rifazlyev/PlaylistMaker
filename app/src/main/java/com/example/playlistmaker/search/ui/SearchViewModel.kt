@@ -91,31 +91,33 @@ class SearchViewModel(
         }
         renderState(TrackUiState.Loading)
 
-        trackInteractor.searchTrack(newSearchText, object : TrackInteractor.TrackConsumer {
-            override fun consume(foundTrack: List<Track>?, errorMessage: String?) {
-                handler.post {
-                    val listOfTrack = mutableListOf<TrackUi>()
-                    if (foundTrack != null) {
-                        listOfTrack.addAll(foundTrack.map { it.toTrackUi() })
-                    }
-                    when {
-                        errorMessage != null -> {
-                            renderState(TrackUiState.Error)
-                        }
-
-                        listOfTrack.isEmpty() -> {
-                            renderState(TrackUiState.EmptyResult)
-
-                        }
-
-                        else -> {
-                            renderState(TrackUiState.Content(listOfTrack))
-                        }
-
-                    }
+        viewModelScope.launch {
+            trackInteractor.searchTrack(newSearchText)
+                .collect { pair ->
+                    processResul(pair.first, pair.second)
                 }
+        }
+    }
+
+    private fun processResul(foundTrack: List<Track>?, errorMessage: String?) {
+        val listOfTrack = mutableListOf<TrackUi>()
+        if (foundTrack != null) {
+            listOfTrack.addAll(foundTrack.map { it.toTrackUi() })
+        }
+        when {
+            errorMessage != null -> {
+                renderState(TrackUiState.Error)
             }
-        })
+
+            listOfTrack.isEmpty() -> {
+                renderState(TrackUiState.EmptyResult)
+
+            }
+
+            else -> {
+                renderState(TrackUiState.Content(listOfTrack))
+            }
+        }
     }
 
     private fun renderState(state: TrackUiState) {
