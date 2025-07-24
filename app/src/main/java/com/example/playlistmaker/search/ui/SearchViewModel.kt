@@ -1,7 +1,5 @@
 package com.example.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,13 +19,11 @@ class SearchViewModel(
     private var isClickAllowed = true
     private var lastSearch: String? = null
     var lastSearchQuery: String? = null
-    private val handler = Handler(Looper.getMainLooper())
     private var searchTrack: Job? = null
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 
     fun clickDebounce(): Boolean {
@@ -85,10 +81,8 @@ class SearchViewModel(
     }
 
     private fun searchRequest(newSearchText: String) {
-        if (newSearchText.isBlank()) {
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-            return
-        }
+        if (newSearchText.isBlank()) return
+
         renderState(TrackUiState.Loading)
 
         viewModelScope.launch {
