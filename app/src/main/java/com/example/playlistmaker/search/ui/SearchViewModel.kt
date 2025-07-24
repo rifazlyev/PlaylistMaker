@@ -94,12 +94,12 @@ class SearchViewModel(
         viewModelScope.launch {
             trackInteractor.searchTrack(newSearchText)
                 .collect { pair ->
-                    processResul(pair.first, pair.second)
+                    processResult(pair.first, pair.second)
                 }
         }
     }
 
-    private fun processResul(foundTrack: List<Track>?, errorMessage: String?) {
+    private fun processResult(foundTrack: List<Track>?, errorMessage: String?) {
         val listOfTrack = mutableListOf<TrackUi>()
         if (foundTrack != null) {
             listOfTrack.addAll(foundTrack.map { it.toTrackUi() })
