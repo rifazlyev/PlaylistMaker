@@ -5,8 +5,6 @@ import android.content.Context
 import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 object UiUtils {
     fun dpToPx(dp: Float, context: Context): Int {
@@ -15,10 +13,6 @@ object UiUtils {
             dp,
             context.resources.displayMetrics
         ).toInt()
-    }
-
-    fun formatTrackTime(durationInMillis: Long): String {
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(durationInMillis)
     }
 
     fun Activity.hideKeyboard(view: View) {
