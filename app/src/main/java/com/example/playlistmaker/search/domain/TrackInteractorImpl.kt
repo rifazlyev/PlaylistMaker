@@ -1,25 +1,21 @@
 package com.example.playlistmaker.search.domain
 
 import com.example.playlistmaker.common.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TrackInteractorImpl(
     private val trackRepository: TrackRepository,
     private val trackHistoryRepository: TrackHistoryRepository
 ) : TrackInteractor {
 
-    override fun searchTrack(expression: String, consumer: TrackInteractor.TrackConsumer) {
-        val t = Thread {
-            when (val resource = trackRepository.searchTrack(expression)) {
-                is Resource.Success -> {
-                    consumer.consume(resource.data, null)
-                }
-
-                is Resource.Error -> {
-                    consumer.consume(null, resource.message)
-                }
+    override fun searchTrack(expression: String): Flow<Pair<List<Track>?, String?>> {
+        return trackRepository.searchTrack(expression).map { result ->
+            when (result) {
+                is Resource.Success -> Pair(result.data, null)
+                is Resource.Error -> Pair(null, result.message)
             }
         }
-        t.start()
     }
 
     override fun loadHistoryTrackList(): MutableList<Track> {

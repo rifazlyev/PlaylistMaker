@@ -1,13 +1,15 @@
 package com.example.playlistmaker.player.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.common.UiUtils.formatTrackTime
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.domain.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
@@ -23,7 +25,7 @@ class PlayerViewModel(
         data object Paused : PlayerState
     }
 
-    private val handler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
 
     private val trackLiveData = MutableLiveData<Track>()
     fun observeTrackLiveData(): LiveData<Track> = trackLiveData
@@ -49,22 +51,12 @@ class PlayerViewModel(
         }
     }
 
-    private val runnableUpdateTime = object : Runnable {
-        override fun run() {
-            if (playerStateLiveData.value == PlayerState.Playing) {
-                progressTimeLiveData.postValue(formatTrackTime(playerInteractor.getCurrentPosition()))
-                handler.postDelayed(this, CUSTOM_DELAY)
-            }
-        }
-    }
-
     private fun resetTimer() {
-        handler.removeCallbacks(runnableUpdateTime)
         progressTimeLiveData.postValue(formatTrackTime(0))
     }
 
     private fun pauseTimer() {
-        handler.removeCallbacks(runnableUpdateTime)
+        timerJob?.cancel()
     }
 
     private fun pausePlayer() {
@@ -75,8 +67,17 @@ class PlayerViewModel(
 
     private fun startPlayer() {
         playerInteractor.startPlayer()
-        playerStateLiveData.postValue(PlayerState.Playing)
-        handler.post(runnableUpdateTime)
+        playerStateLiveData.value = PlayerState.Playing
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (playerStateLiveData.value == PlayerState.Playing) {
+                delay(CUSTOM_DELAY)
+                progressTimeLiveData.postValue(formatTrackTime(playerInteractor.getCurrentPosition()))
+            }
+        }
     }
 
     private fun preparePlayer(url: String) {
@@ -86,6 +87,7 @@ class PlayerViewModel(
             },
             onCompletion = {
                 playerStateLiveData.value = PlayerState.Prepared
+                pausePlayer()
                 resetTimer()
             })
     }

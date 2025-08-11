@@ -6,25 +6,27 @@ import com.example.playlistmaker.search.data.dto.TrackSearchResponse
 import com.example.playlistmaker.search.data.dto.mapper.toTrackDomain
 import com.example.playlistmaker.search.domain.TrackRepository
 import com.example.playlistmaker.search.domain.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TrackRepositoryImpl(private val networkClient: NetworkClient) : TrackRepository {
     override fun searchTrack(
         expression: String
-    ): Resource<List<Track>> {
+    ): Flow<Resource<List<Track>>> = flow{
         val response = networkClient.doRequest(TrackSearchRequest(expression))
-        return when (response.resultCode) {
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
 
             200 -> {
-                Resource.Success((response as TrackSearchResponse).results.map {
+                emit(Resource.Success((response as TrackSearchResponse).results.map {
                     it.toTrackDomain()
-                })
+                }))
             }
 
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }
