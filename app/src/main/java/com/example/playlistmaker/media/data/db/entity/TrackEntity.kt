@@ -16,5 +16,7 @@ data class TrackEntity(
     val country: String,
     val trackTime: Long,
     val formattedTime: String,
-    val previewUrl: String?
+    val previewUrl: String?,
+    //Для сортировки по времени добавления
+    val addedAt: Long
 )

@@ -10,15 +10,14 @@ import com.example.playlistmaker.media.data.db.entity.TrackEntity
 @Dao
 interface TrackDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTrack(trackEntity: TrackEntity)
+    suspend fun insertFavoriteTrack(trackEntity: TrackEntity)
 
     @Delete
-    suspend fun deleteTrack(trackEntity: TrackEntity)
+    suspend fun deleteFavoriteTrack(trackEntity: TrackEntity)
 
-    @Query("SELECT * FROM favorite_tracks")
-    suspend fun getListOfTrack(): List<TrackEntity>
+    @Query("SELECT * FROM favorite_tracks ORDER BY addedAt ASC")
+    suspend fun getListOfFavoriteTracks(): List<TrackEntity>
 
     @Query("SELECT trackId from favorite_tracks")
-    suspend fun getTracksId(): List<Int>
-
+    suspend fun getFavoriteTracksId(): List<Int>
 }

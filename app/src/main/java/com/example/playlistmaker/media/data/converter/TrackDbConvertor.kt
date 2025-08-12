@@ -18,6 +18,7 @@ class TrackDbConvertor {
             country = track.country,
             previewUrl = track.previewUrl,
             formattedTime = formatTrackTime(track.trackTime),
+            addedAt = System.currentTimeMillis()
         )
     }
 
