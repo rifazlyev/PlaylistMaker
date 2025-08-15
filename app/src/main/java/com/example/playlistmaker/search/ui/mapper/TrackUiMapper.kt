@@ -16,6 +16,7 @@ fun Track.toTrackUi(): TrackUi {
         releaseDate = releaseDate.take(4),
         primaryGenreName = primaryGenreName,
         country = country,
-        previewUrl = previewUrl
+        previewUrl = previewUrl,
+        isFavorite = isFavorite
     )
 }

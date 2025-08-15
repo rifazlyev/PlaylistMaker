@@ -106,6 +106,7 @@ class PlayerFragment : Fragment() {
         binding.playerYearValue.text = trackUi.releaseDate
         binding.playerGenreValue.text = trackUi.primaryGenreName
         binding.playerCountryValue.text = trackUi.country
+        binding.playerLikeButton
 
         Glide.with(this)
             .load(trackUi.getCoverArtwork())

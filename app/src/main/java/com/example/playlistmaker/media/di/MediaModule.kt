@@ -18,7 +18,7 @@ val mediaModule = module {
         PlaylistsViewModel()
     }
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(get())
     }
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")

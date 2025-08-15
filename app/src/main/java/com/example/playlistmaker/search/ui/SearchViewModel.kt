@@ -50,7 +50,7 @@ class SearchViewModel(
     }
 
     fun addTrackToHistory(track: TrackUi) {
-        trackInteractor.addTrackToSearchHistoryList(track.toTrackDomain())
+        trackInteractor.addTrackToSearchHistoryList(track.toTrackDomain(track.isFavorite))
     }
 
     fun clearSearchHistory() {

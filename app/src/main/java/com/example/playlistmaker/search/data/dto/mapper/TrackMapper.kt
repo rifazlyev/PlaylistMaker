@@ -3,7 +3,7 @@ package com.example.playlistmaker.search.data.dto.mapper
 import com.example.playlistmaker.search.data.dto.TrackDto
 import com.example.playlistmaker.search.domain.Track
 
-fun TrackDto.toTrackDomain(): Track {
+fun TrackDto.toTrackDomain(isFavorite: Boolean): Track {
     return Track(
         trackName = trackName,
         artistName = artistName,
@@ -14,6 +14,7 @@ fun TrackDto.toTrackDomain(): Track {
         releaseDate = releaseDate,
         primaryGenreName = primaryGenreName,
         country = country,
-        previewUrl = previewUrl
+        previewUrl = previewUrl,
+        isFavorite = isFavorite
     )
 }

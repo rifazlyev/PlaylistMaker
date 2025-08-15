@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.common.formatTrackTime
+import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
@@ -13,9 +14,11 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
+    private val favoriteTrackInteractor: FavoriteTrackInteractor
 ) : ViewModel() {
     companion object {
         const val CUSTOM_DELAY = 300L
+        const val FAVORITE_DELAY = 500L
     }
 
     sealed interface PlayerState {
@@ -25,7 +28,9 @@ class PlayerViewModel(
         data object Paused : PlayerState
     }
 
+    private var isFavoriteClickAllowed: Boolean = true
     private var timerJob: Job? = null
+    private var favoriteJob: Job? = null
 
     private val trackLiveData = MutableLiveData<Track>()
     fun observeTrackLiveData(): LiveData<Track> = trackLiveData
@@ -105,5 +110,32 @@ class PlayerViewModel(
     fun onDestroy() {
         playerInteractor.release()
         pauseTimer()
+        favoriteJob?.cancel()
+    }
+
+    fun favoriteClickDebounce(): Boolean {
+        val currentValue = isFavoriteClickAllowed
+        if (isFavoriteClickAllowed) {
+            isFavoriteClickAllowed = false
+            viewModelScope.launch {
+                delay(FAVORITE_DELAY)
+                isFavoriteClickAllowed = true
+            }
+        }
+        return currentValue
+    }
+
+    fun onFavoriteClicked() {
+        favoriteJob?.cancel()
+        favoriteJob = viewModelScope.launch {
+            val track = trackLiveData.value ?: return@launch
+            if (track.isFavorite) {
+                favoriteTrackInteractor.deleteFavoriteTrack(track)
+            } else {
+                favoriteTrackInteractor.addFavoriteTrack(track)
+            }
+            val newValue = !track.isFavorite
+            trackLiveData.value = (track.copy(isFavorite = newValue))
+        }
     }
 }
