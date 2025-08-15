@@ -34,6 +34,7 @@ class TrackDbConvertor {
             primaryGenreName = track.primaryGenreName,
             country = track.country,
             previewUrl = track.previewUrl,
+            isFavorite = true
         )
     }
 }

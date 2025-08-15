@@ -23,4 +23,5 @@
     <color name="tab_selected_color">#3772E7</color>
     <color name="bottom_nav">#FFFFFF</color>
     <color name="divider">#E6E8EB</color>
+    <color name="red">#F56B6C</color>
 </resources>

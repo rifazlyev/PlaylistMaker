@@ -73,6 +73,10 @@ class PlayerFragment : Fragment() {
             val ui = trackDomain.toTrackUi()
             renderTrackUi(ui)
         }
+
+        binding.playerLikeButton.setOnClickListener {
+            playerViewModel.onFavoriteClicked()
+        }
     }
 
     override fun onPause() {
@@ -106,7 +110,8 @@ class PlayerFragment : Fragment() {
         binding.playerYearValue.text = trackUi.releaseDate
         binding.playerGenreValue.text = trackUi.primaryGenreName
         binding.playerCountryValue.text = trackUi.country
-        binding.playerLikeButton
+        binding.playerLikeButton.isActivated = trackUi.isFavorite
+        renderFavoriteIcon(trackUi.isFavorite)
 
         Glide.with(this)
             .load(trackUi.getCoverArtwork())
@@ -114,6 +119,13 @@ class PlayerFragment : Fragment() {
             .centerCrop()
             .transform(RoundedCorners(radiusPx))
             .into(binding.playerImagePlaceholder)
+    }
+
+    private fun renderFavoriteIcon(flag: Boolean){
+        when(flag){
+            true -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart_fill)
+            else -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart)
+        }
     }
 
     override fun onDestroyView() {
