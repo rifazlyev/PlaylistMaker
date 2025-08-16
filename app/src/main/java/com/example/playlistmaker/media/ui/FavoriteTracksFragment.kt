@@ -68,7 +68,7 @@ class FavoriteTracksFragment : Fragment() {
     private fun openPlayer(trackUi: TrackUi) {
         findNavController().navigate(
             R.id.action_global_player,
-            PlayerFragment.createArg(trackUi.trackId)
+            PlayerFragment.createArg(trackUi)
         )
     }
 

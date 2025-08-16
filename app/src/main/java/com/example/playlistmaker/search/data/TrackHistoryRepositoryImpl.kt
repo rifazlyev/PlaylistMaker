@@ -54,8 +54,4 @@ class TrackHistoryRepositoryImpl(
             .putString(SEARCH_HISTORY_KEY, json)
             .apply()
     }
-
-    override fun getTrackById(id: Int): Track {
-        return loadHistoryTrackList().first { it.trackId == id }
-    }
 }

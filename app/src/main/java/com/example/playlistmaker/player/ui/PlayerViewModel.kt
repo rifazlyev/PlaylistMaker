@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.common.formatTrackTime
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractor
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.search.ui.mapper.toTrackDomain
+import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,11 +33,10 @@ class PlayerViewModel(
     private var timerJob: Job? = null
     private var favoriteJob: Job? = null
 
-    private val trackLiveData = MutableLiveData<Track>()
-    fun observeTrackLiveData(): LiveData<Track> = trackLiveData
+    private val trackLiveData = MutableLiveData<TrackUi>()
+    fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
 
-    fun initializePlayer(trackId: Int) {
-        val track = playerInteractor.getTrackById(trackId)
+    fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
         preparePlayer(track.previewUrl ?: "")
     }
@@ -129,10 +129,11 @@ class PlayerViewModel(
         favoriteJob?.cancel()
         favoriteJob = viewModelScope.launch {
             val track = trackLiveData.value ?: return@launch
+            val domain = track.toTrackDomain(track.isFavorite)
             if (track.isFavorite) {
-                favoriteTrackInteractor.deleteFavoriteTrack(track)
+                favoriteTrackInteractor.deleteFavoriteTrack(domain)
             } else {
-                favoriteTrackInteractor.addFavoriteTrack(track)
+                favoriteTrackInteractor.addFavoriteTrack(domain)
             }
             val newValue = !track.isFavorite
             trackLiveData.value = (track.copy(isFavorite = newValue))
