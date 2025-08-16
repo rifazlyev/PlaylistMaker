@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class FavoriteTracksViewModel(
@@ -20,6 +21,8 @@ class FavoriteTracksViewModel(
             }
         }
     }
+
+    private var isClickAllowed = true
 
     private val stateLiveData = MutableLiveData<FavoriteUiState>()
     fun observeState(): LiveData<FavoriteUiState> = stateLiveData
@@ -37,5 +40,21 @@ class FavoriteTracksViewModel(
             }
             renderState(FavoriteUiState.Content(listOfFavoriteTracksUi))
         }
+    }
+
+    fun favoriteClickDebounce(): Boolean {
+        val currentValue = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            viewModelScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
+        }
+        return currentValue
+    }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
