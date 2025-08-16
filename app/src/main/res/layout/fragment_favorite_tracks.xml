@@ -14,12 +14,14 @@
         android:layout_height="@dimen/_0dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="@dimen/_44dp"
         android:layout_weight="1"
         android:maxHeight="200dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
     <LinearLayout
         android:id="@+id/empty_favorite_tracks_block"
