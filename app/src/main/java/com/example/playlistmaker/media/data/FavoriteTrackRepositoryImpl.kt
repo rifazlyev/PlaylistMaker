@@ -2,16 +2,14 @@ package com.example.playlistmaker.media.data
 
 import com.example.playlistmaker.media.data.converter.TrackDbConvertor
 import com.example.playlistmaker.media.data.db.AppDatabase
-import com.example.playlistmaker.media.data.db.entity.TrackEntity
 import com.example.playlistmaker.media.domain.FavoriteTrackRepository
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class FavoriteTrackImpl(
+class FavoriteTrackRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val trackDbConvertor: TrackDbConvertor
 ) : FavoriteTrackRepository {
@@ -25,12 +23,8 @@ class FavoriteTrackImpl(
         appDatabase.getTrackDao().deleteFavoriteTrack(trackEntity)
     }
 
-    override fun getFavoriteTracks(): Flow<List<Track>> = flow {
-        val tracks = appDatabase.getTrackDao().getListOfFavoriteTracks()
-        emit(convertToTrackDomain(tracks))
-    }.flowOn(Dispatchers.IO)
-
-    private fun convertToTrackDomain(tracks: List<TrackEntity>): List<Track> {
-        return tracks.map { track -> trackDbConvertor.map(track) }
-    }
+    override fun getFavoriteTracks(): Flow<List<Track>> =
+        appDatabase.getTrackDao().getListOfFavoriteTracks().map { entities ->
+            entities.map { trackDbConvertor.map(it) }
+        }
 }

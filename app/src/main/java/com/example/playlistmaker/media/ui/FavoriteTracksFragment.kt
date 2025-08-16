@@ -40,13 +40,14 @@ class FavoriteTracksFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.favoriteTracksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.favoriteTracksRecyclerView.adapter = favoriteTracksAdapter
+
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
     }
 
     private fun render(state: FavoriteUiState) {
-        when(state){
+        when (state) {
             is FavoriteUiState.Empty -> showEmptyScreen()
             is FavoriteUiState.Content -> showContent(state.tracks)
         }

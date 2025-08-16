@@ -1,7 +1,7 @@
 package com.example.playlistmaker.media.di
 
 import androidx.room.Room
-import com.example.playlistmaker.media.data.FavoriteTrackImpl
+import com.example.playlistmaker.media.data.FavoriteTrackRepositoryImpl
 import com.example.playlistmaker.media.data.converter.TrackDbConvertor
 import com.example.playlistmaker.media.data.db.AppDatabase
 import com.example.playlistmaker.media.domain.FavoriteTrackInteractorImpl
@@ -27,7 +27,7 @@ val mediaModule = module {
     factory { TrackDbConvertor() }
 
     single<FavoriteTrackRepository> {
-        FavoriteTrackImpl(get(), get())
+        FavoriteTrackRepositoryImpl(get(), get())
     }
 
     single<FavoriteTrackInteractor> {
