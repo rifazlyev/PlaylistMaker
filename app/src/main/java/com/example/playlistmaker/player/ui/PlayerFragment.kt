@@ -13,7 +13,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
-import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,8 +33,8 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val trackId = requireArguments().getInt(TRACK_ID, -1)
-        if (trackId == -1) {
+        val trackUi: TrackUi? = requireArguments().getParcelable(TRACK)
+        if (trackUi == null) {
             Toast.makeText(
                 requireContext(),
                 getString(R.string.track_not_found),
@@ -45,13 +44,13 @@ class PlayerFragment : Fragment() {
             return
         }
 
+        playerViewModel.initializePlayer(trackUi)
+
         binding.backButtonPlayerScreen.setOnClickListener {
             findNavController().navigateUp()
         }
 
         binding.playerAlbumInfoGroup.visibility = View.GONE
-
-        playerViewModel.initializePlayer(trackId)
 
         playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
             if (it == PlayerViewModel.PlayerState.Playing) {
@@ -69,9 +68,13 @@ class PlayerFragment : Fragment() {
             playerViewModel.onPlayButtonClicked()
         }
 
-        playerViewModel.observeTrackLiveData().observe(viewLifecycleOwner) { trackDomain ->
-            val ui = trackDomain.toTrackUi()
-            renderTrackUi(ui)
+        playerViewModel.observeTrackLiveData().observe(viewLifecycleOwner) {
+            renderTrackUi(it)
+        }
+
+        binding.playerLikeButton.setOnClickListener {
+            if (playerViewModel.favoriteClickDebounce())
+                playerViewModel.onFavoriteClicked()
         }
     }
 
@@ -106,6 +109,8 @@ class PlayerFragment : Fragment() {
         binding.playerYearValue.text = trackUi.releaseDate
         binding.playerGenreValue.text = trackUi.primaryGenreName
         binding.playerCountryValue.text = trackUi.country
+        binding.playerLikeButton.isActivated = trackUi.isFavorite
+        renderFavoriteIcon(trackUi.isFavorite)
 
         Glide.with(this)
             .load(trackUi.getCoverArtwork())
@@ -115,16 +120,20 @@ class PlayerFragment : Fragment() {
             .into(binding.playerImagePlaceholder)
     }
 
+    private fun renderFavoriteIcon(flag: Boolean) {
+        when (flag) {
+            true -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart_fill)
+            else -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     companion object {
-        private const val TRACK_ID = "trackId"
-
-        fun createArg(trackId: Int): Bundle {
-            return bundleOf(TRACK_ID to trackId)
-        }
+        private const val TRACK = "track"
+        fun createArg(track: TrackUi) = bundleOf(TRACK to track)
     }
 }

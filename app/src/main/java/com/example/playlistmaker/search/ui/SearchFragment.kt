@@ -210,7 +210,7 @@ class SearchFragment : Fragment() {
     private fun openPlayer(track: TrackUi) {
         findNavController().navigate(
             R.id.action_searchFragment_to_playerFragment,
-            PlayerFragment.createArg(track.trackId)
+            PlayerFragment.createArg(track)
         )
     }
 

@@ -31,11 +31,11 @@ val searchModule = module {
 
     factory { Gson() }
     single<TrackRepository> {
-        TrackRepositoryImpl(get())
+        TrackRepositoryImpl(get(), get())
     }
 
     single<TrackHistoryRepository> {
-        TrackHistoryRepositoryImpl(get(), get())
+        TrackHistoryRepositoryImpl(get(), get(), get())
     }
     factory<TrackInteractor> {
         TrackInteractorImpl(get(), get())

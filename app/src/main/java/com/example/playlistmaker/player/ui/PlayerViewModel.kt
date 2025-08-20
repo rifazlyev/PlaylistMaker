@@ -4,18 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.common.UiUtils.formatTrackTime
+import com.example.playlistmaker.common.formatTrackTime
+import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.player.domain.PlayerInteractor
-import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.search.ui.mapper.toTrackDomain
+import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
+    private val favoriteTrackInteractor: FavoriteTrackInteractor
 ) : ViewModel() {
     companion object {
         const val CUSTOM_DELAY = 300L
+        const val FAVORITE_DELAY = 500L
     }
 
     sealed interface PlayerState {
@@ -25,13 +29,14 @@ class PlayerViewModel(
         data object Paused : PlayerState
     }
 
+    private var isFavoriteClickAllowed: Boolean = true
     private var timerJob: Job? = null
+    private var favoriteJob: Job? = null
 
-    private val trackLiveData = MutableLiveData<Track>()
-    fun observeTrackLiveData(): LiveData<Track> = trackLiveData
+    private val trackLiveData = MutableLiveData<TrackUi>()
+    fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
 
-    fun initializePlayer(trackId: Int) {
-        val track = playerInteractor.getTrackById(trackId)
+    fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
         preparePlayer(track.previewUrl ?: "")
     }
@@ -105,5 +110,33 @@ class PlayerViewModel(
     fun onDestroy() {
         playerInteractor.release()
         pauseTimer()
+        favoriteJob?.cancel()
+    }
+
+    fun favoriteClickDebounce(): Boolean {
+        val currentValue = isFavoriteClickAllowed
+        if (isFavoriteClickAllowed) {
+            isFavoriteClickAllowed = false
+            viewModelScope.launch {
+                delay(FAVORITE_DELAY)
+                isFavoriteClickAllowed = true
+            }
+        }
+        return currentValue
+    }
+
+    fun onFavoriteClicked() {
+        favoriteJob?.cancel()
+        favoriteJob = viewModelScope.launch {
+            val track = trackLiveData.value ?: return@launch
+            val domain = track.toTrackDomain(track.isFavorite)
+            if (track.isFavorite) {
+                favoriteTrackInteractor.deleteFavoriteTrack(domain)
+            } else {
+                favoriteTrackInteractor.addFavoriteTrack(domain)
+            }
+            val newValue = !track.isFavorite
+            trackLiveData.value = (track.copy(isFavorite = newValue))
+        }
     }
 }

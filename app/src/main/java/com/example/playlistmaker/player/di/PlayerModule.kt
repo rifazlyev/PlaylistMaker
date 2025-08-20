@@ -19,9 +19,9 @@ val playerModule = module {
     }
 
     factory<PlayerInteractor> {
-        PlayerInteractorImpl(get(), get())
+        PlayerInteractorImpl(get())
     }
     viewModel {
-        PlayerViewModel(get())
+        PlayerViewModel(get(), get())
     }
 }

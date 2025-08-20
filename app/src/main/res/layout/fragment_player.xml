@@ -112,11 +112,13 @@
         <ImageButton
             android:id="@+id/player_like_button"
             style="@style/PlayerButton"
-            android:src="@drawable/ic_like_track"
+            android:background="@drawable/ic_player_circle_bg"
+            android:src="@drawable/ic_heart"
             app:layout_constraintBottom_toBottomOf="@id/player_play_button"
             app:layout_constraintEnd_toStartOf="@id/guideline_end"
             app:layout_constraintStart_toEndOf="@id/player_play_button"
-            app:layout_constraintTop_toTopOf="@id/player_play_button" />
+            app:layout_constraintTop_toTopOf="@id/player_play_button"
+            />
 
         <TextView
             android:id="@+id/player_track_duration"
