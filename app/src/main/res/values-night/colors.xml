@@ -23,4 +23,7 @@
     <color name="bottom_nav">#1A1B22</color>
     <color name="divider">#E6E8EB</color>
     <color name="red">#F56B6C</color>
+    <color name="text_input_stroke">#FFFFFF</color>
+    <color name="hint_base">#FFFFFF</color>
+    <color name="create_playlist_button_disabled">#AEAFB4</color>
 </resources>
