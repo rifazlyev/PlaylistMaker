@@ -4,16 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.example.playlistmaker.media.ui.model.PlaylistUi
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PlaylistsViewModel by viewModels()
+    private val viewModel: PlaylistsViewModel by viewModel<PlaylistsViewModel>()
+
+    private val playlistAdapter = PlaylistAdapter(object : OnPlaylistClickListener {
+        override fun onPlaylistClick(playlistUi: PlaylistUi) {
+            Toast.makeText(requireContext(), "Пока только показываем", Toast.LENGTH_SHORT).show()
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +41,33 @@ class PlaylistsFragment : Fragment() {
                 R.id.action_create_playlist_global
             )
         }
+        binding.playlistRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.playlistRecyclerView.adapter = playlistAdapter
+        viewModel.observeState().observe(viewLifecycleOwner) {
+            render(it)
+        }
     }
+
+    private fun render(playlistUiState: PlaylistUiState) {
+        when (playlistUiState) {
+            is PlaylistUiState.Empty -> showEmptyScreen()
+            is PlaylistUiState.Content -> showContent(playlistUiState.playlists)
+        }
+    }
+
+    private fun showEmptyScreen() {
+        binding.playlistRecyclerView.visibility = View.GONE
+        binding.emptyPlaylistPlaceholder.visibility = View.VISIBLE
+    }
+
+    private fun showContent(playlists: List<PlaylistUi>) {
+        binding.emptyPlaylistPlaceholder.visibility = View.GONE
+        binding.playlistRecyclerView.visibility = View.VISIBLE
+        playlistAdapter.listOfPlaylists.clear()
+        playlistAdapter.listOfPlaylists.addAll(playlists)
+        playlistAdapter.notifyDataSetChanged()
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -58,7 +58,7 @@
         app:destination="@id/playerFragment" />
     <fragment
         android:id="@+id/createPlaylistFragment"
-        android:name="com.example.playlistmaker.media.ui.playlist.CreatePlaylistFragment"
+        android:name="com.example.playlistmaker.media.ui.playlist.createPlaylist.CreatePlaylistFragment"
         android:label="fragment_new_playlist"
         tools:layout="@layout/fragment_new_playlist" />
     <action

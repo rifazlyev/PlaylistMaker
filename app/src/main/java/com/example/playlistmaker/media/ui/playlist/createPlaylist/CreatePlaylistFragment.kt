@@ -1,5 +1,6 @@
-package com.example.playlistmaker.media.ui.playlist
+package com.example.playlistmaker.media.ui.playlist.createPlaylist
 
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,16 +15,23 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatePlaylistFragment : Fragment() {
+    private val viewModel by viewModel<CreatePlaylistViewModel>()
     private var _binding: FragmentNewPlaylistBinding? = null
     private val binding get() = _binding!!
     private var namePlaylistTextWatcher: TextWatcher? = null
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
-    private var isPhotoSelected: Boolean = false
+    private var uri: Uri? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +50,16 @@ class CreatePlaylistFragment : Fragment() {
                     Toast.makeText(requireContext(), "Вы не выбрали фото", Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    binding.playlistImageHint.setImageURI(uri)
+                    this.uri = uri
+                    binding.playlistImageHint.setBackgroundResource(0)
+                    val radiusPx = dpToPx(8F, requireContext())
+                    Glide.with(binding.root)
+                        .load(uri)
+                        .transform(
+                            CenterCrop(),
+                            RoundedCorners(radiusPx)
+                        )
+                        .into(binding.playlistImageHint)
                 }
             }
 
@@ -64,15 +81,29 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.nameEditText.addTextChangedListener(namePlaylistTextWatcher)
         binding.backButtonPlaylistScreen.setOnClickListener {
-            showConfirmDialog()
+            checkScreenIsChanged()
         }
 
         binding.playlistImageHint.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
+        binding.createPlaylistButton.setOnClickListener {
+            viewModel.createPlaylist(
+               name = binding.nameEditText.text.toString(),
+                description = binding.descriptionEditText.text.toString(),
+                uri = uri
+            )
+            Toast.makeText(
+                requireContext(),
+                "Плейлист ${binding.nameEditText.text.toString()} создан",
+                Toast.LENGTH_SHORT
+            ).show()
+            findNavController().navigateUp()
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            showConfirmDialog()
+            checkScreenIsChanged()
         }
     }
 
@@ -90,5 +121,12 @@ class CreatePlaylistFragment : Fragment() {
             .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
     }
 
-
+    private fun checkScreenIsChanged() {
+        if (uri != null ||
+            !binding.nameEditText.text.isNullOrEmpty() || !binding.descriptionEditText.text.isNullOrEmpty()
+        ) showConfirmDialog()
+        else {
+            findNavController().navigateUp()
+        }
+    }
 }

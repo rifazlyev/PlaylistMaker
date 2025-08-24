@@ -1,28 +1,37 @@
 package com.example.playlistmaker.media.data.converter
 
 import com.example.playlistmaker.media.data.db.entity.PlaylistEntity
-import com.example.playlistmaker.media.domain.Playlist
+import com.example.playlistmaker.media.domain.model.Playlist
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-class PlaylistDbConverter {
-    fun map(playlistEntity: PlaylistEntity): Playlist{
+class PlaylistDbConverter(private val gson: Gson) {
+    fun map(playlistEntity: PlaylistEntity): Playlist {
+        val type = object : TypeToken<List<Int>>() {}.type
+        val trackIds = if (playlistEntity.trackIds.isBlank()) {
+            emptyList<Int>()
+        } else {
+            gson.fromJson(playlistEntity.trackIds, type)
+        }
         return Playlist(
             id = playlistEntity.id,
             name = playlistEntity.name,
             description = playlistEntity.description,
             coverPath = playlistEntity.coverPath,
-            trackIds = playlistEntity.trackIds,
-            tracksCount = playlistEntity.tracksCount
+            trackIds = trackIds,
+            tracksCount = trackIds.size
         )
     }
 
-    fun map(playlist: Playlist): PlaylistEntity{
+    fun map(playlist: Playlist): PlaylistEntity {
+        val json: String = gson.toJson(playlist.trackIds)
         return PlaylistEntity(
             id = playlist.id,
             name = playlist.name,
             description = playlist.description,
             coverPath = playlist.coverPath,
-            trackIds = playlist.trackIds,
-            tracksCount = playlist.tracksCount
+            trackIds = json,
+            tracksCount = playlist.trackIds.size
         )
     }
 }

@@ -1,10 +1,10 @@
-package com.example.playlistmaker.media.domain
+package com.example.playlistmaker.media.domain.model
 
 data class Playlist(
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String,
     val description: String = "",
     val coverPath: String? = null,
-    val trackIds: String = "",
+    val trackIds: List<Int> = emptyList(),
     val tracksCount: Int = 0
 )
