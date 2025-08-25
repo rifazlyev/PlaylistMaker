@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playlist_card_from_player"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingVertical="@dimen/_8dp"
+    android:paddingHorizontal="@dimen/_13dp">
+
+    <ImageView
+        android:id="@+id/track_image"
+        android:layout_width="@dimen/_45dp"
+        android:layout_height="@dimen/_45dp"
+        android:background="@drawable/track_placeholder"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/playlist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Название плейлиста"
+        app:layout_constraintStart_toEndOf="@id/track_image"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingTop="6dp"
+        android:layout_marginStart="@dimen/_8dp"
+        android:textSize="@dimen/_16sp"
+        android:fontFamily="@font/ys_display_regular"
+        android:textColor="?attr/textColor"
+         />
+    <TextView
+        android:id="@+id/playlist_track_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="100 треков"
+        app:layout_constraintStart_toEndOf="@id/track_image"
+        app:layout_constraintTop_toBottomOf="@id/playlist_name"
+        android:layout_marginStart="@dimen/_8dp"
+        android:textSize="@dimen/_11sp"
+        android:fontFamily="@font/ys_display_regular"
+        android:textColor="?attr/textColor"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
