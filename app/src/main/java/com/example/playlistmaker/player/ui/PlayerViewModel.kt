@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.common.formatTrackTime
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
+import com.example.playlistmaker.media.domain.db.PlaylistInteractor
+import com.example.playlistmaker.media.domain.model.Playlist
+import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.ui.mapper.toTrackDomain
 import com.example.playlistmaker.search.ui.model.TrackUi
@@ -15,30 +18,39 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val favoriteTrackInteractor: FavoriteTrackInteractor
+    private val favoriteTrackInteractor: FavoriteTrackInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
-    companion object {
-        const val CUSTOM_DELAY = 300L
-        const val FAVORITE_DELAY = 500L
-    }
 
-    sealed interface PlayerState {
-        data object Default : PlayerState
-        data object Prepared : PlayerState
-        data object Playing : PlayerState
-        data object Paused : PlayerState
+    init {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists().collect { playlist ->
+                processResult(playlist)
+            }
+        }
     }
 
     private var isFavoriteClickAllowed: Boolean = true
     private var timerJob: Job? = null
     private var favoriteJob: Job? = null
 
+    private val playlistData = MutableLiveData<PlayerPlaylistState>()
+    fun observePlaylistData(): LiveData<PlayerPlaylistState> = playlistData
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
 
     fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
         preparePlayer(track.previewUrl ?: "")
+    }
+
+    private fun renderState(playerPlaylistState: PlayerPlaylistState) {
+        playlistData.value = playerPlaylistState
+    }
+
+    private fun processResult(playlist: List<Playlist>) {
+        if (playlist.isEmpty()) renderState(PlayerPlaylistState.Empty)
+        else renderState(PlayerPlaylistState.Content(playlist.map { it.toPlaylistUi() }))
     }
 
     private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default)
@@ -138,5 +150,17 @@ class PlayerViewModel(
             val newValue = !track.isFavorite
             trackLiveData.value = (track.copy(isFavorite = newValue))
         }
+    }
+
+    sealed interface PlayerState {
+        data object Default : PlayerState
+        data object Prepared : PlayerState
+        data object Playing : PlayerState
+        data object Paused : PlayerState
+    }
+
+    companion object {
+        const val CUSTOM_DELAY = 300L
+        const val FAVORITE_DELAY = 500L
     }
 }
