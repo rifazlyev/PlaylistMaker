@@ -7,7 +7,6 @@ object Migration_2_3 : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("CREATE TABLE IF NOT EXISTS track_in_playlist (\n" +
                 "    trackId INTEGER NOT NULL,\n" +
-                "    playlistId INTEGER NOT NULL,\n" +
                 "    artworkUrl100 TEXT NOT NULL,\n" +
                 "    trackName TEXT NOT NULL,\n" +
                 "    artistName TEXT NOT NULL,\n" +
@@ -19,7 +18,7 @@ object Migration_2_3 : Migration(2, 3) {
                 "    formattedTime TEXT NOT NULL,\n" +
                 "    previewUrl TEXT,\n" +
                 "    addedAt INTEGER NOT NULL,\n" +
-                "    PRIMARY KEY(trackId, playlistId)\n" +
+                "    PRIMARY KEY(trackId)\n" +
                 ");")
     }
 }

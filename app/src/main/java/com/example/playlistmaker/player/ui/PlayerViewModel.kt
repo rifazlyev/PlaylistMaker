@@ -53,7 +53,7 @@ class PlayerViewModel(
         }
         viewModelScope.launch {
             try {
-                val result = playlistInteractor.addTrackToPlaylistAndUpdate(
+                playlistInteractor.addTrackToPlaylistAndUpdate(
                     trackUi.toTrackInPlaylist(),
                     playlistUi.toPlaylist()
                 )
@@ -145,7 +145,6 @@ class PlayerViewModel(
     }
 
     fun onDestroy() {
-        playerInteractor.release()
         pauseTimer()
         favoriteJob?.cancel()
     }

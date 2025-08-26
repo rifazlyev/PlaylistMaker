@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -25,6 +27,7 @@ class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
     private lateinit var playlistAdapter: PlaylistPlayerAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +58,7 @@ class PlayerFragment : Fragment() {
             }
         })
 
-        playerViewModel.observeAddTrackResult().observe(viewLifecycleOwner){
+        playerViewModel.observeAddTrackResult().observe(viewLifecycleOwner) {
             showResult(it)
         }
 
@@ -75,7 +78,7 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        playerViewModel.observePlaylistData().observe(viewLifecycleOwner){
+        playerViewModel.observePlaylistData().observe(viewLifecycleOwner) {
             render(it)
         }
 
@@ -97,7 +100,7 @@ class PlayerFragment : Fragment() {
         }
 
         val bottomSheetContainer = binding.bottomSheet
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         binding.playerAddTrackButton.setOnClickListener {
@@ -127,6 +130,14 @@ class PlayerFragment : Fragment() {
 
         binding.playlistRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistRecyclerView.adapter = playlistAdapter
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            } else {
+                findNavController().navigateUp()
+            }
+        }
     }
 
     override fun onPause() {
@@ -178,33 +189,37 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    private fun render(playerPlaylistState: PlayerPlaylistState){
-        when(playerPlaylistState){
+    private fun render(playerPlaylistState: PlayerPlaylistState) {
+        when (playerPlaylistState) {
             is PlayerPlaylistState.Empty -> showEmpty()
             is PlayerPlaylistState.Content -> showPlaylists(playerPlaylistState.playlists)
         }
     }
 
-    private fun showPlaylists(playlists: List<PlaylistUi>){
+    private fun showPlaylists(playlists: List<PlaylistUi>) {
         binding.playlistRecyclerView.visibility = View.VISIBLE
         playlistAdapter.listOfPlaylists.clear()
         playlistAdapter.listOfPlaylists.addAll(playlists)
         playlistAdapter.notifyDataSetChanged()
     }
 
-    private fun showEmpty(){
+    private fun showEmpty() {
         binding.playlistRecyclerView.visibility = View.GONE
     }
 
-    private fun showResult(addTrackResult: AddTrackResult){
-        when(addTrackResult){
-            is AddTrackResult.Success -> showToast("Добавлено в плейлист ${addTrackResult.playlist.name}")
+    private fun showResult(addTrackResult: AddTrackResult) {
+        when (addTrackResult) {
+            is AddTrackResult.Success -> {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                showToast("Добавлено в плейлист ${addTrackResult.playlist.name}")
+            }
+
             is AddTrackResult.AlreadyExist -> showToast("Трек уже добавлен в плейлист ${addTrackResult.playlist.name}")
             is AddTrackResult.Error -> showToast("Ошибка добавления, попробуйте еще раз")
         }
     }
 
-    private fun showToast(message: String){
+    private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
