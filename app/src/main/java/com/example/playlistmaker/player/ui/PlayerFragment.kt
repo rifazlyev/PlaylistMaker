@@ -9,6 +9,9 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -20,6 +23,7 @@ import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.media.ui.playlist.OnPlaylistClickListener
 import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
@@ -58,8 +62,13 @@ class PlayerFragment : Fragment() {
             }
         })
 
-        playerViewModel.observeAddTrackResult().observe(viewLifecycleOwner) {
-            showResult(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playerViewModel.observeAddTrackResult()
+                    .collect { addTrackResult ->
+                        showResult(addTrackResult)
+                    }
+            }
         }
 
         playerViewModel.initializePlayer(trackUi)
@@ -107,22 +116,22 @@ class PlayerFragment : Fragment() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        binding.overlay.visibility = View.GONE
-                    }
-
-                    else -> {
-                        binding.overlay.visibility = View.VISIBLE
+        bottomSheetBehavior.addBottomSheetCallback(
+            object :
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                        }
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                        }
                     }
                 }
-            }
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
 
         binding.newPlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_create_playlist_global)
@@ -137,6 +146,10 @@ class PlayerFragment : Fragment() {
             } else {
                 findNavController().navigateUp()
             }
+        }
+
+        binding.overlay.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 

@@ -17,6 +17,8 @@ import com.example.playlistmaker.search.ui.mapper.toTrackInPlaylist
 import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -41,14 +43,18 @@ class PlayerViewModel(
     fun observePlaylistData(): LiveData<PlayerPlaylistState> = playlistData
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
-    private val addTrackResult = MutableLiveData<AddTrackResult>()
-    fun observeAddTrackResult(): LiveData<AddTrackResult> = addTrackResult
+    private val addTrackResult =
+        MutableSharedFlow<AddTrackResult>(replay = 0, extraBufferCapacity = 1)
+
+    fun observeAddTrackResult(): SharedFlow<AddTrackResult> = addTrackResult
 
     fun addTrackToPlaylist(trackUi: TrackUi, playlistUi: PlaylistUi) {
         val trackId = trackUi.trackId
         val isPresent = playlistUi.trackIds.contains(trackId)
         if (isPresent) {
-            addTrackResult.value = AddTrackResult.AlreadyExist(playlistUi)
+            viewModelScope.launch {
+                addTrackResult.emit(AddTrackResult.AlreadyExist(playlistUi))
+            }
             return
         }
         viewModelScope.launch {
@@ -57,9 +63,9 @@ class PlayerViewModel(
                     trackUi.toTrackInPlaylist(),
                     playlistUi.toPlaylist()
                 )
-                addTrackResult.value = AddTrackResult.Success(playlistUi)
+                addTrackResult.emit(AddTrackResult.Success(playlistUi))
             } catch (e: Exception) {
-                addTrackResult.value = AddTrackResult.Error
+                addTrackResult.emit(AddTrackResult.Error)
             }
         }
     }
