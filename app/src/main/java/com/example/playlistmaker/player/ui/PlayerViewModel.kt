@@ -38,6 +38,8 @@ class PlayerViewModel(
     fun observePlaylistData(): LiveData<PlayerPlaylistState> = playlistData
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
+    private val trackInPlaylistStatus = MutableLiveData<AddTrackResult>()
+    fun observeTrackInPlaylistStatus(): LiveData<AddTrackResult> = trackInPlaylistStatus
 
     fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
@@ -157,6 +159,12 @@ class PlayerViewModel(
         data object Prepared : PlayerState
         data object Playing : PlayerState
         data object Paused : PlayerState
+    }
+
+    sealed interface AddTrackResult{
+        data object Success: AddTrackResult
+        data object AlreadyExist: AddTrackResult
+        data object Error: AddTrackResult
     }
 
     companion object {

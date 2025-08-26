@@ -3,6 +3,7 @@ package com.example.playlistmaker.media.domain
 import android.net.Uri
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
+import com.example.playlistmaker.media.domain.model.TrackInPlaylist
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(
@@ -29,5 +30,9 @@ class PlaylistInteractorImpl(
 
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistRepository.getPlaylists()
+    }
+
+    override suspend fun addTrackToPlaylist(trackInPlaylist: TrackInPlaylist): Long {
+        return playlistRepository.addTrackToPlaylist(trackInPlaylist)
     }
 }
