@@ -8,9 +8,12 @@ import com.example.playlistmaker.common.formatTrackTime
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
+import com.example.playlistmaker.media.ui.mapper.toPlaylist
 import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
+import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.ui.mapper.toTrackDomain
+import com.example.playlistmaker.search.ui.mapper.toTrackInPlaylist
 import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,8 +41,28 @@ class PlayerViewModel(
     fun observePlaylistData(): LiveData<PlayerPlaylistState> = playlistData
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
-    private val trackInPlaylistStatus = MutableLiveData<AddTrackResult>()
-    fun observeTrackInPlaylistStatus(): LiveData<AddTrackResult> = trackInPlaylistStatus
+    private val addTrackResult = MutableLiveData<AddTrackResult>()
+    fun observeAddTrackResult(): LiveData<AddTrackResult> = addTrackResult
+
+    fun addTrackToPlaylist(trackUi: TrackUi, playlistUi: PlaylistUi) {
+        val trackId = trackUi.trackId
+        val isPresent = playlistUi.trackIds.contains(trackId)
+        if (isPresent) {
+            addTrackResult.value = AddTrackResult.AlreadyExist(playlistUi)
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val result = playlistInteractor.addTrackToPlaylistAndUpdate(
+                    trackUi.toTrackInPlaylist(),
+                    playlistUi.toPlaylist()
+                )
+                addTrackResult.value = AddTrackResult.Success(playlistUi)
+            } catch (e: Exception) {
+                addTrackResult.value = AddTrackResult.Error
+            }
+        }
+    }
 
     fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
@@ -161,14 +184,10 @@ class PlayerViewModel(
         data object Paused : PlayerState
     }
 
-    sealed interface AddTrackResult{
-        data object Success: AddTrackResult
-        data object AlreadyExist: AddTrackResult
-        data object Error: AddTrackResult
-    }
-
     companion object {
         const val CUSTOM_DELAY = 300L
         const val FAVORITE_DELAY = 500L
     }
 }
+
+

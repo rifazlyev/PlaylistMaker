@@ -1,5 +1,6 @@
 package com.example.playlistmaker.media.data
 
+import androidx.room.Transaction
 import com.example.playlistmaker.media.data.converter.PlaylistDbConverter
 import com.example.playlistmaker.media.data.converter.TrackInPlaylistDbConverter
 import com.example.playlistmaker.media.data.db.AppDatabase
@@ -26,8 +27,20 @@ class PlaylistRepositoryImpl(
         }
     }
 
-    override suspend fun addTrackToPlaylist(trackInPlaylist: TrackInPlaylist): Long {
-        return appDatabase.getTrackInPlaylistDao().insertTrackToPlaylist(
-            trackInPlaylistDbConverter.map(trackInPlaylist))
+    @Transaction
+    override suspend fun addTrackToPlaylistAndUpdate(
+        trackInPlaylist: TrackInPlaylist,
+        playlist: Playlist
+    ): Long {
+        val result = appDatabase.getTrackInPlaylistDao().insertTrackToPlaylist(
+            trackInPlaylistDbConverter.map(trackInPlaylist)
+        )
+        val newTrackIds = playlist.trackIds + trackInPlaylist.trackId
+        val updatePlaylist = playlist.copy(
+            trackIds = newTrackIds,
+            tracksCount = newTrackIds.size
+        )
+        appDatabase.getPlaylistDao().updatePlaylist(playlistDbConverter.map(updatePlaylist))
+        return result
     }
 }

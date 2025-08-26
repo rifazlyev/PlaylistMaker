@@ -9,6 +9,7 @@ import com.example.playlistmaker.media.data.converter.TrackDbConvertor
 import com.example.playlistmaker.media.data.converter.TrackInPlaylistDbConverter
 import com.example.playlistmaker.media.data.db.AppDatabase
 import com.example.playlistmaker.media.data.db.migrations.Migration_1_2
+import com.example.playlistmaker.media.data.db.migrations.Migration_2_3
 import com.example.playlistmaker.media.domain.FavoriteTrackInteractorImpl
 import com.example.playlistmaker.media.domain.FavoriteTrackRepository
 import com.example.playlistmaker.media.domain.FileRepository
@@ -36,7 +37,7 @@ val mediaModule = module {
     }
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
-            .addMigrations(Migration_1_2)
+            .addMigrations(Migration_1_2, Migration_2_3)
             .build()
     }
     factory { TrackDbConvertor() }

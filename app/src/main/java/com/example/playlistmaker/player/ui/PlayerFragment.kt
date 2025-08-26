@@ -24,12 +24,7 @@ class PlayerFragment : Fragment() {
     private val playerViewModel: PlayerViewModel by viewModel<PlayerViewModel>()
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
-
-    private val playlistAdapter = PlaylistPlayerAdapter(object : OnPlaylistClickListener {
-        override fun onPlaylistClick(playlistUi: PlaylistUi) {
-
-        }
-    })
+    private lateinit var playlistAdapter: PlaylistPlayerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +47,16 @@ class PlayerFragment : Fragment() {
             ).show()
             findNavController().navigateUp()
             return
+        }
+
+        playlistAdapter = PlaylistPlayerAdapter(object : OnPlaylistClickListener {
+            override fun onPlaylistClick(playlistUi: PlaylistUi) {
+                playerViewModel.addTrackToPlaylist(trackUi, playlistUi)
+            }
+        })
+
+        playerViewModel.observeAddTrackResult().observe(viewLifecycleOwner){
+            showResult(it)
         }
 
         playerViewModel.initializePlayer(trackUi)
@@ -189,6 +194,18 @@ class PlayerFragment : Fragment() {
 
     private fun showEmpty(){
         binding.playlistRecyclerView.visibility = View.GONE
+    }
+
+    private fun showResult(addTrackResult: AddTrackResult){
+        when(addTrackResult){
+            is AddTrackResult.Success -> showToast("Добавлено в плейлист ${addTrackResult.playlist.name}")
+            is AddTrackResult.AlreadyExist -> showToast("Трек уже добавлен в плейлист ${addTrackResult.playlist.name}")
+            is AddTrackResult.Error -> showToast("Ошибка добавления, попробуйте еще раз")
+        }
+    }
+
+    private fun showToast(message: String){
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
