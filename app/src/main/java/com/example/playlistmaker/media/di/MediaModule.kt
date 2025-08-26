@@ -6,8 +6,9 @@ import com.example.playlistmaker.media.data.FileRepositoryImpl
 import com.example.playlistmaker.media.data.PlaylistRepositoryImpl
 import com.example.playlistmaker.media.data.converter.PlaylistDbConverter
 import com.example.playlistmaker.media.data.converter.TrackDbConvertor
+import com.example.playlistmaker.media.data.converter.TrackInPlaylistDbConverter
 import com.example.playlistmaker.media.data.db.AppDatabase
-import com.example.playlistmaker.media.data.db.Migration_1_2
+import com.example.playlistmaker.media.data.db.migrations.Migration_1_2
 import com.example.playlistmaker.media.domain.FavoriteTrackInteractorImpl
 import com.example.playlistmaker.media.domain.FavoriteTrackRepository
 import com.example.playlistmaker.media.domain.FileRepository
@@ -50,7 +51,9 @@ val mediaModule = module {
 
     factory { PlaylistDbConverter(get()) }
 
-    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get()) }
+    factory { TrackInPlaylistDbConverter() }
+
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get(), get()) }
     single <FileRepository>{FileRepositoryImpl(get())}
 
     single<PlaylistInteractor> { PlaylistInteractorImpl(get(), get()) }

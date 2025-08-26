@@ -1,4 +1,4 @@
-package com.example.playlistmaker.media.data.db
+package com.example.playlistmaker.media.data.db.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
