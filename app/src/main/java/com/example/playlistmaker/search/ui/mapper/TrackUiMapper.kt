@@ -13,7 +13,7 @@ fun Track.toTrackUi(): TrackUi {
         artworkUrl100 = artworkUrl100,
         trackId = trackId,
         collectionName = collectionName,
-        releaseDate = releaseDate.take(4),
+        releaseDate = releaseDate?.take(4),
         primaryGenreName = primaryGenreName,
         country = country,
         previewUrl = previewUrl,
