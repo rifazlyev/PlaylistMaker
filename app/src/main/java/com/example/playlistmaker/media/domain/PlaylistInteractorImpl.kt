@@ -32,7 +32,10 @@ class PlaylistInteractorImpl(
         return playlistRepository.getPlaylists()
     }
 
-    override suspend fun addTrackToPlaylistAndUpdate(trackInPlaylist: TrackInPlaylist, playlist: Playlist): Long {
-        return playlistRepository.addTrackToPlaylistAndUpdate(trackInPlaylist,playlist)
+    override suspend fun addTrackToPlaylistAndUpdate(
+        trackInPlaylist: TrackInPlaylist,
+        playlistId: Long
+    ): Long {
+        return playlistRepository.addTrackToPlaylistAndUpdate(trackInPlaylist, playlistId)
     }
 }

@@ -4,8 +4,8 @@ import androidx.room.Transaction
 import com.example.playlistmaker.media.data.converter.PlaylistDbConverter
 import com.example.playlistmaker.media.data.converter.TrackInPlaylistDbConverter
 import com.example.playlistmaker.media.data.db.AppDatabase
-import com.example.playlistmaker.media.domain.model.Playlist
 import com.example.playlistmaker.media.domain.PlaylistRepository
+import com.example.playlistmaker.media.domain.model.Playlist
 import com.example.playlistmaker.media.domain.model.TrackInPlaylist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,11 +30,12 @@ class PlaylistRepositoryImpl(
     @Transaction
     override suspend fun addTrackToPlaylistAndUpdate(
         trackInPlaylist: TrackInPlaylist,
-        playlist: Playlist
+        playlistId: Long
     ): Long {
         val result = appDatabase.getTrackInPlaylistDao().insertTrackToPlaylist(
             trackInPlaylistDbConverter.map(trackInPlaylist)
         )
+        val playlist = playlistDbConverter.map(appDatabase.getPlaylistDao().getPlaylistById(playlistId))
         val newTrackIds = playlist.trackIds + trackInPlaylist.trackId
         val updatePlaylist = playlist.copy(
             trackIds = newTrackIds,

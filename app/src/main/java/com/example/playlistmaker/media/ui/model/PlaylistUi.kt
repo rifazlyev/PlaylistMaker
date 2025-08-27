@@ -1,7 +1,7 @@
 package com.example.playlistmaker.media.ui.model
 
 data class PlaylistUi(
-    val id: Long = 0,
+    val id: Long,
     val name: String,
     val description: String = "",
     val coverPath: String? = null,

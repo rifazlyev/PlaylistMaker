@@ -64,7 +64,7 @@ class PlayerViewModel(
             try {
                 playlistInteractor.addTrackToPlaylistAndUpdate(
                     trackUi.toTrackInPlaylist(),
-                    playlistUi.toPlaylist()
+                    playlistUi.id
                 )
                 addTrackResult.emit(AddTrackResult.Success(playlistUi))
             } catch (e: Exception) {

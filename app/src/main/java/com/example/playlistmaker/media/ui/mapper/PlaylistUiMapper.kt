@@ -13,15 +13,3 @@ fun Playlist.toPlaylistUi(): PlaylistUi {
         tracksCount = tracksCount
     )
 }
-
-fun PlaylistUi.toPlaylist(): Playlist {
-    return Playlist(
-        id = id,
-        name = name,
-        description = description,
-        coverPath = coverPath,
-        trackIds = trackIds,
-        tracksCount = tracksCount
-    )
-}
-

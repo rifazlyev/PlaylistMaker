@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface PlaylistRepository {
     suspend fun createPlaylist(playlist: Playlist): Long
     fun getPlaylists(): Flow<List<Playlist>>
-    suspend fun addTrackToPlaylistAndUpdate(trackInPlaylist: TrackInPlaylist, playlist: Playlist): Long
+    suspend fun addTrackToPlaylistAndUpdate(trackInPlaylist: TrackInPlaylist, playlistId: Long): Long
 }
