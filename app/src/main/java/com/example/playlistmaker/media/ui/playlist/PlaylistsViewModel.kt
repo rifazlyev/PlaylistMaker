@@ -10,6 +10,9 @@ import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import kotlinx.coroutines.launch
 
 class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
+    private val stateLiveData = MutableLiveData<PlaylistUiState>()
+    fun observeState(): LiveData<PlaylistUiState> = stateLiveData
+
     init {
         viewModelScope.launch {
             playlistInteractor.getPlaylists().collect { playlist ->
@@ -17,9 +20,6 @@ class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : V
             }
         }
     }
-
-    private val stateLiveData = MutableLiveData<PlaylistUiState>()
-    fun observeState(): LiveData<PlaylistUiState> = stateLiveData
 
     private fun render(playlistUiState: PlaylistUiState) {
         stateLiveData.value = playlistUiState

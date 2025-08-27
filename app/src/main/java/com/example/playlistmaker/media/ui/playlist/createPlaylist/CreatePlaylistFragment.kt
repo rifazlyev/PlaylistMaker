@@ -49,6 +49,7 @@ class CreatePlaylistFragment : Fragment() {
                 if (uri == null) {
                     Toast.makeText(requireContext(), "Вы не выбрали фото", Toast.LENGTH_SHORT)
                         .show()
+                    return@registerForActivityResult
                 } else {
                     this.uri = uri
                     binding.playlistImageHint.setBackgroundResource(0)
@@ -90,7 +91,7 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.createPlaylistButton.setOnClickListener {
             viewModel.createPlaylist(
-               name = binding.nameEditText.text.toString(),
+                name = binding.nameEditText.text.toString(),
                 description = binding.descriptionEditText.text.toString(),
                 uri = uri
             )

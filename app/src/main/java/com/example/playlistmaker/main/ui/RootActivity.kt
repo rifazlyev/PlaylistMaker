@@ -1,8 +1,8 @@
 package com.example.playlistmaker.main.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.R
@@ -24,13 +24,13 @@ class RootActivity : AppCompatActivity() {
             when (destination.id) {
                 R.id.playerFragment,
                 R.id.createPlaylistFragment -> {
-                    bottomNavigationView.visibility = View.GONE
-                    binding.divider.visibility = View.GONE
+                    bottomNavigationView.isVisible = false
+                    binding.divider.isVisible = false
                 }
 
                 else -> {
-                    bottomNavigationView.visibility = View.VISIBLE
-                    binding.divider.visibility = View.VISIBLE
+                    bottomNavigationView.isVisible = true
+                    binding.divider.isVisible = true
                 }
             }
         }

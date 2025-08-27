@@ -224,11 +224,15 @@ class PlayerFragment : Fragment() {
         when (addTrackResult) {
             is AddTrackResult.Success -> {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                showToast("Добавлено в плейлист ${addTrackResult.playlist.name}")
+                showToast(getString(R.string.added_to_playlist, addTrackResult.playlist.name))
             }
 
-            is AddTrackResult.AlreadyExist -> showToast("Трек уже добавлен в плейлист ${addTrackResult.playlist.name}")
-            is AddTrackResult.Error -> showToast("Ошибка добавления, попробуйте еще раз")
+            is AddTrackResult.AlreadyExist -> showToast(
+                getString(
+                    R.string.already_added_in_playlist,
+                    addTrackResult.playlist.name
+                ))
+            is AddTrackResult.Error -> showToast(getString(R.string.adding_to_playlist_error))
         }
     }
 

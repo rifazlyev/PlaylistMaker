@@ -8,7 +8,6 @@ import com.example.playlistmaker.common.formatTrackTime
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
-import com.example.playlistmaker.media.ui.mapper.toPlaylist
 import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.player.domain.PlayerInteractor
@@ -16,6 +15,7 @@ import com.example.playlistmaker.search.ui.mapper.toTrackDomain
 import com.example.playlistmaker.search.ui.mapper.toTrackInPlaylist
 import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -44,7 +44,10 @@ class PlayerViewModel(
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
     private val addTrackResult =
-        MutableSharedFlow<AddTrackResult>(replay = 0, extraBufferCapacity = 1)
+        MutableSharedFlow<AddTrackResult>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     fun observeAddTrackResult(): SharedFlow<AddTrackResult> = addTrackResult
 
