@@ -29,4 +29,8 @@
     <color name="create_playlist_button_disabled">#AEAFB4</color>
     <color name="bottom_sheet_view">#E6E8EB</color>
     <color name="track_count">#AEAFB4</color>
+    <color name="playlist_details_text">#1A1B22</color>
+    <color name="background_playlist_details_screen">#E6E8EB</color>
+    <color name="overlay">#99000000</color>
 </resources>
+

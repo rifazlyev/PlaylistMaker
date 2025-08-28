@@ -21,7 +21,7 @@ class PlaylistsFragment : Fragment() {
 
     private val playlistAdapter = PlaylistAdapter(object : OnPlaylistClickListener {
         override fun onPlaylistClick(playlistUi: PlaylistUi) {
-            Toast.makeText(requireContext(), "Пока только показываем", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.playlistDetailFragment)
         }
     })
 
