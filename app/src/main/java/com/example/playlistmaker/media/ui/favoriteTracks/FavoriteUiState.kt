@@ -1,4 +1,4 @@
-package com.example.playlistmaker.media.ui
+package com.example.playlistmaker.media.ui.favoriteTracks
 import com.example.playlistmaker.search.ui.model.TrackUi
 
 interface FavoriteUiState {

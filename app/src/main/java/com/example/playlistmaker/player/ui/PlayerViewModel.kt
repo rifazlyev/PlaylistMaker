@@ -6,39 +6,85 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.common.formatTrackTime
 import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
+import com.example.playlistmaker.media.domain.db.PlaylistInteractor
+import com.example.playlistmaker.media.domain.model.Playlist
+import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
+import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.ui.mapper.toTrackDomain
+import com.example.playlistmaker.search.ui.mapper.toTrackInPlaylist
 import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val favoriteTrackInteractor: FavoriteTrackInteractor
+    private val favoriteTrackInteractor: FavoriteTrackInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
-    companion object {
-        const val CUSTOM_DELAY = 300L
-        const val FAVORITE_DELAY = 500L
-    }
 
-    sealed interface PlayerState {
-        data object Default : PlayerState
-        data object Prepared : PlayerState
-        data object Playing : PlayerState
-        data object Paused : PlayerState
+    init {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists().collect { playlist ->
+                processResult(playlist)
+            }
+        }
     }
 
     private var isFavoriteClickAllowed: Boolean = true
     private var timerJob: Job? = null
     private var favoriteJob: Job? = null
 
+    private val playlistData = MutableLiveData<PlayerPlaylistState>()
+    fun observePlaylistData(): LiveData<PlayerPlaylistState> = playlistData
     private val trackLiveData = MutableLiveData<TrackUi>()
     fun observeTrackLiveData(): LiveData<TrackUi> = trackLiveData
+    private val addTrackResult =
+        MutableSharedFlow<AddTrackResult>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    fun observeAddTrackResult(): SharedFlow<AddTrackResult> = addTrackResult
+
+    fun addTrackToPlaylist(trackUi: TrackUi, playlistUi: PlaylistUi) {
+        val trackId = trackUi.trackId
+        val isPresent = playlistUi.trackIds.contains(trackId)
+        if (isPresent) {
+            viewModelScope.launch {
+                addTrackResult.emit(AddTrackResult.AlreadyExist(playlistUi))
+            }
+            return
+        }
+        viewModelScope.launch {
+            try {
+                playlistInteractor.addTrackToPlaylistAndUpdate(
+                    trackUi.toTrackInPlaylist(),
+                    playlistUi.id
+                )
+                addTrackResult.emit(AddTrackResult.Success(playlistUi))
+            } catch (e: Exception) {
+                addTrackResult.emit(AddTrackResult.Error)
+            }
+        }
+    }
 
     fun initializePlayer(track: TrackUi) {
         trackLiveData.postValue(track)
         preparePlayer(track.previewUrl ?: "")
+    }
+
+    private fun renderState(playerPlaylistState: PlayerPlaylistState) {
+        playlistData.value = playerPlaylistState
+    }
+
+    private fun processResult(playlist: List<Playlist>) {
+        if (playlist.isEmpty()) renderState(PlayerPlaylistState.Empty)
+        else renderState(PlayerPlaylistState.Content(playlist.map { it.toPlaylistUi() }))
     }
 
     private val playerStateLiveData = MutableLiveData<PlayerState>(PlayerState.Default)
@@ -108,7 +154,6 @@ class PlayerViewModel(
     }
 
     fun onDestroy() {
-        playerInteractor.release()
         pauseTimer()
         favoriteJob?.cancel()
     }
@@ -139,4 +184,18 @@ class PlayerViewModel(
             trackLiveData.value = (track.copy(isFavorite = newValue))
         }
     }
+
+    sealed interface PlayerState {
+        data object Default : PlayerState
+        data object Prepared : PlayerState
+        data object Playing : PlayerState
+        data object Paused : PlayerState
+    }
+
+    companion object {
+        const val CUSTOM_DELAY = 300L
+        const val FAVORITE_DELAY = 500L
+    }
 }
+
+

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="vertical"
-    tools:context=".media.ui.FavoriteTracksFragment">
+    tools:context=".media.ui.favoriteTracks.FavoriteTracksFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favoriteTracksRecyclerView"
@@ -20,6 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginHorizontal="@dimen/_16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 

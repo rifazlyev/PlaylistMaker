@@ -4,22 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.common.UiUtils.dpToPx
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
+import com.example.playlistmaker.media.ui.model.PlaylistUi
+import com.example.playlistmaker.media.ui.playlist.OnPlaylistClickListener
 import com.example.playlistmaker.search.ui.model.TrackUi
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
     private val playerViewModel: PlayerViewModel by viewModel<PlayerViewModel>()
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
+    private lateinit var playlistAdapter: PlaylistPlayerAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +56,21 @@ class PlayerFragment : Fragment() {
             return
         }
 
+        playlistAdapter = PlaylistPlayerAdapter(object : OnPlaylistClickListener {
+            override fun onPlaylistClick(playlistUi: PlaylistUi) {
+                playerViewModel.addTrackToPlaylist(trackUi, playlistUi)
+            }
+        })
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playerViewModel.observeAddTrackResult()
+                    .collect { addTrackResult ->
+                        showResult(addTrackResult)
+                    }
+            }
+        }
+
         playerViewModel.initializePlayer(trackUi)
 
         binding.backButtonPlayerScreen.setOnClickListener {
@@ -58,6 +85,10 @@ class PlayerFragment : Fragment() {
             } else {
                 enablePlayButton()
             }
+        }
+
+        playerViewModel.observePlaylistData().observe(viewLifecycleOwner) {
+            render(it)
         }
 
         playerViewModel.observeProgressTime().observe(viewLifecycleOwner) {
@@ -75,6 +106,50 @@ class PlayerFragment : Fragment() {
         binding.playerLikeButton.setOnClickListener {
             if (playerViewModel.favoriteClickDebounce())
                 playerViewModel.onFavoriteClicked()
+        }
+
+        val bottomSheetContainer = binding.bottomSheet
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        binding.playerAddTrackButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(
+            object :
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.visibility = View.GONE
+                        }
+                        else -> {
+                            binding.overlay.visibility = View.VISIBLE
+                        }
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+
+        binding.newPlaylistButton.setOnClickListener {
+            findNavController().navigate(R.id.action_create_playlist_global)
+        }
+
+        binding.playlistRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.playlistRecyclerView.adapter = playlistAdapter
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            } else {
+                findNavController().navigateUp()
+            }
+        }
+
+        binding.overlay.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
@@ -125,6 +200,44 @@ class PlayerFragment : Fragment() {
             true -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart_fill)
             else -> binding.playerLikeButton.setImageResource(R.drawable.ic_heart)
         }
+    }
+
+    private fun render(playerPlaylistState: PlayerPlaylistState) {
+        when (playerPlaylistState) {
+            is PlayerPlaylistState.Empty -> showEmpty()
+            is PlayerPlaylistState.Content -> showPlaylists(playerPlaylistState.playlists)
+        }
+    }
+
+    private fun showPlaylists(playlists: List<PlaylistUi>) {
+        binding.playlistRecyclerView.visibility = View.VISIBLE
+        playlistAdapter.listOfPlaylists.clear()
+        playlistAdapter.listOfPlaylists.addAll(playlists)
+        playlistAdapter.notifyDataSetChanged()
+    }
+
+    private fun showEmpty() {
+        binding.playlistRecyclerView.visibility = View.GONE
+    }
+
+    private fun showResult(addTrackResult: AddTrackResult) {
+        when (addTrackResult) {
+            is AddTrackResult.Success -> {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                showToast(getString(R.string.added_to_playlist, addTrackResult.playlist.name))
+            }
+
+            is AddTrackResult.AlreadyExist -> showToast(
+                getString(
+                    R.string.already_added_in_playlist,
+                    addTrackResult.playlist.name
+                ))
+            is AddTrackResult.Error -> showToast(getString(R.string.adding_to_playlist_error))
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
