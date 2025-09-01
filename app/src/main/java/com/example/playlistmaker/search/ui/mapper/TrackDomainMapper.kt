@@ -22,7 +22,7 @@ fun TrackUi.toTrackDomain(isFavorite: Boolean): Track {
 
 fun TrackUi.toTrackInPlaylist(): TrackInPlaylist{
     return TrackInPlaylist(
-        trackId = trackId,
+        trackId = trackId.toLong(),
         artworkUrl100 = artworkUrl100,
         trackName = trackName,
         artistName = artistName,

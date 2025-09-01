@@ -52,7 +52,7 @@ class PlayerViewModel(
     fun observeAddTrackResult(): SharedFlow<AddTrackResult> = addTrackResult
 
     fun addTrackToPlaylist(trackUi: TrackUi, playlistUi: PlaylistUi) {
-        val trackId = trackUi.trackId
+        val trackId = trackUi.trackId.toLong()
         val isPresent = playlistUi.trackIds.contains(trackId)
         if (isPresent) {
             viewModelScope.launch {
