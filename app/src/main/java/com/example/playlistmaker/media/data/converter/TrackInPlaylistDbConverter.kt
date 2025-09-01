@@ -16,7 +16,8 @@ class TrackInPlaylistDbConverter {
             country = trackInPlaylistEntity.country,
             trackTime = trackInPlaylistEntity.trackTime,
             formattedTime = trackInPlaylistEntity.formattedTime,
-            previewUrl = trackInPlaylistEntity.previewUrl
+            previewUrl = trackInPlaylistEntity.previewUrl,
+            addedAt = trackInPlaylistEntity.addedAt
         )
     }
 

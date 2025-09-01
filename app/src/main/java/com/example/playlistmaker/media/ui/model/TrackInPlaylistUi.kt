@@ -1,6 +1,6 @@
-package com.example.playlistmaker.media.domain.model
+package com.example.playlistmaker.media.ui.model
 
-data class TrackInPlaylist(
+data class TrackInPlaylistUi(
     val trackId: Long,
     val artworkUrl100: String,
     val trackName: String,
@@ -13,4 +13,4 @@ data class TrackInPlaylist(
     val formattedTime: String,
     val previewUrl: String?,
     val addedAt: Long
-    )
+)
