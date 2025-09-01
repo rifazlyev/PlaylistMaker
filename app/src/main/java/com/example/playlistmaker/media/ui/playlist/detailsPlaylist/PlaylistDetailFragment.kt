@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
 import com.example.playlistmaker.media.ui.model.PlaylistUi
+import com.example.playlistmaker.media.ui.model.TrackInPlaylistUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -42,20 +43,22 @@ class PlaylistDetailFragment : Fragment() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehavior.apply {
             isHideable = true
+            //делаю с учетом маленьких экранов, закрыть полностью нельзя, но кнопки при этом видно
             peekHeight = resources.getDimensionPixelSize(R.dimen._54dp)
-            state = BottomSheetBehavior.STATE_COLLAPSED
+            state = BottomSheetBehavior.STATE_HALF_EXPANDED
         }
-
-
 
         val playlistId = requireArguments().getLong(PLAYLIST_ID)
         playlistDetailsViewModel.loadPlaylist(playlistId)
         playlistDetailsViewModel.observePlaylist().observe(viewLifecycleOwner) {
-            renderPlaylistDetails(it)
+            renderPlaylistImageNameAndDescription(it)
+        }
+        playlistDetailsViewModel.observeTrackInPlaylist().observe(viewLifecycleOwner) {
+            renderPlaylistTracksCountAndDuration(it)
         }
     }
 
-    private fun renderPlaylistDetails(playlistUi: PlaylistUi) {
+    private fun renderPlaylistImageNameAndDescription(playlistUi: PlaylistUi) {
         Glide.with(this)
             .load(playlistUi.coverPath)
             .placeholder(R.drawable.ic_placeholder_player_screen)
@@ -64,10 +67,19 @@ class PlaylistDetailFragment : Fragment() {
         binding.playlistName.text = playlistUi.name
         binding.playlistDescription.isVisible = playlistUi.description.isNotBlank()
         binding.playlistDescription.text = playlistUi.description
+    }
 
+    private fun renderPlaylistTracksCountAndDuration(list: List<TrackInPlaylistUi>) {
+        val tracksCount = list.size
+        val tracksCountText =
+            resources.getQuantityString(R.plurals.playlist_tracks_count, tracksCount, tracksCount)
+        binding.playlistTracksCount.text = tracksCountText
 
-//        binding.playlistDurationCount
-        binding.playlistTracksCount.text = String.format(playlistUi.tracksCount.toString())
+        val tracksDuration = list.sumOf { it.trackTime }
+        val totalMinutes = (tracksDuration / 60000).toInt()
+        val tracksDurationText =
+            resources.getQuantityString(R.plurals.playlist_duration, totalMinutes, totalMinutes)
+        binding.playlistDurationCount.text = tracksDurationText
     }
 
     override fun onDestroyView() {
