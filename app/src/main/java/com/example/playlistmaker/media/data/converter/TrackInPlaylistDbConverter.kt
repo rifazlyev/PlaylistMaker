@@ -17,8 +17,7 @@ class TrackInPlaylistDbConverter {
             trackTime = trackInPlaylistEntity.trackTime,
             formattedTime = trackInPlaylistEntity.formattedTime,
             previewUrl = trackInPlaylistEntity.previewUrl,
-            addedAt = trackInPlaylistEntity.addedAt
-        )
+            )
     }
 
     fun map(trackInPlaylist: TrackInPlaylist): TrackInPlaylistEntity{
