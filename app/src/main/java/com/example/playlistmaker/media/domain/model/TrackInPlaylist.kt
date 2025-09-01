@@ -12,5 +12,4 @@ data class TrackInPlaylist(
     val trackTime: Long,
     val formattedTime: String,
     val previewUrl: String?,
-    val addedAt: Long
     )
