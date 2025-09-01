@@ -44,4 +44,18 @@ class PlaylistRepositoryImpl(
         appDatabase.getPlaylistDao().updatePlaylist(playlistDbConverter.map(updatePlaylist))
         return result
     }
+
+    override suspend fun getPlaylistById(playlistId: Long): Playlist {
+        return playlistDbConverter.map(appDatabase.getPlaylistDao().getPlaylistById(playlistId))
+    }
+
+    override fun getTracksFromPlaylist(list: List<Long>): Flow<List<TrackInPlaylist>> {
+        return appDatabase.getTrackInPlaylistDao().getAllTracks()
+            .map { tracks ->
+                tracks
+                    .filter { list.contains(it.trackId) }
+                    .sortedByDescending { it.addedAt }
+                    .map { trackInPlaylistDbConverter.map(it) }
+            }
+    }
 }

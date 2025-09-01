@@ -5,6 +5,7 @@ import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
 import com.example.playlistmaker.media.domain.model.TrackInPlaylist
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class PlaylistInteractorImpl(
     private val playlistRepository: PlaylistRepository,
@@ -37,5 +38,14 @@ class PlaylistInteractorImpl(
         playlistId: Long
     ): Long {
         return playlistRepository.addTrackToPlaylistAndUpdate(trackInPlaylist, playlistId)
+    }
+
+    override suspend fun getPlaylistById(playlistId: Long): Playlist {
+        return playlistRepository.getPlaylistById(playlistId)
+    }
+
+    override fun getTracksFromPlaylist(list: List<Long>): Flow<List<TrackInPlaylist>> {
+        if (list.isEmpty()) return flowOf(emptyList())
+        return playlistRepository.getTracksFromPlaylist(list)
     }
 }
