@@ -5,16 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
 import com.example.playlistmaker.media.ui.model.PlaylistUi
+import com.example.playlistmaker.player.ui.PlayerFragment
+import com.example.playlistmaker.search.ui.OnTrackClickListener
 import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -23,8 +29,20 @@ class PlaylistDetailFragment : Fragment() {
     private var _binding: FragmentPlaylistDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-
-
+    private lateinit var confirmDialog: MaterialAlertDialogBuilder
+    private val tracksAdapter = TrackInPlaylistAdapter(
+        object : OnTrackClickListener {
+            override fun onTrackClick(track: TrackUi) {
+                openPlayer(track)
+            }
+        },
+        object : OnTrackInPlaylistLongClickListener {
+            override fun onTrackLongClickListener(trackUi: TrackUi): Boolean {
+                showConfirmDialog()
+                return true
+            }
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +61,7 @@ class PlaylistDetailFragment : Fragment() {
         val bottomSheetContainer = binding.bottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehavior.apply {
-            isHideable = true
+            isHideable = false
             //делаю с учетом маленьких экранов, закрыть полностью нельзя, но кнопки при этом видно
             peekHeight = resources.getDimensionPixelSize(R.dimen._54dp)
             state = BottomSheetBehavior.STATE_HALF_EXPANDED
@@ -60,6 +78,12 @@ class PlaylistDetailFragment : Fragment() {
         playlistDetailsViewModel.observeState().observe(viewLifecycleOwner) {
             renderContent(it)
         }
+        binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.playlistDetailsRecyclerView.adapter = tracksAdapter
+        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Хотите удалить трек")
+            .setNegativeButton("Нет",null)
+            .setPositiveButton("Да", null)
     }
 
     private fun renderPlaylistImageNameAndDescription(playlistUi: PlaylistUi) {
@@ -87,11 +111,41 @@ class PlaylistDetailFragment : Fragment() {
     }
 
     private fun renderContent(state: PlaylistDetailsUiState) {
+        when (state) {
+            is PlaylistDetailsUiState.Empty -> showEmpty()
+            is PlaylistDetailsUiState.Content -> showTracks(state.tracks)
+        }
 
     }
 
-    private fun showTracks() {
+    private fun showTracks(list: List<TrackUi>) {
+        binding.emptyPlaylistPlaceholder.isVisible = false
+        binding.playlistDetailsRecyclerView.isVisible = true
+        tracksAdapter.listOfTracks.clear()
+        tracksAdapter.listOfTracks.addAll(list)
+        tracksAdapter.notifyDataSetChanged()
+    }
 
+    private fun showEmpty() {
+        binding.playlistDetailsRecyclerView.isVisible = false
+        binding.emptyPlaylistPlaceholder.isVisible = true
+    }
+
+    private fun openPlayer(trackUi: TrackUi) {
+        findNavController().navigate(
+            R.id.action_global_player,
+            PlayerFragment.createArg(trackUi)
+        )
+    }
+
+    private fun showConfirmDialog() {
+        val dialog = confirmDialog.create()
+        dialog.show()
+        //хочу сделать согласованно системе, поэтому крашу кнопки в синий
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
     }
 
     override fun onDestroyView() {

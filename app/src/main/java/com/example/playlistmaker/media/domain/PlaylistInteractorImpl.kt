@@ -44,8 +44,8 @@ class PlaylistInteractorImpl(
         return playlistRepository.getPlaylistById(playlistId)
     }
 
-    override fun getTracksFromPlaylist(list: List<Long>): Flow<List<Track>> {
-        if (list.isEmpty()) return flowOf(emptyList())
-        return playlistRepository.getTracksFromPlaylist(list)
+    override fun getTracksFromPlaylist(ids: List<Long>): Flow<List<Track>> {
+        if (ids.isEmpty()) return flowOf(emptyList())
+        return playlistRepository.getTracksFromPlaylist(ids)
     }
 }

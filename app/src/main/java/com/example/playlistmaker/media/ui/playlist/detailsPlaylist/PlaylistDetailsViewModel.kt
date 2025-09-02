@@ -40,7 +40,12 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
 
     private fun processResult(list: List<Track>) {
         val uiTracks = list.map { it.toTrackUi() }
-        tracksInPlaylist.value = uiTracks
-        render(PlaylistDetailsUiState.Content(uiTracks))
+        if (uiTracks.isEmpty()) {
+            render(PlaylistDetailsUiState.Empty)
+            tracksInPlaylist.value = emptyList()
+        } else {
+            tracksInPlaylist.value = uiTracks
+            render(PlaylistDetailsUiState.Content(uiTracks))
+        }
     }
 }
