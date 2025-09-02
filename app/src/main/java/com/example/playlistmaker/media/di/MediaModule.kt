@@ -39,7 +39,7 @@ val mediaModule = module {
         PlaylistDetailsViewModel(get())
     }
     single {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database_playlist.db")
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "data.db")
             .build()
     }
     factory { TrackDbConvertor() }

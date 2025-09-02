@@ -75,5 +75,9 @@
         android:id="@+id/playlistDetailFragment"
         android:name="com.example.playlistmaker.media.ui.playlist.detailsPlaylist.PlaylistDetailFragment"
         android:label="fragment_playlist_details"
-        tools:layout="@layout/fragment_playlist_details" />
+        tools:layout="@layout/fragment_playlist_details" >
+        <action
+            android:id="@+id/action_playlistDetailFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+    </fragment>
 </navigation>

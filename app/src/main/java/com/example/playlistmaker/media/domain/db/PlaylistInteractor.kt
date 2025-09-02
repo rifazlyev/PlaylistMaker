@@ -2,16 +2,16 @@ package com.example.playlistmaker.media.domain.db
 
 import android.net.Uri
 import com.example.playlistmaker.media.domain.model.Playlist
-import com.example.playlistmaker.media.domain.model.TrackInPlaylist
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 
 interface PlaylistInteractor {
     suspend fun createPlaylist(name: String, description: String, uri: Uri?): Long
     fun getPlaylists(): Flow<List<Playlist>>
     suspend fun addTrackToPlaylistAndUpdate(
-        trackInPlaylist: TrackInPlaylist, playlistId: Long
+        track: Track, playlistId: Long
     ): Long
 
     suspend fun getPlaylistById(playlistId: Long): Playlist
-    fun getTracksFromPlaylist(list: List<Long>): Flow<List<TrackInPlaylist>>
+    fun getTracksFromPlaylist(list: List<Long>): Flow<List<Track>>
 }

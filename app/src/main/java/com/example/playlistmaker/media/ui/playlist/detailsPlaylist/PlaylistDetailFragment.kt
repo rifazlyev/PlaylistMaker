@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
 import com.example.playlistmaker.media.ui.model.PlaylistUi
-import com.example.playlistmaker.media.ui.model.TrackInPlaylistUi
+import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,6 +23,7 @@ class PlaylistDetailFragment : Fragment() {
     private var _binding: FragmentPlaylistDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
 
 
     override fun onCreateView(
@@ -56,6 +57,9 @@ class PlaylistDetailFragment : Fragment() {
         playlistDetailsViewModel.observeTrackInPlaylist().observe(viewLifecycleOwner) {
             renderPlaylistTracksCountAndDuration(it)
         }
+        playlistDetailsViewModel.observeState().observe(viewLifecycleOwner) {
+            renderContent(it)
+        }
     }
 
     private fun renderPlaylistImageNameAndDescription(playlistUi: PlaylistUi) {
@@ -69,7 +73,7 @@ class PlaylistDetailFragment : Fragment() {
         binding.playlistDescription.text = playlistUi.description
     }
 
-    private fun renderPlaylistTracksCountAndDuration(list: List<TrackInPlaylistUi>) {
+    private fun renderPlaylistTracksCountAndDuration(list: List<TrackUi>) {
         val tracksCount = list.size
         val tracksCountText =
             resources.getQuantityString(R.plurals.playlist_tracks_count, tracksCount, tracksCount)
@@ -80,6 +84,14 @@ class PlaylistDetailFragment : Fragment() {
         val tracksDurationText =
             resources.getQuantityString(R.plurals.playlist_duration, totalMinutes, totalMinutes)
         binding.playlistDurationCount.text = tracksDurationText
+    }
+
+    private fun renderContent(state: PlaylistDetailsUiState) {
+
+    }
+
+    private fun showTracks() {
+
     }
 
     override fun onDestroyView() {
