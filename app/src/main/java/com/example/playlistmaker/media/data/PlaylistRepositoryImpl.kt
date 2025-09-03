@@ -8,6 +8,7 @@ import com.example.playlistmaker.media.domain.PlaylistRepository
 import com.example.playlistmaker.media.domain.model.Playlist
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
@@ -35,7 +36,8 @@ class PlaylistRepositoryImpl(
         val result = appDatabase.getTrackInPlaylistDao().insertTrackToPlaylist(
             trackInPlaylistDbConverter.map(track)
         )
-        val playlist = playlistDbConverter.map(appDatabase.getPlaylistDao().getPlaylistById(playlistId))
+        val playlist =
+            playlistDbConverter.map(appDatabase.getPlaylistDao().getPlaylistById(playlistId))
         val newTrackIds = playlist.trackIds + track.trackId
         val updatePlaylist = playlist.copy(
             trackIds = newTrackIds,
@@ -57,5 +59,26 @@ class PlaylistRepositoryImpl(
                     .sortedByDescending { it.addedAt }
                     .map { trackInPlaylistDbConverter.map(it) }
             }
+    }
+
+    @Transaction
+    override suspend fun deleteTrack(trackId: Long, playlistId: Long) {
+        val playlist =
+            playlistDbConverter.map(appDatabase.getPlaylistDao().getPlaylistById(playlistId))
+        val newTrackIds = playlist.trackIds - trackId
+        val updatedPlaylist = playlist.copy(
+            trackIds = newTrackIds,
+            tracksCount = newTrackIds.size
+        )
+        appDatabase.getPlaylistDao().updatePlaylist(playlistDbConverter.map(updatedPlaylist))
+        if (!isTrackPresentInPlaylists(trackId)){
+            appDatabase.getTrackInPlaylistDao().deleteTrack(trackId)
+        }
+    }
+
+    private suspend fun isTrackPresentInPlaylists(trackId: Long): Boolean {
+        val listOfPlaylist: List<Playlist> = appDatabase.getPlaylistDao().getPlaylists().first()
+            .map { playlistDbConverter.map(it) }
+        return listOfPlaylist.any { trackId in it.trackIds }
     }
 }

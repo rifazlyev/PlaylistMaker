@@ -48,4 +48,8 @@ class PlaylistInteractorImpl(
         if (ids.isEmpty()) return flowOf(emptyList())
         return playlistRepository.getTracksFromPlaylist(ids)
     }
+
+    override suspend fun deleteTrack(trackId: Long, playlistId: Long) {
+        playlistRepository.deleteTrack(trackId = trackId, playlistId = playlistId)
+    }
 }

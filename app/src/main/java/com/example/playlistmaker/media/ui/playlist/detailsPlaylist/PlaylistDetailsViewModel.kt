@@ -10,9 +10,12 @@ import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
+    private var playlistId: Long? = null
+    private var loadJob: Job? = null
     private val playlist = MutableLiveData<PlaylistUi>()
     fun observePlaylist(): LiveData<PlaylistUi> = playlist
 
@@ -23,9 +26,11 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
     fun observeTrackInPlaylist(): LiveData<List<TrackUi>> = tracksInPlaylist
 
     fun loadPlaylist(playlistId: Long) {
-        viewModelScope.launch {
+        this.playlistId = playlistId
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val playlistUi = playlistInteractor.getPlaylistById(playlistId).toPlaylistUi()
-            playlist.value = playlistUi
+            playlist.postValue(playlistUi)
             val tracksIds = playlistUi.trackIds
             playlistInteractor.getTracksFromPlaylist(tracksIds)
                 .collect {
@@ -35,17 +40,25 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
     }
 
     private fun render(state: PlaylistDetailsUiState) {
-        stateLiveData.value = state
+        stateLiveData.postValue(state)
     }
 
     private fun processResult(list: List<Track>) {
         val uiTracks = list.map { it.toTrackUi() }
         if (uiTracks.isEmpty()) {
             render(PlaylistDetailsUiState.Empty)
-            tracksInPlaylist.value = emptyList()
+            tracksInPlaylist.postValue(emptyList())
         } else {
-            tracksInPlaylist.value = uiTracks
+            tracksInPlaylist.postValue(uiTracks)
             render(PlaylistDetailsUiState.Content(uiTracks))
+        }
+    }
+
+    fun deleteTrack(trackId: Long) {
+        val id = playlistId ?: return
+        viewModelScope.launch {
+            playlistInteractor.deleteTrack(trackId = trackId, playlistId = id)
+            loadPlaylist(id)
         }
     }
 }

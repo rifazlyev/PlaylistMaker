@@ -30,6 +30,7 @@ class PlaylistDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
+private var trackId: Long? = null
     private val tracksAdapter = TrackInPlaylistAdapter(
         object : OnTrackClickListener {
             override fun onTrackClick(track: TrackUi) {
@@ -38,6 +39,7 @@ class PlaylistDetailFragment : Fragment() {
         },
         object : OnTrackInPlaylistLongClickListener {
             override fun onTrackLongClickListener(trackUi: TrackUi): Boolean {
+                trackId = trackUi.trackId
                 showConfirmDialog()
                 return true
             }
@@ -80,10 +82,15 @@ class PlaylistDetailFragment : Fragment() {
         }
         binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistDetailsRecyclerView.adapter = tracksAdapter
+
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Хотите удалить трек")
-            .setNegativeButton("Нет",null)
-            .setPositiveButton("Да", null)
+            .setTitle(getString(R.string.confirm_delete_track))
+            .setNegativeButton(getString(R.string.no),null)
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                playlistDetailsViewModel.deleteTrack(
+                    trackId ?: return@setPositiveButton
+                )
+            }
     }
 
     private fun renderPlaylistImageNameAndDescription(playlistUi: PlaylistUi) {
