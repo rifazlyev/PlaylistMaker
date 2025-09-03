@@ -23,14 +23,13 @@ import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.math.max
-
 
 class PlaylistDetailFragment : Fragment() {
     private val playlistDetailsViewModel: PlaylistDetailsViewModel by viewModel<PlaylistDetailsViewModel>()
     private var _binding: FragmentPlaylistDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
     private var trackId: Long? = null
     private val tracksAdapter = TrackInPlaylistAdapter(
@@ -62,15 +61,41 @@ class PlaylistDetailFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        val bottomSheetContainer = binding.bottomSheet
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        binding.menuButton.setOnClickListener {
+            menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+
+        tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
         binding.root.doOnLayout {
             val buttonSBottom = binding.menuButton.bottom
             val parentHeight = (binding.root as ViewGroup).height
             val peek = parentHeight - buttonSBottom
-            bottomSheetBehavior.peekHeight = peek
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            tracksBottomSheetBehavior.peekHeight = peek
+            tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+
+        menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet)
+        menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+
+        menuBottomSheetBehavior.addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_HIDDEN -> {
+                            binding.overlay.isVisible = false
+                        }
+
+                        BottomSheetBehavior.STATE_EXPANDED -> bottomSheet.post {
+                            menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                        }
+                        else -> binding.overlay.isVisible = true
+
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
 
         val playlistId = requireArguments().getLong(PLAYLIST_ID)
         playlistDetailsViewModel.loadPlaylist(playlistId)
