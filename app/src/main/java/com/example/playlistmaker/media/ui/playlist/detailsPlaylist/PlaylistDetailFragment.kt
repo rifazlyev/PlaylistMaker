@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -22,6 +23,7 @@ import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.math.max
 
 
 class PlaylistDetailFragment : Fragment() {
@@ -30,7 +32,7 @@ class PlaylistDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
-private var trackId: Long? = null
+    private var trackId: Long? = null
     private val tracksAdapter = TrackInPlaylistAdapter(
         object : OnTrackClickListener {
             override fun onTrackClick(track: TrackUi) {
@@ -62,11 +64,13 @@ private var trackId: Long? = null
 
         val bottomSheetContainer = binding.bottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
-        bottomSheetBehavior.apply {
-            isHideable = false
-            //делаю с учетом маленьких экранов, закрыть полностью нельзя, но кнопки при этом видно
-            peekHeight = resources.getDimensionPixelSize(R.dimen._54dp)
-            state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        binding.root.doOnLayout {
+            val buttonSBottom = binding.menuButton.bottom
+            val parentHeight = (binding.root as ViewGroup).height
+            val peek = parentHeight - buttonSBottom
+            bottomSheetBehavior.peekHeight = peek
+            bottomSheetBehavior.isHideable = false
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         val playlistId = requireArguments().getLong(PLAYLIST_ID)
@@ -85,7 +89,7 @@ private var trackId: Long? = null
 
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.confirm_delete_track))
-            .setNegativeButton(getString(R.string.no),null)
+            .setNegativeButton(getString(R.string.no), null)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 playlistDetailsViewModel.deleteTrack(
                     trackId ?: return@setPositiveButton

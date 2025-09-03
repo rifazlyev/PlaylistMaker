@@ -148,9 +148,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet"
         android:orientation="vertical"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sharing_button">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
             android:id="@+id/bottom_sheet_button"
@@ -174,8 +172,7 @@
             android:id="@+id/playlist_details_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_24dp"
-            android:layout_marginHorizontal="@dimen/_13dp"/>
+            android:layout_marginHorizontal="@dimen/_13dp"
+            android:layout_marginTop="@dimen/_24dp" />
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
