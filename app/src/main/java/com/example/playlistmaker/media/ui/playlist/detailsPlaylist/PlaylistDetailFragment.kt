@@ -69,7 +69,6 @@ class PlaylistDetailFragment : Fragment() {
             val parentHeight = (binding.root as ViewGroup).height
             val peek = parentHeight - buttonSBottom
             bottomSheetBehavior.peekHeight = peek
-            bottomSheetBehavior.isHideable = false
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
@@ -106,6 +105,12 @@ class PlaylistDetailFragment : Fragment() {
         binding.playlistName.text = playlistUi.name
         binding.playlistDescription.isVisible = playlistUi.description.isNotBlank()
         binding.playlistDescription.text = playlistUi.description
+        binding.playlistNameSmall.text = playlistUi.name
+        Glide.with(this)
+            .load(playlistUi.coverPath)
+            .placeholder(R.drawable.ic_placeholder_player_screen)
+            .centerCrop()
+            .into(binding.playlistImageSmall)
     }
 
     private fun renderPlaylistTracksCountAndDuration(list: List<TrackUi>) {
@@ -119,6 +124,7 @@ class PlaylistDetailFragment : Fragment() {
         val tracksDurationText =
             resources.getQuantityString(R.plurals.playlist_duration, totalMinutes, totalMinutes)
         binding.playlistDurationCount.text = tracksDurationText
+        binding.playlistTracksCountSmall.text = tracksCountText
     }
 
     private fun renderContent(state: PlaylistDetailsUiState) {
