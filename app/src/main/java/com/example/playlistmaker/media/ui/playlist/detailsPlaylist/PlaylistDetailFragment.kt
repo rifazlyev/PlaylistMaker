@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -30,7 +31,7 @@ class PlaylistDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var tracksBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-    private lateinit var confirmDialog: MaterialAlertDialogBuilder
+    private lateinit var confirmDeleteTrackDialog: MaterialAlertDialogBuilder
     private var trackId: Long? = null
     private val tracksAdapter = TrackInPlaylistAdapter(
         object : OnTrackClickListener {
@@ -41,7 +42,7 @@ class PlaylistDetailFragment : Fragment() {
         object : OnTrackInPlaylistLongClickListener {
             override fun onTrackLongClickListener(trackUi: TrackUi): Boolean {
                 trackId = trackUi.trackId
-                showConfirmDialog()
+                showConfirmDeleteTrackDialog()
                 return true
             }
         }
@@ -63,6 +64,10 @@ class PlaylistDetailFragment : Fragment() {
 
         binding.menuButton.setOnClickListener {
             menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
+
+        binding.deleteButton.setOnClickListener {
+            showConfirmDeletePlaylistDialog()
         }
 
         tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
@@ -89,6 +94,7 @@ class PlaylistDetailFragment : Fragment() {
                         BottomSheetBehavior.STATE_EXPANDED -> bottomSheet.post {
                             menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                         }
+
                         else -> binding.overlay.isVisible = true
 
                     }
@@ -108,10 +114,14 @@ class PlaylistDetailFragment : Fragment() {
         playlistDetailsViewModel.observeState().observe(viewLifecycleOwner) {
             renderContent(it)
         }
+
+        playlistDetailsViewModel.observeDeletePlaylist().observe(viewLifecycleOwner) {
+            deletePlaylistResult(it)
+        }
         binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistDetailsRecyclerView.adapter = tracksAdapter
 
-        confirmDialog = MaterialAlertDialogBuilder(requireContext())
+        confirmDeleteTrackDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.confirm_delete_track))
             .setNegativeButton(getString(R.string.no), null)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
@@ -157,7 +167,6 @@ class PlaylistDetailFragment : Fragment() {
             is PlaylistDetailsUiState.Empty -> showEmpty()
             is PlaylistDetailsUiState.Content -> showTracks(state.tracks)
         }
-
     }
 
     private fun showTracks(list: List<TrackUi>) {
@@ -180,14 +189,43 @@ class PlaylistDetailFragment : Fragment() {
         )
     }
 
-    private fun showConfirmDialog() {
-        val dialog = confirmDialog.create()
+    private fun showConfirmDeleteTrackDialog() {
+        val dialog = confirmDeleteTrackDialog.create()
         dialog.show()
         //хочу сделать согласованно системе, поэтому крашу кнопки в синий
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
+    }
+
+    private fun showConfirmDeletePlaylistDialog() {
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.confirm_delete_playlist) + " \"${binding.playlistName.text}\"?")
+            .setNegativeButton(getString(R.string.no), null)
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                playlistDetailsViewModel.deletePlaylist()
+            }
+            .create()
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
+    }
+
+    private fun deletePlaylistResult(resultCode: Int) {
+        if (resultCode > 0) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist_deleted),
+                Toast.LENGTH_SHORT
+            ).show()
+            findNavController().navigateUp()
+            return
+        }
+        Toast.makeText(requireContext(), getString(R.string.deleting_error), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onDestroyView() {

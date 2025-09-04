@@ -50,6 +50,9 @@
     <string name="sharing_playlist">Поделиться</string>
     <string name="edit_playlist">Редактировать информацию</string>
     <string name="delete_playlist">Удалить плейлист</string>
+    <string name="confirm_delete_playlist">Хотите удалить плейлист"</string>
+    <string name="playlist_deleted">Плейлист удален</string>
+    <string name="deleting_error">Ошибка удаления</string>
     <plurals name="playlist_tracks_count">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>

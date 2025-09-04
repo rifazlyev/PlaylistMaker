@@ -25,6 +25,9 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
     private val tracksInPlaylist = MutableLiveData<List<TrackUi>>()
     fun observeTrackInPlaylist(): LiveData<List<TrackUi>> = tracksInPlaylist
 
+    private val deletePlaylistResult = MutableLiveData<Int>()
+    fun observeDeletePlaylist(): LiveData<Int> = deletePlaylistResult
+
     fun loadPlaylist(playlistId: Long) {
         this.playlistId = playlistId
         loadJob?.cancel()
@@ -59,6 +62,18 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
         viewModelScope.launch {
             playlistInteractor.deleteTrack(trackId = trackId, playlistId = id)
             loadPlaylist(id)
+        }
+    }
+
+    fun deletePlaylist() {
+        val id = playlistId
+        if (id == null) {
+            deletePlaylistResult.postValue(0)
+            return
+        }
+
+        viewModelScope.launch {
+            deletePlaylistResult.postValue(playlistInteractor.deletePlaylist(id))
         }
     }
 }
