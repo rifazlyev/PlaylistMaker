@@ -56,7 +56,7 @@ val mediaModule = module {
 
     factory { TrackInPlaylistDbConverter() }
 
-    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get(), get()) }
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get(), get(), get()) }
     single<FileRepository> { FileRepositoryImpl(get()) }
 
     single<PlaylistInteractor> { PlaylistInteractorImpl(get(), get()) }

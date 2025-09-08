@@ -56,4 +56,8 @@ class PlaylistInteractorImpl(
     override suspend fun deletePlaylist(playlistId: Long): Int {
         return playlistRepository.deletePlaylist(playlistId)
     }
+
+    override fun shareApp(playlist: Playlist, tracks: List<Track>) {
+        playlistRepository.sharePlaylist(playlist, tracks)
+    }
 }

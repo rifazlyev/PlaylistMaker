@@ -12,17 +12,23 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
+import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.ui.OnTrackClickListener
+import com.example.playlistmaker.search.ui.mapper.toTrackUi
 import com.example.playlistmaker.search.ui.model.TrackUi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistDetailFragment : Fragment() {
@@ -105,11 +111,11 @@ class PlaylistDetailFragment : Fragment() {
 
         val playlistId = requireArguments().getLong(PLAYLIST_ID)
         playlistDetailsViewModel.loadPlaylist(playlistId)
-        playlistDetailsViewModel.observePlaylist().observe(viewLifecycleOwner) {
-            renderPlaylistImageNameAndDescription(it)
+        playlistDetailsViewModel.observePlaylist().observe(viewLifecycleOwner) { playlist ->
+            renderPlaylistImageNameAndDescription(playlist.toPlaylistUi())
         }
-        playlistDetailsViewModel.observeTrackInPlaylist().observe(viewLifecycleOwner) {
-            renderPlaylistTracksCountAndDuration(it)
+        playlistDetailsViewModel.observeTrackInPlaylist().observe(viewLifecycleOwner) { tracks ->
+            renderPlaylistTracksCountAndDuration(tracks.map { it.toTrackUi() })
         }
         playlistDetailsViewModel.observeState().observe(viewLifecycleOwner) {
             renderContent(it)
@@ -118,6 +124,19 @@ class PlaylistDetailFragment : Fragment() {
         playlistDetailsViewModel.observeDeletePlaylist().observe(viewLifecycleOwner) {
             deletePlaylistResult(it)
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playlistDetailsViewModel.observeUiSharingEvent().collect { event ->
+                    showNoTracksToast(event)
+                }
+            }
+        }
+
+        binding.sharingButton.setOnClickListener {
+            playlistDetailsViewModel.sharePlaylist()
+        }
+
         binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistDetailsRecyclerView.adapter = tracksAdapter
 
@@ -129,6 +148,13 @@ class PlaylistDetailFragment : Fragment() {
                     trackId ?: return@setPositiveButton
                 )
             }
+    }
+
+    private fun showNoTracksToast(playlistDetailsEvent: PlaylistDetailsEvent) {
+        if (playlistDetailsEvent is PlaylistDetailsEvent.ShowNoTracksToast) {
+            Toast.makeText(requireContext(), getString(R.string.no_tracks), Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     private fun renderPlaylistImageNameAndDescription(playlistUi: PlaylistUi) {

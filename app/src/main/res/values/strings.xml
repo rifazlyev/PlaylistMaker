@@ -53,6 +53,7 @@
     <string name="confirm_delete_playlist">Хотите удалить плейлист"</string>
     <string name="playlist_deleted">Плейлист удален</string>
     <string name="deleting_error">Ошибка удаления</string>
+    <string name="no_tracks">Треков нет, делиться нечем</string>
     <plurals name="playlist_tracks_count">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>
