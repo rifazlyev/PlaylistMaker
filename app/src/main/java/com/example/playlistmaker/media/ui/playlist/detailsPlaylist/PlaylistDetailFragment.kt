@@ -137,6 +137,11 @@ class PlaylistDetailFragment : Fragment() {
             playlistDetailsViewModel.sharePlaylist()
         }
 
+        binding.sharingAction.setOnClickListener {
+            playlistDetailsViewModel.sharePlaylist()
+            menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
         binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.playlistDetailsRecyclerView.adapter = tracksAdapter
 
