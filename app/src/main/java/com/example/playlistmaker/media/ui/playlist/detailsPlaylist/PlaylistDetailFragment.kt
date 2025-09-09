@@ -22,6 +22,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
 import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import com.example.playlistmaker.media.ui.model.PlaylistUi
+import com.example.playlistmaker.media.ui.playlist.createPlaylist.CreateEditPlaylistFragment
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.ui.OnTrackClickListener
 import com.example.playlistmaker.search.ui.mapper.toTrackUi
@@ -39,6 +40,7 @@ class PlaylistDetailFragment : Fragment() {
     private lateinit var menuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var confirmDeleteTrackDialog: MaterialAlertDialogBuilder
     private var trackId: Long? = null
+    private var playlistId: Long? = null
     private val tracksAdapter = TrackInPlaylistAdapter(
         object : OnTrackClickListener {
             override fun onTrackClick(track: TrackUi) {
@@ -109,7 +111,8 @@ class PlaylistDetailFragment : Fragment() {
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {}
             })
 
-        val playlistId = requireArguments().getLong(PLAYLIST_ID)
+        val args = arguments
+        playlistId = if (args?.containsKey(PLAYLIST_ID) == true) args.getLong(PLAYLIST_ID) else null
         playlistDetailsViewModel.loadPlaylist(playlistId)
         playlistDetailsViewModel.observePlaylist().observe(viewLifecycleOwner) { playlist ->
             renderPlaylistImageNameAndDescription(playlist.toPlaylistUi())
@@ -140,6 +143,10 @@ class PlaylistDetailFragment : Fragment() {
         binding.sharingAction.setOnClickListener {
             playlistDetailsViewModel.sharePlaylist()
             menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.editButton.setOnClickListener {
+            openEditPlaylistScreen(playlistId)
         }
 
         binding.playlistDetailsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -257,6 +264,14 @@ class PlaylistDetailFragment : Fragment() {
         }
         Toast.makeText(requireContext(), getString(R.string.deleting_error), Toast.LENGTH_SHORT)
             .show()
+    }
+
+    private fun openEditPlaylistScreen(playlistId: Long?) {
+        if (playlistId == null) return
+        findNavController().navigate(
+            R.id.createPlaylistFragment,
+            CreateEditPlaylistFragment.createArg(playlistId)
+        )
     }
 
     override fun onDestroyView() {

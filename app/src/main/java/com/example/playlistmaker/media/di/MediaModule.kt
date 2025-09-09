@@ -17,7 +17,7 @@ import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.ui.favoriteTracks.FavoriteTracksViewModel
 import com.example.playlistmaker.media.ui.playlist.PlaylistsViewModel
-import com.example.playlistmaker.media.ui.playlist.createPlaylist.CreatePlaylistViewModel
+import com.example.playlistmaker.media.ui.playlist.createPlaylist.CreateEditPlaylistViewModel
 import com.example.playlistmaker.media.ui.playlist.detailsPlaylist.PlaylistDetailsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -32,7 +32,7 @@ val mediaModule = module {
     }
 
     viewModel {
-        CreatePlaylistViewModel(get())
+        CreateEditPlaylistViewModel(get())
     }
 
     viewModel {

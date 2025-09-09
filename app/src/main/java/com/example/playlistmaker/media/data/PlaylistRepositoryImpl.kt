@@ -128,6 +128,10 @@ class PlaylistRepositoryImpl(
         context.startActivity(chooser)
     }
 
+    override suspend fun editPlaylist(playlist: Playlist) {
+        appDatabase.getPlaylistDao().updatePlaylist(playlistDbConverter.map(playlist))
+    }
+
     private suspend fun isTrackPresentInPlaylists(trackId: Long): Boolean {
         val listOfPlaylist: List<Playlist> = appDatabase.getPlaylistDao().getPlaylists().first()
             .map { playlistDbConverter.map(it) }

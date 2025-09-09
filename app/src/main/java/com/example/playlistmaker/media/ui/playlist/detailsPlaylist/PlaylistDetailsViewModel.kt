@@ -37,7 +37,8 @@ class PlaylistDetailsViewModel(private val playlistInteractor: PlaylistInteracto
 
     fun observeUiSharingEvent(): SharedFlow<PlaylistDetailsEvent> = uiSharingEvent
 
-    fun loadPlaylist(playlistId: Long) {
+    fun loadPlaylist(playlistId: Long?) {
+        if (playlistId == null) return
         this.playlistId = playlistId
         loadJob?.cancel()
         loadJob = viewModelScope.launch {

@@ -17,4 +17,6 @@ interface PlaylistInteractor {
     suspend fun deleteTrack(trackId: Long, playlistId: Long)
     suspend fun deletePlaylist(playlistId: Long): Int
     fun shareApp(playlist: Playlist, tracks: List<Track>)
+    suspend fun editPlaylist(playlist: Playlist)
+    suspend fun getCoverPath(uri: Uri): String?
 }

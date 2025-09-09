@@ -19,7 +19,7 @@ class PlaylistInteractorImpl(
                 description = description,
             )
         )
-        val coverPath = fileRepository.copyToPrivateStorage(uri)
+        val coverPath = getCoverPath(uri)
         return playlistRepository.createPlaylist(
             Playlist(
                 name = name,
@@ -59,5 +59,13 @@ class PlaylistInteractorImpl(
 
     override fun shareApp(playlist: Playlist, tracks: List<Track>) {
         playlistRepository.sharePlaylist(playlist, tracks)
+    }
+
+    override suspend fun editPlaylist(playlist: Playlist) {
+        playlistRepository.editPlaylist(playlist)
+    }
+
+    override suspend fun getCoverPath(uri: Uri): String? {
+        return fileRepository.copyToPrivateStorage(uri)
     }
 }
