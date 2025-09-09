@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -79,13 +78,7 @@ class PlaylistDetailFragment : Fragment() {
         }
 
         tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
-        binding.root.doOnLayout {
-            val buttonSBottom = binding.menuButton.bottom
-            val parentHeight = (binding.root as ViewGroup).height
-            val peek = parentHeight - buttonSBottom
-            tracksBottomSheetBehavior.peekHeight = peek
-            tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
+        tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
 
         menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet)
         menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN

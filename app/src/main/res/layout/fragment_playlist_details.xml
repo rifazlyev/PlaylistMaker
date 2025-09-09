@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--        в макете есть недочет - для заглушки имеются отступы, если есть изображение - нет-->
+        <!--        я оставил для обоих вариантов на весь экран-->
         <ImageView
             android:id="@+id/playlist_image"
             android:layout_width="@dimen/_0dp"
@@ -142,13 +144,16 @@
         android:background="@color/overlay"
         android:visibility="gone" />
 
+    <!--тут сделан небольшой behavior_peekHeight с учетом маленьких экранов -->
     <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/bottom_sheet"
         android:orientation="vertical"
+        app:behavior_fitToContents="true"
         app:behavior_hideable="false"
+        app:behavior_peekHeight="100dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
@@ -247,6 +252,7 @@
                 android:text="@string/edit_playlist"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/sharing_action" />
+
             <TextView
                 android:id="@+id/delete_button"
                 style="@style/PlaylistCardButtonsInBottomSheet"
