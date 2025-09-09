@@ -78,7 +78,7 @@ class PlaylistDetailFragment : Fragment() {
         }
 
         tracksBottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
-        tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        tracksBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         menuBottomSheetBehavior = BottomSheetBehavior.from(binding.menuBottomSheet)
         menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN

@@ -153,7 +153,7 @@
         android:orientation="vertical"
         app:behavior_fitToContents="true"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="100dp"
+        app:behavior_peekHeight="200dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
