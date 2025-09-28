@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.media.ui.model.PlaylistUi
+import com.example.playlistmaker.media.ui.playlist.detailsPlaylist.PlaylistDetailFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -21,7 +20,10 @@ class PlaylistsFragment : Fragment() {
 
     private val playlistAdapter = PlaylistAdapter(object : OnPlaylistClickListener {
         override fun onPlaylistClick(playlistUi: PlaylistUi) {
-            Toast.makeText(requireContext(), "Пока только показываем", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(
+                R.id.playlistDetailFragment,
+                PlaylistDetailFragment.createArg(playlistUi.id)
+            )
         }
     })
 

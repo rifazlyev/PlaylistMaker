@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "track_in_playlist")
 data class TrackInPlaylistEntity(
     @PrimaryKey
-    val trackId: Int,
+    val trackId: Long,
     val artworkUrl100: String,
     val trackName: String,
     val artistName: String,
@@ -15,7 +15,6 @@ data class TrackInPlaylistEntity(
     val primaryGenreName: String,
     val country: String,
     val trackTime: Long,
-    val formattedTime: String,
     val previewUrl: String?,
     val addedAt: Long
 )

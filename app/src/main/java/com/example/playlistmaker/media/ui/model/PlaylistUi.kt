@@ -5,6 +5,6 @@ data class PlaylistUi(
     val name: String,
     val description: String = "",
     val coverPath: String? = null,
-    val trackIds: List<Int> = emptyList(),
+    val trackIds: List<Long> = emptyList(),
     val tracksCount: Int = trackIds.size
 )

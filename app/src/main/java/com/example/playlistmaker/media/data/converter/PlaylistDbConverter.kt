@@ -7,9 +7,9 @@ import com.google.gson.reflect.TypeToken
 
 class PlaylistDbConverter(private val gson: Gson) {
     fun map(playlistEntity: PlaylistEntity): Playlist {
-        val type = object : TypeToken<List<Int>>() {}.type
+        val type = object : TypeToken<List<Long>>() {}.type
         val trackIds = if (playlistEntity.trackIds.isBlank()) {
-            emptyList<Int>()
+            emptyList<Long>()
         } else {
             gson.fromJson(playlistEntity.trackIds, type)
         }

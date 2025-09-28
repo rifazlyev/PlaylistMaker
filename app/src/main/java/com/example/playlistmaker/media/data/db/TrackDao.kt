@@ -20,5 +20,5 @@ interface TrackDao {
     fun getListOfFavoriteTracks(): Flow<List<TrackEntity>>
 
     @Query("SELECT trackId from favorite_tracks")
-    suspend fun getFavoriteTracksId(): List<Int>
+    suspend fun getFavoriteTracksId(): List<Long>
 }

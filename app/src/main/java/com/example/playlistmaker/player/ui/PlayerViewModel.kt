@@ -12,7 +12,6 @@ import com.example.playlistmaker.media.ui.mapper.toPlaylistUi
 import com.example.playlistmaker.media.ui.model.PlaylistUi
 import com.example.playlistmaker.player.domain.PlayerInteractor
 import com.example.playlistmaker.search.ui.mapper.toTrackDomain
-import com.example.playlistmaker.search.ui.mapper.toTrackInPlaylist
 import com.example.playlistmaker.search.ui.model.TrackUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -63,7 +62,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             try {
                 playlistInteractor.addTrackToPlaylistAndUpdate(
-                    trackUi.toTrackInPlaylist(),
+                    trackUi.toTrackDomain(false),
                     playlistUi.id
                 )
                 addTrackResult.emit(AddTrackResult.Success(playlistUi))

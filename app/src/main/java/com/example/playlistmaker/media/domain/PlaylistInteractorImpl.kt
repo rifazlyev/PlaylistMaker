@@ -3,8 +3,9 @@ package com.example.playlistmaker.media.domain
 import android.net.Uri
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.domain.model.Playlist
-import com.example.playlistmaker.media.domain.model.TrackInPlaylist
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class PlaylistInteractorImpl(
     private val playlistRepository: PlaylistRepository,
@@ -18,7 +19,7 @@ class PlaylistInteractorImpl(
                 description = description,
             )
         )
-        val coverPath = fileRepository.copyToPrivateStorage(uri)
+        val coverPath = getCoverPath(uri)
         return playlistRepository.createPlaylist(
             Playlist(
                 name = name,
@@ -33,9 +34,38 @@ class PlaylistInteractorImpl(
     }
 
     override suspend fun addTrackToPlaylistAndUpdate(
-        trackInPlaylist: TrackInPlaylist,
+        track: Track,
         playlistId: Long
     ): Long {
-        return playlistRepository.addTrackToPlaylistAndUpdate(trackInPlaylist, playlistId)
+        return playlistRepository.addTrackToPlaylistAndUpdate(track, playlistId)
+    }
+
+    override suspend fun getPlaylistById(playlistId: Long): Playlist {
+        return playlistRepository.getPlaylistById(playlistId)
+    }
+
+    override fun getTracksFromPlaylist(ids: List<Long>): Flow<List<Track>> {
+        if (ids.isEmpty()) return flowOf(emptyList())
+        return playlistRepository.getTracksFromPlaylist(ids)
+    }
+
+    override suspend fun deleteTrack(trackId: Long, playlistId: Long) {
+        playlistRepository.deleteTrack(trackId = trackId, playlistId = playlistId)
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long): Int {
+        return playlistRepository.deletePlaylist(playlistId)
+    }
+
+    override fun shareApp(playlist: Playlist, tracks: List<Track>) {
+        playlistRepository.sharePlaylist(playlist, tracks)
+    }
+
+    override suspend fun editPlaylist(playlist: Playlist) {
+        playlistRepository.editPlaylist(playlist)
+    }
+
+    override suspend fun getCoverPath(uri: Uri): String? {
+        return fileRepository.copyToPrivateStorage(uri)
     }
 }

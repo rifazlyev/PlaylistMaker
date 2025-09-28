@@ -17,7 +17,8 @@ import com.example.playlistmaker.media.domain.db.FavoriteTrackInteractor
 import com.example.playlistmaker.media.domain.db.PlaylistInteractor
 import com.example.playlistmaker.media.ui.favoriteTracks.FavoriteTracksViewModel
 import com.example.playlistmaker.media.ui.playlist.PlaylistsViewModel
-import com.example.playlistmaker.media.ui.playlist.createPlaylist.CreatePlaylistViewModel
+import com.example.playlistmaker.media.ui.playlist.createPlaylist.CreateEditPlaylistViewModel
+import com.example.playlistmaker.media.ui.playlist.detailsPlaylist.PlaylistDetailsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -30,11 +31,15 @@ val mediaModule = module {
         FavoriteTracksViewModel(get())
     }
 
-    viewModel{
-        CreatePlaylistViewModel(get())
+    viewModel {
+        CreateEditPlaylistViewModel(get())
+    }
+
+    viewModel {
+        PlaylistDetailsViewModel(get())
     }
     single {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database_playlist.db")
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "data.db")
             .build()
     }
     factory { TrackDbConvertor() }
@@ -51,8 +56,8 @@ val mediaModule = module {
 
     factory { TrackInPlaylistDbConverter() }
 
-    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get(), get()) }
-    single <FileRepository>{FileRepositoryImpl(get())}
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get(), get(), get(), get()) }
+    single<FileRepository> { FileRepositoryImpl(get()) }
 
     single<PlaylistInteractor> { PlaylistInteractorImpl(get(), get()) }
 }
